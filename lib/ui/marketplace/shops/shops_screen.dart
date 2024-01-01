@@ -11,7 +11,7 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 class ShopsScreen extends StatelessWidget {
   ShopsScreen({super.key});
 
-  final List<String> shopTypes = ["All", "Dealer", "Repair", "Detailing", "Servicing"];
+  final List<String> shopTypes = ["All", "Dealer", "Repair", "Detailing", "Servicing", "Parts"];
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,11 @@ class ShopsScreen extends StatelessWidget {
           onTap: (){
             popView(context);
           },
-          child: const Icon(Icons.arrow_back_ios_rounded, size: 21, color: Colors.purpleAccent,),
+          child: const Row(
+            children: [
+              Icon(Icons.arrow_back_ios_rounded, size: 21, color: Colors.purpleAccent,),
+            ],
+          ),
         ),
       ),
       floatingActionButton: GestureDetector(
@@ -78,28 +82,17 @@ class ShopsScreen extends StatelessWidget {
                 ],),
               ),
               const YMargin(20),
-              Container(
-                height: MediaQuery.of(context).size.height - 50,
-                child: GridView.builder(
-                  itemCount: 5,
-                  scrollDirection: Axis.vertical,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 21,
-                      mainAxisSpacing: 20,
-                      mainAxisExtent: 171),
-                  itemBuilder: (BuildContext context, int position) {
-                    return GestureDetector(
-                      onTap: (){
-                        navigate(context, const ShopDetailsScreen());
-                      },
-                        child: const ShopListItem(),
-                    );
+              ...List.generate(5, (index) {
+                return GestureDetector(
+                  onTap: (){
+                    navigate(context, const ShopDetailsScreen());
                   },
-                ),
-              ),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: ShopListItem(),
+                  ),
+                );
+              }),
             ],
           ),
         ),
@@ -114,18 +107,16 @@ class ShopListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
       decoration: BoxDecorators.containerDecoration(
-          hasOutline: true,
-          outlineWidth: 2,
-          radius: 26,
-          outlineColor: Colors.purpleAccent.withOpacity(0.2)
+          hasOutline: false,
       ),
-      child: Column(
+      child: Row(
         children: [
           const YMargin(20),
           Container(
-            height: 70,
-            width: 70,
+            height: 40,
+            width: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(
                 32,
@@ -133,12 +124,27 @@ class ShopListItem extends StatelessWidget {
             ),
             child: Image.asset('assets/images/auto/bmw_logo.jpeg'),
           ),
-          const YMargin(20),
-          NormalText(
-            text: 'Auto shop',
-            textColor: XColors.textColor(),
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
+          const XMargin(10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              NormalText(
+                text: 'Auto shop',
+                textColor: XColors.textColor(),
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+              Row(
+                children: [
+                  NormalText(
+                    text: 'Few kms away',
+                    textColor: XColors.textColor(),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 11,
+                  ),
+                ],
+              ),
+            ],
           )
         ],
       ),

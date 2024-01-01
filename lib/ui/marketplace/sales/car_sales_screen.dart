@@ -60,7 +60,7 @@ class CarSalesScreen extends StatelessWidget {
           const XMargin(30),
         ],
       ),
-      floatingActionButton: isADealer ? Container(
+      floatingActionButton: !isADealer ? Container(
         height: 60,
         width: 200,
         alignment: Alignment.center,

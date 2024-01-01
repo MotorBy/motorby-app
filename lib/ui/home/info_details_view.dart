@@ -154,7 +154,7 @@ class _InfoDetailsViewState extends State<InfoDetailsView> {
                 ),
                 const YMargin(15),
               ],),
-          ] else if(widget.infoType == 'servicing') ... [
+          ] else if(widget.infoType == 'servicing' || widget.infoType == 'repairing') ... [
             Column(
               children: [
                 const YMargin(15),
@@ -163,13 +163,25 @@ class _InfoDetailsViewState extends State<InfoDetailsView> {
                   children: [
                     GestureDetector(
                       onTap: (){
+                        navigate(context, const HistoryScreen());
+                      },
+                      child: NormalText(
+                        text: 'View History',
+                        textColor: XColors.textColor(),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const XMargin(45),
+                    GestureDetector(
+                      onTap: (){
                         Navigator.pop(context);
                       },
                       child: const Icon(Icons.close_rounded, size: 31,),
                     ),
                   ],
                 ),
-                const YMargin(15),
+                const YMargin(5),
                 Row(
                   children: [
                     NormalText(
@@ -201,112 +213,79 @@ class _InfoDetailsViewState extends State<InfoDetailsView> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    NormalText(
-                      text:'last servicing on $date: Tuesday',
-                      textColor: XColors.textColor(),
-                      fontSize: 13,
-                    ),
                     const YMargin(15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        NormalText(
-                          text:'Engine servicing',
-                          textColor: XColors.textColor(),
-                          fontSize: 15,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            NormalText(
+                              text:'Condition',
+                              textColor: XColors.textColor(),
+                              fontSize: 15,
+                            ),
+                            const YMargin(4),
+                            NormalText(
+                              text:'Date',
+                              textColor: XColors.textColor(),
+                              fontSize: 15,
+                            ),
+                          ],
                         ),
                         NormalText(
-                          text:'N 5,000',
+                          text:'N 0',
                           textColor: XColors.textColor(),
                           fontWeight: FontWeight.w700,
                           fontSize: 17,
                         ),
                       ],
                     ),
-                  ],
-                ),
-                const YMargin(35),
-                XButton(
-                  onPressed: () {
-                    navigate(context, const HistoryScreen());
-                  },
-                  text: "View History",
-                  height: 56,
-                  textColor: Colors.white,
-                  buttonColor: XColors.primaryColor(),
-                  progressColor: Colors.white,
-                  radius: 26,
-                  width: SizeConfig().sw(400) as double?,
-                ),
-                const YMargin(15),
-              ],),
-          ] else if(widget.infoType == 'repairing') ... [
-            Column(
-              children: [
-                const YMargin(15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: (){
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.close_rounded, size: 31,),
-                    ),
-                  ],
-                ),
-                const YMargin(15),
-                Row(
-                  children: [
-                    NormalText(
-                      text: widget.infoType!.toUpperCase(),
-                      textColor: XColors.textColor(),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 23,
-                    ),
-                  ],
-                ),
-                const YMargin(5),
-                Row(
-                  children: [
-                    NormalText(
-                      text:'You have spent total of ',
-                      textColor: XColors.textColor(),
-                      fontSize: 15,
-                    ),
-                    NormalText(
-                      text:'N100,000 ',
-                      textColor: XColors.textColor(),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ],
-                ),
-                const YMargin(35),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    NormalText(
-                      text:'last repair on $date: Tuesday',
-                      textColor: XColors.textColor(),
-                      fontSize: 13,
+                    const YMargin(15),
+                    MkInputField2(
+                      controller: _amountInputController,
+                      label: "Condition",
+                      isEnabled: true,
                     ),
                     const YMargin(15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        NormalText(
-                          text:'Oil pump repair',
-                          textColor: XColors.textColor(),
-                          fontSize: 15,
+                    MkInputField2(
+                      controller: _amountInputController,
+                      label: "Amount",
+                      isEnabled: true,
+                    ),
+                    const YMargin(15),
+                    MkInputField2(
+                      controller: _amountInputController,
+                      label: "Location",
+                      isEnabled: true,
+                      suffixIcon: GestureDetector(
+                        child: Container(
+                          width: 100,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(Icons.location_on_rounded, size: 21, color: XColors.textColor(),),
+                              const XMargin(20),
+                              GestureDetector(
+                                onTap: () async {
+                                  DateTime? startPickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(DateTime.now().year - 10),
+                                      lastDate: DateTime(DateTime.now().year + 10));
+                                  String formattedDate =
+                                      '${startPickedDate!.day}-${startPickedDate.month}-${startPickedDate.year}';
+                                  setState(() {
+                                    date = formattedDate;
+                                  });
+                                },
+                                child: Icon(Icons.calendar_month_rounded, size: 21, color: XColors.textColor(),),
+                              ),
+                              const XMargin(10),
+                            ],
+                          ),
                         ),
-                        NormalText(
-                          text:'N 10,000',
-                          textColor: XColors.textColor(),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 17,
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -315,7 +294,7 @@ class _InfoDetailsViewState extends State<InfoDetailsView> {
                   onPressed: () {
 
                   },
-                  text: "View History",
+                  text: "Add",
                   height: 56,
                   textColor: Colors.white,
                   buttonColor: XColors.primaryColor(),
@@ -519,4 +498,5 @@ class _InfoDetailsViewState extends State<InfoDetailsView> {
       ),
     );
   }
+
 }

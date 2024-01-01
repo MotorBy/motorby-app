@@ -162,7 +162,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const YMargin(30),
+            const YMargin(70),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -244,7 +244,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const YMargin(30),
+            const YMargin(70),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -252,7 +252,7 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecorators.containerDecoration(
                       hasOutline: true,
-                      outlineWidth: 2,
+                      outlineWidth: 1,
                       radius: 16,
                       outlineColor: Colors.purpleAccent.withOpacity(0.1)
                   ),
@@ -263,8 +263,8 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           NormalText(
                             text: 'Total set budget',
-                            textColor: XColors.textColor(),
-                            fontWeight: FontWeight.w700,
+                            textColor: XColors.textColor().withOpacity(0.5),
+                            fontWeight: FontWeight.w500,
                             fontSize: 12,
                           ),
                           const XMargin(30),
@@ -295,7 +295,7 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecorators.containerDecoration(
                       hasOutline: true,
-                      outlineWidth: 2,
+                      outlineWidth: 1,
                       radius: 16,
                       outlineColor: Colors.purpleAccent.withOpacity(0.1)
                   ),
@@ -306,8 +306,8 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           NormalText(
                             text: 'Current tier',
-                            textColor: XColors.textColor(),
-                            fontWeight: FontWeight.w700,
+                            textColor: XColors.textColor().withOpacity(0.5),
+                            fontWeight: FontWeight.w500,
                             fontSize: 12,
                           ),
                           const XMargin(30),
@@ -320,9 +320,9 @@ class ProfileScreen extends StatelessWidget {
                                 outlineColor: Colors.purpleAccent.withOpacity(0.2)
                             ),
                             child: NormalText(
-                              text: 'Buy',
+                              text: 'Change',
                               textColor: XColors.textColor(),
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w500,
                               fontSize: 12,
                             ),
                           ),
@@ -343,7 +343,7 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecorators.containerDecoration(
                       hasOutline: true,
-                      outlineWidth: 2,
+                      outlineWidth: 1,
                       radius: 16,
                       outlineColor: Colors.purpleAccent.withOpacity(0.1)
                   ),
@@ -354,8 +354,8 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           NormalText(
                             text: 'Payment method',
-                            textColor: XColors.textColor(),
-                            fontWeight: FontWeight.w700,
+                            textColor: XColors.textColor().withOpacity(0.5),
+                            fontWeight: FontWeight.w500,
                             fontSize: 12,
                           ),
                           const XMargin(30),
@@ -385,7 +385,7 @@ class ProfileScreen extends StatelessWidget {
                               child: NormalText(
                                 text: 'Change',
                                 textColor: XColors.textColor(),
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w500,
                                 fontSize: 12,
                               ),
                             ),

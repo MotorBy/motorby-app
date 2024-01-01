@@ -29,6 +29,8 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
 
   final TextEditingController _mileageController = TextEditingController();
 
+  final TextEditingController _vinController = TextEditingController();
+
   bool isBusinessOrForSale = true;
 
   @override
@@ -79,6 +81,56 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                     ),
                   ),
                 ],
+              ),
+              const YMargin(5),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14.0),
+                      child: Container(
+                        width: 110,
+                          height: 110,
+                          child: Image.asset('assets/images/car_placeholder.jpeg', fit: BoxFit.cover,)
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14.0),
+                      child: Container(
+                          width: 110,
+                          height: 110,
+                          child: Image.asset('assets/images/car_placeholder.jpeg', fit: BoxFit.cover,)
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14.0),
+                      child: Container(
+                          width: 110,
+                          height: 110,
+                          child: Image.asset('assets/images/car_placeholder.jpeg', fit: BoxFit.cover,)
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14.0),
+                      child: Container(
+                          width: 110,
+                          height: 110,
+                          child: Image.asset('assets/images/car_placeholder.jpeg', fit: BoxFit.cover,)
+                      ),
+                    ),
+                  )
+                ],),
               ),
               const YMargin(15),
               MkInputField2(
@@ -437,6 +489,13 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                 keyboard: TextInputType.number,
               ),
               if(isBusinessOrForSale) ... [
+                const YMargin(15),
+                MkInputField2(
+                  controller: _vinController,
+                  label: "VIN number",
+                  isEnabled: true,
+                  keyboard: TextInputType.number,
+                ),
                 const YMargin(15),
                 MkInputField2(
                   controller: _mileageController,
