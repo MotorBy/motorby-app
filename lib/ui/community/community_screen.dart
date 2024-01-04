@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/community/discussions_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
@@ -62,7 +63,7 @@ class CommunityScreen extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  //navigate(context, const MarketPlace());
+                  navigate(context, DiscussionsScreen());
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
