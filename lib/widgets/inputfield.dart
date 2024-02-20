@@ -160,12 +160,13 @@ class MkInputField2 extends StatelessWidget {
         FocusScope.of(context).requestFocus(nextNode);
         onsaved!(value);
       },
-      onFieldSubmitted: (String value) {
+      onFieldSubmitted: (String? value) {
         FocusScope.of(context).requestFocus(nextNode);
-        onFieldSubmitted(value);
+        if(onFieldSubmitted != null) {
+          onFieldSubmitted(value);
+        }
       },
       textInputAction: textInputAction,
-      //autovalidate: autoValidate,
       decoration: InputDecoration(
         fillColor: XColors.primaryColor().withOpacity(0.0),
         border: OutlineInputBorder(
@@ -183,6 +184,7 @@ class MkInputField2 extends StatelessWidget {
           ),
         ),
         hintStyle: const TextStyle(color: Colors.grey),
+        hintText: hint,
         focusedBorder: OutlineInputBorder(
             borderRadius: const BorderRadius.all(Radius.circular(5.0)),
             borderSide: BorderSide(color: XColors.primaryColor())),

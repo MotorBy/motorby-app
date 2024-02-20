@@ -12,6 +12,10 @@ var carMakeData = [
       "logo" : "assets/images/auto/aston_martin_logo.jpeg",
     },
     {
+      "name" : "Toyota",
+      "logo" : "assets/images/auto/toyota_logo.jpeg",
+    },
+    {
       "name" : "Ford",
       "logo" : "assets/images/auto/ford_logo.jpeg",
     },

@@ -10,14 +10,18 @@ void navigateReplace(BuildContext context, Widget route,
       ),
     );
 
-void navigate(BuildContext context, Widget route, {bool isDialog = false}) =>
+void navigate(BuildContext context, Widget route, {bool isDialog = false, Function? onCallback}) =>
     Navigator.push(
       context,
       MaterialPageRoute<dynamic>(
         fullscreenDialog: isDialog,
         builder: (BuildContext context) => route,
       ),
-    );
+    ).then((value) {
+      if(onCallback != null) {
+        onCallback();
+      }
+    });
 
 void popToFirst(BuildContext context) =>
     Navigator.of(context).popUntil((Route<dynamic> route) => route.isFirst);

@@ -1,0 +1,93 @@
+import 'package:mobile_auto_drive/models/community_model.dart';
+import 'package:mobile_auto_drive/models/discussion_model.dart';
+import 'package:mobile_auto_drive/services/community_service.dart';
+import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/utils/locator_setup.dart';
+import 'package:stacked/stacked.dart';
+
+class CommunityViewModel extends BaseViewModel {
+  final userService = serviceLocator<UserService>();
+  final communityService = serviceLocator<CommunityService>();
+
+  List<Community>? communities = [];
+  Community? selectedCommunity;
+
+  List<Discussion> discussions = [];
+  String? contentText = '';
+
+  String? communityId;
+
+  Future initialise() async {
+    await getCommunities();
+  }
+
+  Future getCommunities() async {
+    setBusy(true);
+
+    await communityService.getCommunities().then((value) {
+      communities = communityService.communities;
+      setBusy(false);
+    }).onError((error, stackTrace) {
+      print(stackTrace.toString());
+      setBusy(false);
+    });
+
+  }
+
+  Future getDiscussions() async {
+
+    setBusy(true);
+
+    await communityService.getDiscussions().then((value) {
+      discussions = communityService.discussions;
+      setBusy(false);
+    }).onError((error, stackTrace) {
+      print(stackTrace);
+      setBusy(false);
+    });
+
+  }
+
+  void onSelectCommunity({Community? community}) {
+    selectedCommunity = community;
+
+    if(community != null) {
+      communityService.selectedCommunity = selectedCommunity;
+      communityService.communityId = selectedCommunity!.id;
+    } else {
+      communityService.communityId = null;
+    }
+
+    notifyListeners();
+  }
+
+  void onContentUpdate({String? s}) {
+    contentText = s;
+    notifyListeners();
+  }
+
+  Future addDiscussions({Function? onCallBack,}) async {
+    setBusyForObject('discussion', true,);
+
+    await communityService.addDiscussions(content: contentText).then((value) {
+      discussions = communityService.discussions;
+      setBusyForObject('discussion', false,);
+
+      if(onCallBack != null) {
+        onCallBack();
+      }
+
+    }).onError((error, stackTrace) {
+      print(stackTrace);
+      setBusyForObject('discussion', false,);
+    });
+
+  }
+
+  Future makeComments() async {
+
+  }
+
+
+
+}

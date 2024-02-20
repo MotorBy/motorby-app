@@ -1,4 +1,4 @@
-package com.example.mobile_auto_drive
+package com.motorby.motorbyapp
 
 import io.flutter.embedding.android.FlutterActivity
 

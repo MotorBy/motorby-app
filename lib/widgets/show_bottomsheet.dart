@@ -21,6 +21,7 @@ void modalBottomSheetMenu({
       builder: (builder) {
         return SingleChildScrollView(
           child: Container(
+            width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
