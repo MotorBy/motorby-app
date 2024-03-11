@@ -6,6 +6,7 @@ void modalBottomSheetMenu({
   double? radius,
   Widget? child,
   bool? isDismissible,
+  double? height,
   Color? color}) {
   showModalBottomSheet(
       isDismissible: isDismissible ?? true,
@@ -22,6 +23,7 @@ void modalBottomSheetMenu({
         return SingleChildScrollView(
           child: Container(
             width: MediaQuery.of(context).size.width,
+            height: height,
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),

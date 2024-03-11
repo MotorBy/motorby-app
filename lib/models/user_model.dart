@@ -27,11 +27,13 @@ class Payload {
   PaymentDetails? paymentDetails;
   StatsDetails? statsDetails;
   PlanDetails? planDetails;
+  BusinessDetails? businessDetails;
   String? fullname;
   String? firstname;
   String? lastname;
   String? email;
   String? country;
+  String? state;
   String? phonenumber;
   String? userType;
   String? userId;
@@ -50,11 +52,13 @@ class Payload {
         this.lastname,
         this.email,
         this.country,
+        this.state,
         this.phonenumber,
         this.userType,
         this.userId,
         this.referralCode,
         //this.favourites,
+        this.businessDetails,
         this.createdAt,
         this.updatedAt,
         this.iV});
@@ -69,11 +73,15 @@ class Payload {
     planDetails = json['plan_details'] != null
         ? PlanDetails.fromJson(json['plan_details'])
         : null;
+    businessDetails: json["business_details"] != null
+        ? BusinessDetails.fromJson(json["business_details"])
+        : null;
     fullname = json['fullname'];
     firstname = json['firstname'];
     lastname = json['lastname'];
     email = json['email'];
     country = json['country'];
+    state = json['state'];
     phonenumber = json['phonenumber'];
     userType = json['user_type'];
     userId = json['user_id'];
@@ -100,11 +108,15 @@ class Payload {
     if (planDetails != null) {
       data['plan_details'] = planDetails!.toJson();
     }
+    if(businessDetails != null) {
+      data["business_details"] = businessDetails!.toJson();
+    }
     data['fullname'] = fullname;
     data['firstname'] = firstname;
     data['lastname'] = lastname;
     data['email'] = email;
     data['country'] = country;
+    data['state'] = state;
     data['phonenumber'] = phonenumber;
     data['user_type'] = userType;
     data['user_id'] = userId;
@@ -171,4 +183,24 @@ class PlanDetails {
     data['last_plan_update'] = lastPlanUpdate;
     return data;
   }
+}
+
+class BusinessDetails {
+  String? businessName;
+  String? businessPlan;
+
+  BusinessDetails({
+    this.businessName,
+    this.businessPlan,
+  });
+
+  factory BusinessDetails.fromJson(Map<String, dynamic> json) => BusinessDetails(
+    businessName: json["business_name"],
+    businessPlan: json["business_plan"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "business_name": businessName,
+    "business_plan": businessPlan,
+  };
 }

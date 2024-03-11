@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -126,48 +127,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                           context: context,
                           height: 500,
                           title: 'Car make',
-                          listString: [
-                            "Audi",
-                            "Chevrolet",
-                            "Cadillac",
-                            "Acura",
-                            "BMW",
-                            "Chrysler",
-                            "Ford",
-                            "INFINITI",
-                            "GMC",
-                            "Honda",
-                            "Hyundai",
-                            "Jeep",
-                            "Genesis",
-                            "Dodge",
-                            "Jaguar",
-                            "Kia",
-                            "Land Rover",
-                            "Lexus",
-                            "Mercedes-Be",
-                            "Mitsubishi",
-                            "Lincoln",
-                            "MAZDA",
-                            "Nissan",
-                            "Porsche",
-                            "Subaru",
-                            "Toyota",
-                            "Volkswagen",
-                            "Volvo",
-                            "Maserati",
-                            "Tesla",
-                            "Aston Marti",
-                            "Bentley",
-                            "Ferrari",
-                            "Lamborghini",
-                            "Lotus",
-                            "McLaren",
-                            "Rolls-Royce",
-                            "smart",
-                            "Scion",
-                            "SRT",
-                            "Suzuki",],
+                          listString: carMakeDataList!,
                           selected: (s) {
                             _carMakeController.text = s!;
                             model.updateSetCarData(data: s, dataType: 'make');

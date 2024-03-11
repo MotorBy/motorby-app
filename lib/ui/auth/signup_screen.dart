@@ -77,6 +77,7 @@ class SignupScreen extends StatelessWidget {
                   MkInputField2(
                     label: "Email address",
                     isEnabled: true,
+                    validator: EmailValidator.validate,
                     onChanged: (s){
 
                     },
@@ -93,7 +94,7 @@ class SignupScreen extends StatelessWidget {
                           title: 'Register as',
                           listString: [
                             "User",
-                            "Profession"
+                            "Business"
                           ],
                           selected: (s) {
                             model.updateRegAsPro(v: s == 'User' ? false : true);
@@ -112,7 +113,7 @@ class SignupScreen extends StatelessWidget {
                     const YMargin(20),
                     MkInputField2(
                       label: "Business type",
-                      isEnabled: true,
+                      isEnabled: false,
                       suffixIcon: GestureDetector(
                         onTap: (){
                           listHelperPicker(
@@ -121,8 +122,10 @@ class SignupScreen extends StatelessWidget {
                             title: 'Business type',
                             listString: [
                               "Dealership",
-                              "Auto Repair",
-                              "Auto Part sales",
+                              "Repair",
+                              "Servicing",
+                              "Detailing",
+                              "Part sales",
                               "Rental",
                               "Insurance",],
                             selected: (s) {
@@ -140,7 +143,7 @@ class SignupScreen extends StatelessWidget {
                       Expanded(
                         child: MkInputField2(
                           label: "Country",
-                          isEnabled: true,
+                          isEnabled: false,
                           suffixIcon: GestureDetector(
                             onTap: (){
                               listHelperPicker(
@@ -149,7 +152,8 @@ class SignupScreen extends StatelessWidget {
                                 title: 'Countries',
                                 listString: [
                                   "Nigeria",
-                                  "Ghana",],
+                                  "Ghana",
+                                ],
                                 selected: (s) {
 
                                 },
@@ -171,6 +175,8 @@ class SignupScreen extends StatelessWidget {
                   const YMargin(20),
                   const MkInputField2(
                     label: "Password",
+                    isPassword: true,
+                    validator: PasswordValidator.validate,
                     isEnabled: true,
                   ),
                   const YMargin(20),

@@ -83,6 +83,7 @@ class MarketPlace extends StatelessWidget {
                             model.setPickedCarMake(v: carMakeData[index]['name']);
                             if(pickOptionsBeforeNav!) {
                               modalBottomSheetMenu(
+                                  height: 150,
                                   context: context,
                                   color: XColors.background(),
                                   child: Padding(
@@ -117,12 +118,7 @@ class MarketPlace extends StatelessWidget {
                                             ),
                                             GestureDetector(
                                               onTap: (){
-                                                //navigate(context, ShopsScreen());
-                                                modalBottomSheetMenu(
-                                                    context: context,
-                                                    child: const ComingSoon(),
-                                                    color: XColors.background()
-                                                );
+                                                navigate(context, ShopsScreen());
                                               },
                                               child: Container(
                                                 alignment: Alignment.center,

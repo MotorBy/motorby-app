@@ -2,11 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_screen.dart';
+import 'package:mobile_auto_drive/ui/profile/plan_subscription_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/size_config.dart';
+import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
@@ -20,6 +24,7 @@ class ProfileScreen extends StatelessWidget {
     return ViewModelBuilder<ProfileViewModel>.reactive(
         viewModelBuilder: () => ProfileViewModel(),
         onViewModelReady: (model) async => await model.init(),
+        disposeViewModel: false,
         builder: (context, model, child) {
         return Scaffold(
           backgroundColor: XColors.white(),
@@ -102,7 +107,9 @@ class ProfileScreen extends StatelessWidget {
                             modalBottomSheetMenu(
                                 color: Colors.white,
                                 context: context,
-                                child: const MoreProfileActionPicks(),
+                                child: MoreProfileActionPicks(
+                                  profileViewModel: model,
+                                ),
                             );
 
                           },
@@ -308,19 +315,24 @@ class ProfileScreen extends StatelessWidget {
                                 fontSize: 12,
                               ),
                               const XMargin(30),
-                              Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecorators.containerDecoration(
-                                    hasOutline: true,
-                                    outlineWidth: 2,
-                                    radius: 26,
-                                    outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                                ),
-                                child: NormalText(
-                                  text: 'Change',
-                                  textColor: XColors.textColor(),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
+                              GestureDetector(
+                                onTap: (){
+                                  navigate(context, PlanSubscriptionScreen(profileViewModel: model,));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecorators.containerDecoration(
+                                      hasOutline: true,
+                                      outlineWidth: 2,
+                                      radius: 26,
+                                      outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                  ),
+                                  child: NormalText(
+                                    text: 'Change',
+                                    textColor: XColors.textColor(),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ],
@@ -425,56 +437,158 @@ class CarBudgetAmountInput extends StatelessWidget {
   }
 }
 
-class MoreProfileActionPicks extends StatelessWidget {
-  const MoreProfileActionPicks({super.key});
+class BusinessSetupView extends StatelessWidget {
+  const BusinessSetupView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+    return Padding(
+      padding: const EdgeInsets.all(18.0),
+      child: Column(
+        children: [
+          // const YMargin(20),
+          // Row(
+          //   children: [
+          //     NormalText(
+          //       text: infoType!.toUpperCase(),
+          //       textColor: XColors.textColor(),
+          //       fontWeight: FontWeight.w700,
+          //       fontSize: 23,
+          //     ),
+          //   ],
+          // ),
+          const YMargin(35),
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const YMargin(25),
               NormalText(
-                text:'Switch to Business',
+                text:'You have not yet setup your business profile',
                 textColor: XColors.textColor(),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontSize: 13,
               ),
-              const YMargin(25),
-              NormalText(
-                text:'Reset Budget',
-                textColor: XColors.textColor(),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              const YMargin(25),
-              GestureDetector(
-                onTap: (){
-                  navigate(context, SignInScreen());
+              const YMargin(15),
+              MkInputField2(
+                label: "Business name",
+                keyboard: TextInputType.number,
+                isEnabled: true,
+                onChanged: (s){
+
                 },
-                child: NormalText(
-                  text:'Logout',
-                  textColor: XColors.textColor(),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
               ),
-              const YMargin(25),
-              NormalText(
-                text: 'Delete account',
-                textColor: XColors.textColor(),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+              const YMargin(15),
+              const MkInputField2(
+                label: "Business bank account",
+                isEnabled: true,
               ),
-              const YMargin(25),
+              const YMargin(15),
+              MkInputField2(
+                label: "Business bank name",
+                keyboard: TextInputType.number,
+                isEnabled: true,
+                onChanged: (s) {
+                },
+              ),
             ],
           ),
-        ),
-      ],
+          const YMargin(35),
+          XButton(
+            onPressed: (){},
+            text: "Create",
+            height: 56,
+            textColor: Colors.white,
+            buttonColor: XColors.primaryColor(),
+            progressColor: Colors.white,
+            radius: 26,
+            width: SizeConfig().sw(400) as double?,
+          ),
+          const YMargin(15),
+        ],
+      ),
+    );
+  }
+
+}
+
+class MoreProfileActionPicks extends StatelessWidget {
+  const MoreProfileActionPicks({super.key, this.profileViewModel});
+
+  final ProfileViewModel? profileViewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<ProfileViewModel>.reactive(
+        viewModelBuilder: () => profileViewModel!,
+        disposeViewModel: false,
+        builder: (context, model, child) {
+        return Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const YMargin(25),
+                  GestureDetector(
+                    onTap: () {
+
+                      //popView(context);
+
+                      modalBottomSheetMenu(
+                        color: Colors.white,
+                        context: context,
+                        child: const BusinessSetupView(),
+                      );
+
+                    },
+                    child: NormalText(
+                      text:'Switch to Business',
+                      textColor: XColors.textColor(),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if(model.hasBusiness!) ... [
+                    const YMargin(45),
+                    NormalText(
+                      text:'Update Business',
+                      textColor: XColors.textColor(),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ],
+                  const YMargin(45),
+                  NormalText(
+                    text:'Reset Budget',
+                    textColor: XColors.textColor(),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  const YMargin(45),
+                  GestureDetector(
+                    onTap: (){
+                      navigate(context, SignInScreen());
+                    },
+                    child: NormalText(
+                      text:'Logout',
+                      textColor: XColors.textColor(),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const YMargin(45),
+                  NormalText(
+                    text: 'Delete account',
+                    textColor: XColors.textColor(),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  const YMargin(25),
+                ],
+              ),
+            ),
+          ],
+        );
+      }
     );
   }
 }

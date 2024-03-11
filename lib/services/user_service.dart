@@ -40,6 +40,27 @@ class UserService {
 
   }
 
+  Future updateUsers({Map<String, dynamic>? data}) async {
+
+    final jsonData = JSON.json.encode(data);
+
+    var response = await http.put(
+        Uri.parse(APIService.getUser(id: persistService.getUserID)),
+        body: jsonData,
+        headers: APIHelper().requestHeadersWithToken()
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+      await getUsers();
+    } else {
+      var error = json["message"];
+      throw Exception(error);
+    }
+
+  }
+
   Future addACar({Map<String, dynamic>? carData}) async {
 
     final jsonData = JSON.json.encode(carData);

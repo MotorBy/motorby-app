@@ -12,7 +12,9 @@ class ShopDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: XColors.white(),
       appBar: AppBar(
+        backgroundColor: XColors.white(),
         leading: GestureDetector(
           onTap: (){
             popView(context);

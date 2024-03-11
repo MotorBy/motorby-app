@@ -11,6 +11,7 @@ import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -437,7 +438,7 @@ class HomeScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 2, horizontal: 10),
                                   child: NormalText(
-                                    text: 'Your sales(s)',
+                                    text: 'Your sale(s)',
                                     textColor: model.currentViewState == CurrentView.sales ? XColors.textColor() : XColors.textColor().withOpacity(0.3),
                                     fontSize: 13,
                                   ),
@@ -616,7 +617,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                       ),
                       const XMargin(10),
                       NormalText(
-                        text: 'N ${viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex!].currentSpending}',
+                        text: 'N ${numberFormat(number: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex!].currentSpending!.toDouble())}',
                         textColor:
                         XColors.black(),
                         fontWeight: FontWeight.w900,
@@ -652,12 +653,15 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                         viewModel.totalList!.length,
                             (index) => GestureDetector(
                           onTap: () {
+                            viewModel.resetUpdateBudgetData();
+
                             modalBottomSheetMenu(
                               color: Colors.white,
                               context: context,
                               child: InfoDetailsView(
                                 homeViewModel: viewModel,
                                 infoType: viewModel.totalList![index].toLowerCase(),
+                                currentIndex: index,
                               ),
                             );
                           },
@@ -681,7 +685,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                                   NormalText(
                                     text: viewModel.totalList![index] == 'Breakdown' || viewModel.totalList![index] == 'Mileage'
                                         ? viewModel.totalCostingAndValue![index].toString()
-                                        : 'N${viewModel.totalCostingAndValue![index]}',
+                                        : 'N ${numberFormat(number: viewModel.totalCostingAndValue![index].toDouble())}',
                                     textColor: XColors.textColor(),
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,

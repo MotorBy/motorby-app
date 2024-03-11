@@ -8,7 +8,9 @@ class APIService {
   static const String SALES = "sales";
   static const String BUDGET = "budget";
   static const String CAR = "car";
+  static const String SHOP = "shop";
   static const String COMMUNITY = 'community';
+  static const String PLANS = 'plans';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
   static const String prod = '';
@@ -39,6 +41,10 @@ class APIService {
   static String getSales = "$root$SALES/";
   static String makeSales = "$root$SALES/makesales";
   static String addCars = "$root$CAR/add";
+
+  static String createShop = "$root$SHOP/createShop";
+  static String getShops = "$root$SHOP/shops";
+  static String getPlans = "$root$PLANS/";
 
   static String getBudget({String? userId}) => "$root$BUDGET/?user_id=$userId";
   static String updateBudget({String? budgetId}) => "$root$BUDGET/$budgetId";

@@ -21,8 +21,6 @@ class BudgetingService {
 
     final json = JSON.jsonDecode(response.body);
 
-    log(json.toString());
-
     if(response.statusCode == 200 || response.statusCode == 201) {
 
       BudgetingModel? res = BudgetingModel.fromJson(json);
@@ -36,7 +34,7 @@ class BudgetingService {
 
   }
 
-  Future updateOnBudget({Map<String, dynamic>? updateBudget, String? dataType, String? budgetId}) async {
+  Future updateOnBudget({Map<String, dynamic>? updateBudget, String? budgetId}) async {
 
     final jsonData = JSON.json.encode(updateBudget);
 
@@ -47,8 +45,6 @@ class BudgetingService {
     );
 
     final json = JSON.jsonDecode(response.body);
-
-    log(json.toString());
 
     if(response.statusCode == 200 || response.statusCode == 201) {
       await getBudgets();

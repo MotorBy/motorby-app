@@ -145,56 +145,67 @@ class MkInputField2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      enabled: isEnabled,
-      initialValue: initialValue,
-      keyboardType: keyboard,
-      obscureText: isPassword,
-      onChanged: onChanged,
-      validator: validator,
-      focusNode: currentNode,
-      inputFormatters: inputFormatters,
-      onSaved: (String? value) {
-        FocusScope.of(context).requestFocus(nextNode);
-        onsaved!(value);
-      },
-      onFieldSubmitted: (String? value) {
-        FocusScope.of(context).requestFocus(nextNode);
-        if(onFieldSubmitted != null) {
-          onFieldSubmitted(value);
-        }
-      },
-      textInputAction: textInputAction,
-      decoration: InputDecoration(
-        fillColor: XColors.primaryColor().withOpacity(0.0),
-        border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(11.0)),
-          borderSide: BorderSide(
-            color: XColors.primaryColor().withOpacity(0.1),
-            width: 1,
+    return Stack(
+      children: [
+        TextFormField(
+          controller: controller,
+          maxLines: maxLines,
+          enabled: isEnabled,
+          initialValue: initialValue,
+          keyboardType: keyboard,
+          obscureText: isPassword,
+          onChanged: onChanged,
+          validator: validator,
+          focusNode: currentNode,
+          inputFormatters: inputFormatters,
+          onSaved: (String? value) {
+            FocusScope.of(context).requestFocus(nextNode);
+            onsaved!(value);
+          },
+          onFieldSubmitted: (String? value) {
+            FocusScope.of(context).requestFocus(nextNode);
+            if(onFieldSubmitted != null) {
+              onFieldSubmitted(value);
+            }
+          },
+          textInputAction: textInputAction,
+          decoration: InputDecoration(
+            fillColor: XColors.primaryColor().withOpacity(0.0),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(11.0)),
+              borderSide: BorderSide(
+                color: XColors.primaryColor().withOpacity(0.1),
+                width: 1
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(11.0)),
+              borderSide: BorderSide(
+                  color: XColors.primaryColor().withOpacity(0.1),
+                  width: 1
+              ),
+            ),
+            hintStyle: const TextStyle(color: Colors.grey),
+            hintText: hint,
+            focusedBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                borderSide: BorderSide(color: XColors.primaryColor())),
+            filled: true,
+            contentPadding: const EdgeInsets.only(bottom: 17, left: 10.0, right: 10.0, top: 17),
+            labelText: label,
+            labelStyle: TextStyle(color: XColors.textColor(), fontWeight: FontWeight.w400),
           ),
+          style: TextStyle(color: XColors.textColor(), fontWeight: FontWeight.w400, fontSize: 16),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(11.0)),
-          borderSide: BorderSide(
-            color: XColors.primaryColor().withOpacity(0.1),
-            width: 1
-          ),
-        ),
-        hintStyle: const TextStyle(color: Colors.grey),
-        hintText: hint,
-        focusedBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-            borderSide: BorderSide(color: XColors.primaryColor())),
-        filled: true,
-        contentPadding: const EdgeInsets.only(bottom: 17, left: 10.0, right: 10.0, top: 17),
-        labelText: label,
-        labelStyle: TextStyle(color: XColors.textColor(), fontWeight: FontWeight.w400),
-        suffixIcon: suffixIcon
-      ),
-      style: TextStyle(color: XColors.textColor(), fontWeight: FontWeight.w400, fontSize: 16),
+        if(suffixIcon != null) ... [
+          Positioned(
+              right: 20,
+              top: 0,
+              bottom: 0,
+              child: suffixIcon!
+          )
+        ]
+      ],
     );
   }
 }
@@ -416,11 +427,10 @@ class MkUnderlineInputField extends StatelessWidget {
   }
 }
 
-class PasswordValiditor {
+class PasswordValidator {
   static String? validate(String? val) {
     Pattern pattern = r'(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])';
     RegExp regex = RegExp(pattern as String);
-    print(val);
     if (val!.isEmpty) {
       return "Enter a password";
     } else if (val.length < 6 || (!regex.hasMatch(val))) {
@@ -431,9 +441,8 @@ class PasswordValiditor {
   }
 }
 
-class EmailValiditor {
+class EmailValidator {
   static String? validate(String? val) {
-    print(val);
     if (!val!.contains("@") || !val.contains(".")) {
       return "Enter a valid Email address";
     } else if (val.isEmpty) {

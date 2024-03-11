@@ -3,18 +3,24 @@ import 'package:get_it/get_it.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/community_service.dart';
+import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
+import 'package:mobile_auto_drive/services/shop_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 
 final GetIt serviceLocator = GetIt.I;
 
 Future locatorSetup() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   serviceLocator.registerLazySingleton(() => PersistenceService());
   serviceLocator.registerLazySingleton(() => AuthService());
   serviceLocator.registerLazySingleton(() => UserService());
   serviceLocator.registerLazySingleton(() => SalesService());
+  serviceLocator.registerLazySingleton(() => ShopService());
   serviceLocator.registerLazySingleton(() => CommunityService());
   serviceLocator.registerLazySingleton(() => BudgetingService());
+  serviceLocator.registerLazySingleton(() => AppPaymentService());
+
 }

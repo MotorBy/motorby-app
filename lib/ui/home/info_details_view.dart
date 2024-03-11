@@ -8,23 +8,23 @@ import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class InfoDetailsView extends StatelessWidget {
 
-  InfoDetailsView({
+  const InfoDetailsView({
     super.key,
     this.infoType = '',
-    this.homeViewModel
+    this.homeViewModel,
+    this.currentIndex,
+    this.onHistoryNav
   });
 
-  final TextEditingController _amountInputController = TextEditingController();
-  final TextEditingController _dateInputController = TextEditingController();
-  final TextEditingController _priceInputController = TextEditingController();
-  final TextEditingController _addressInputController = TextEditingController();
-
   final String? infoType;
+  final int? currentIndex;
+  final Function? onHistoryNav;
 
   final HomeViewModel? homeViewModel;
 
@@ -38,23 +38,26 @@ class InfoDetailsView extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-
               if(infoType == '' || infoType == 'fueling') ... [
                 Column(
                   children: [
-                    const YMargin(15),
+                    const YMargin(5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
                           onTap: (){
-                            navigate(context, const HistoryScreen());
+                            model.updateBudgetTypeIndex(v: 0);
+                            navigate(context, HistoryScreen(
+                              homeViewModel: homeViewModel!,
+                              noEmptyData: homeViewModel!.fueling!.isNotEmpty,
+                            ));
                           },
                           child: NormalText(
                             text: 'View History',
                             textColor: XColors.textColor(),
                             fontWeight: FontWeight.w700,
-                            fontSize: 16,
+                            fontSize: 14,
                           ),
                         ),
                         const XMargin(45),
@@ -66,7 +69,7 @@ class InfoDetailsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const YMargin(15),
+                    const YMargin(20),
                     Row(
                       children: [
                         NormalText(
@@ -77,41 +80,28 @@ class InfoDetailsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const YMargin(5),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        NormalText(
-                          text:'You have spent total of ',
-                          textColor: XColors.textColor(),
-                          fontSize: 15,
-                        ),
-                        NormalText(
-                          text:'N100,000 ',
-                          textColor: XColors.textColor(),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ],
-                    ),
                     const YMargin(35),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         NormalText(
-                          text:'Fuel bought on ${model.date}: ',
+                          text:'Fuel bought on: ${model.date}',
                           textColor: XColors.textColor(),
                           fontSize: 13,
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _amountInputController,
+                          controller: model.amountInputController,
                           label: "Amount",
+                          keyboard: TextInputType.number,
                           isEnabled: true,
+                          onChanged: (s){
+                            model.updateBudgetData(value: s, type: 'amount');
+                          },
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _dateInputController,
+                          controller: model.dateInputController,
                           label: "Date",
                           isEnabled: true,
                           suffixIcon: GestureDetector(
@@ -124,27 +114,41 @@ class InfoDetailsView extends StatelessWidget {
                               String formattedDate =
                                   '${startPickedDate!.day}-${startPickedDate.month}-${startPickedDate.year}';
                               model.date = formattedDate;
+                              model.updateBudgetData(value: model.date, type: 'date');
                             },
                             child: const Icon(Icons.calendar_month_rounded, size: 21,),
                           ),
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _priceInputController,
+                          controller: model.priceInputController,
                           label: "Price/liter",
                           keyboard: TextInputType.number,
                           isEnabled: true,
+                          onChanged: (s){
+                            model.updateBudgetData(value: s, type: 'price_per_liter');
+                          },
                         ),
                       ],
                     ),
                     const YMargin(35),
                     XButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: !model.isBusy ? () {
+                        model.updateToBudget(
+                            type: infoType,
+                            onCallBack: () {
+                              popView(context);
+                              showSnackBar(
+                                  context: context,
+                                  message: 'Successfully updated into your budget'
+                              );
+                            }
+                        );
+                      } : (){},
                       text: "Add",
                       height: 56,
                       textColor: Colors.white,
+                      isLoading: model.isBusy,
                       buttonColor: XColors.primaryColor(),
                       progressColor: Colors.white,
                       radius: 26,
@@ -155,19 +159,27 @@ class InfoDetailsView extends StatelessWidget {
               ] else if(infoType == 'servicing' || infoType == 'repairing') ... [
                 Column(
                   children: [
-                    const YMargin(15),
+                    const YMargin(5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
                           onTap: (){
-                            navigate(context, const HistoryScreen());
+                            if(infoType == 'servicing') {
+                              model.updateBudgetTypeIndex(v: 1);
+                            } else if(infoType == 'repairing') {
+                              model.updateBudgetTypeIndex(v: 2);
+                            }
+                            navigate(context, HistoryScreen(
+                              homeViewModel: homeViewModel!,
+                              noEmptyData: infoType == 'servicing' ? homeViewModel!.servicing!.isNotEmpty : homeViewModel!.repairing!.isNotEmpty,
+                            ));
                           },
                           child: NormalText(
                             text: 'View History',
                             textColor: XColors.textColor(),
                             fontWeight: FontWeight.w700,
-                            fontSize: 16,
+                            fontSize: 14,
                           ),
                         ),
                         const XMargin(45),
@@ -179,7 +191,7 @@ class InfoDetailsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const YMargin(5),
+                    const YMargin(20),
                     Row(
                       children: [
                         NormalText(
@@ -187,23 +199,6 @@ class InfoDetailsView extends StatelessWidget {
                           textColor: XColors.textColor(),
                           fontWeight: FontWeight.w700,
                           fontSize: 23,
-                        ),
-                      ],
-                    ),
-                    const YMargin(5),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        NormalText(
-                          text:'You have spent total of ',
-                          textColor: XColors.textColor(),
-                          fontSize: 15,
-                        ),
-                        NormalText(
-                          text:'N100,000 ',
-                          textColor: XColors.textColor(),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
                         ),
                       ],
                     ),
@@ -219,43 +214,39 @@ class InfoDetailsView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 NormalText(
-                                  text:'Condition',
-                                  textColor: XColors.textColor(),
-                                  fontSize: 15,
-                                ),
-                                const YMargin(4),
-                                NormalText(
-                                  text:'Date',
+                                  text:'Date: ${model.date}',
                                   textColor: XColors.textColor(),
                                   fontSize: 15,
                                 ),
                               ],
                             ),
-                            NormalText(
-                              text:'N 0',
-                              textColor: XColors.textColor(),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 17,
-                            ),
                           ],
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _amountInputController,
-                          label: "Condition",
+                          label: "problem",
                           isEnabled: true,
+                          keyboard: TextInputType.number,
+                          onChanged: (s){
+                            model.updateBudgetData(value: s, type: 'problem');
+                          },
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _amountInputController,
                           label: "Amount",
+                          onChanged: (s){
+                            model.updateBudgetData(value: s, type: 'amount');
+                          },
                           isEnabled: true,
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _addressInputController,
-                          label: "Location",
+                          controller: model.addressInputController,
+                          label: "Place fixed",
                           isEnabled: true,
+                          onChanged: (s) {
+                            model.updateBudgetData(value: s, type: 'location');
+                          },
                           suffixIcon: GestureDetector(
                             child: Container(
                               width: 100,
@@ -274,6 +265,7 @@ class InfoDetailsView extends StatelessWidget {
                                       String formattedDate =
                                           '${startPickedDate!.day}-${startPickedDate.month}-${startPickedDate.year}';
                                       model.date = formattedDate;
+                                      model.updateBudgetData(value: model.date, type: 'date');
                                     },
                                     child: Icon(Icons.calendar_month_rounded, size: 21, color: XColors.textColor(),),
                                   ),
@@ -287,14 +279,24 @@ class InfoDetailsView extends StatelessWidget {
                     ),
                     const YMargin(35),
                     XButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: !model.isBusy ? () {
+                        model.updateToBudget(
+                            type: infoType,
+                            onCallBack: (){
+                              popView(context);
+                              showSnackBar(
+                                context: context,
+                                message: 'Successfully updated into your budget'
+                              );
+                            }
+                        );
+                      } : (){},
                       text: "Add",
                       height: 56,
                       textColor: Colors.white,
                       buttonColor: XColors.primaryColor(),
                       progressColor: Colors.white,
+                      isLoading: model.isBusy,
                       radius: 26,
                       width: SizeConfig().sw(400) as double?,
                     ),
@@ -336,7 +338,7 @@ class InfoDetailsView extends StatelessWidget {
                           fontSize: 15,
                         ),
                         NormalText(
-                          text:'173,000',
+                          text: model.totalCostingAndValue![currentIndex!].toString(),
                           textColor: XColors.textColor(),
                           fontWeight: FontWeight.w600,
                           fontSize: 21,
@@ -359,22 +361,35 @@ class InfoDetailsView extends StatelessWidget {
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _amountInputController,
                           label: "Update miles",
+                          keyboard: TextInputType.number,
                           isEnabled: true,
+                          onChanged: (s){
+                            model.updateBudgetData(value: s, type: 'miles');
+                          },
                         ),
                       ],
                     ),
                     const YMargin(35),
                     XButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: !model.isBusy ? () {
+                        model.updateToBudget(
+                          type: infoType,
+                          onCallBack: (){
+                            popView(context);
+                            showSnackBar(
+                              context: context,
+                              message: 'Successfully updated into your budget'
+                            );
+                          }
+                        );
+                      } : (){},
                       text: "Update",
                       height: 56,
                       textColor: Colors.white,
                       buttonColor: XColors.primaryColor(),
                       progressColor: Colors.white,
+                      isLoading: model.isBusy,
                       radius: 26,
                       width: SizeConfig().sw(400) as double?,
                     ),
@@ -383,10 +398,26 @@ class InfoDetailsView extends StatelessWidget {
               ] else if(infoType == 'breakdown') ... [
                 Column(
                   children: [
-                    const YMargin(15),
+                    const YMargin(5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        GestureDetector(
+                          onTap: (){
+                            model.updateBudgetTypeIndex(v: 4);
+                            navigate(context, HistoryScreen(
+                              homeViewModel: homeViewModel!,
+                              noEmptyData: homeViewModel!.breakdowns!.isNotEmpty,
+                            ));
+                          },
+                          child: NormalText(
+                            text: 'View History',
+                            textColor: XColors.textColor(),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const XMargin(45),
                         GestureDetector(
                           onTap: (){
                             Navigator.pop(context);
@@ -395,7 +426,7 @@ class InfoDetailsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const YMargin(15),
+                    const YMargin(20),
                     Row(
                       children: [
                         NormalText(
@@ -411,18 +442,18 @@ class InfoDetailsView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         NormalText(
-                          text:'You have total of',
+                          text:'You have total of ',
                           textColor: XColors.textColor(),
                           fontSize: 15,
                         ),
                         NormalText(
-                          text:' 2 ',
+                          text:model.totalCostingAndValue![currentIndex!].toString(),
                           textColor: XColors.textColor(),
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
                         ),
                         NormalText(
-                          text:'breakdowns',
+                          text:' breakdowns',
                           textColor: XColors.textColor(),
                           fontSize: 15,
                         ),
@@ -432,16 +463,37 @@ class InfoDetailsView extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        NormalText(
-                          text:'Current breakdown on ${model.date}: ',
-                          textColor: XColors.textColor(),
-                          fontSize: 13,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                NormalText(
+                                  text:'Breakdown occured on : ${model.date}',
+                                  textColor: XColors.textColor(),
+                                  fontSize: 15,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: _amountInputController,
-                          label: "Location",
+                          label: "Cause",
                           isEnabled: true,
+                          onChanged: (s){
+                            model.updateBudgetData(value: s, type: 'cause');
+                          },
+                        ),
+                        const YMargin(15),
+                        MkInputField2(
+                          controller: model.amountInputController,
+                          label: "Place fixed",
+                          isEnabled: true,
+                          onChanged: (s) {
+                            model.updateBudgetData(value: s, type: 'break_down');
+                          },
                           suffixIcon: GestureDetector(
                             child: Container(
                               width: 100,
@@ -460,6 +512,7 @@ class InfoDetailsView extends StatelessWidget {
                                       String formattedDate =
                                           '${startPickedDate!.day}-${startPickedDate.month}-${startPickedDate.year}';
                                       model.date = formattedDate;
+                                      model.updateBudgetData(value: model.date, type: 'date');
                                     },
                                       child: Icon(Icons.calendar_month_rounded, size: 21, color: XColors.textColor(),),
                                   ),
@@ -473,21 +526,31 @@ class InfoDetailsView extends StatelessWidget {
                     ),
                     const YMargin(35),
                     XButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: !model.isBusy ? () {
+                        model.updateToBudget(
+                            type: infoType,
+                            onCallBack: (){
+                              popView(context);
+                              showSnackBar(
+                                  context: context,
+                                  message: 'Successfully updated into your budget'
+                              );
+                            }
+                        );
+                      } : (){},
                       text: "Add",
                       height: 56,
                       textColor: Colors.white,
                       buttonColor: XColors.primaryColor(),
                       progressColor: Colors.white,
+                      isLoading: model.isBusy,
                       radius: 26,
                       width: SizeConfig().sw(400) as double?,
                     ),
                     const YMargin(15),
-                  ],),
+                  ],
+                ),
               ]
-
             ],
           ),
         );

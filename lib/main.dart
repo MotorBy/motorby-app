@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
-import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/home/home_screen.dart';
+import 'package:mobile_auto_drive/ui/splash/splash_screen.dart';
 import 'package:mobile_auto_drive/utils/env_config.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
@@ -57,7 +55,7 @@ class MyApp extends StatelessWidget {
           Size size = MediaQuery.of(context).size;
           EvnConfig.init(envType: 'Dev',);
           SizeConfig.init(context, width: size.width, height: size.height, allowFontScaling: true);
-          return isAuthed! ? HomeScreen() : SignInScreen();
+          return SplashScreen(isAuthed: isAuthed,);
         }
       ),
     );
