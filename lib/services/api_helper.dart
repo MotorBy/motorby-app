@@ -15,6 +15,13 @@ class APIHelper {
     'Accept': 'application/json',
   };
 
+  Map<String, String> requestRapidAPIHeaders = {
+    'Content-type': 'application/json',
+    'Accept': 'application/json',
+    'X-RapidAPI-Key': '780c82b0efmsh02e912e2d8c2402p14051ejsnb7d7dd0274c3',
+    'X-RapidAPI-Host': 'vin-decoder19.p.rapidapi.com'
+  };
+
   // Map<String, String> payStackHeader = {
   //   'Content-type': 'application/json',
   //   'Accept': 'application/json',

@@ -11,6 +11,7 @@ class APIService {
   static const String SHOP = "shop";
   static const String COMMUNITY = 'community';
   static const String PLANS = 'plans';
+  static const String PAYMENT = 'payment';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
   static const String prod = '';
@@ -33,10 +34,12 @@ class APIService {
   static String authUser = "$root$USER/signup";
   static String loginUser = "$root$USER/login";
   static String getUser({String? id}) => "$root$USER/$id";
+  static String makePayment = "$root$PAYMENT/create-payment";
 
   static String getCommunities = "$root$COMMUNITY/get-communities";
   static String getDiscussions = "$root$COMMUNITY/get-discussions";
   static String addDiscussions = "$root$COMMUNITY/discuss/";
+  static String joinCommunity = "$root$COMMUNITY/join/";
 
   static String getSales = "$root$SALES/";
   static String makeSales = "$root$SALES/makesales";

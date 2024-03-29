@@ -12,6 +12,7 @@ import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
+import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -94,11 +95,14 @@ class ProfileScreen extends StatelessWidget {
                               radius: 26,
                               outlineColor: Colors.purpleAccent.withOpacity(0.2)
                           ),
-                          child: NormalText(
-                            text: 'As User',
+                          child: !model.busy('user_type_loading') ? NormalText(
+                            text: 'as ${model.user!.userType!.toLowerCase()}',
                             textColor: XColors.textColor(),
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
+                          ) : const Loader(
+                            height: 20,
+                            width: 20,
                           ),
                         ),
                         const XMargin(10),
@@ -111,7 +115,6 @@ class ProfileScreen extends StatelessWidget {
                                   profileViewModel: model,
                                 ),
                             );
-
                           },
                           child: Container(
                             padding: const EdgeInsets.all(8),
@@ -317,7 +320,9 @@ class ProfileScreen extends StatelessWidget {
                               const XMargin(30),
                               GestureDetector(
                                 onTap: (){
-                                  navigate(context, PlanSubscriptionScreen(profileViewModel: model,));
+                                  if(model.planModel != null) {
+                                    navigate(context, PlanSubscriptionScreen(profileViewModel: model,));
+                                  }
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(3),
@@ -339,7 +344,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const YMargin(10),
                           NormalText(
-                            text: 'Pro',
+                            text: model.userPlan!.toUpperCase(),
                             textColor: XColors.textColor(),
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -438,72 +443,113 @@ class CarBudgetAmountInput extends StatelessWidget {
 }
 
 class BusinessSetupView extends StatelessWidget {
-  const BusinessSetupView({super.key});
+  const BusinessSetupView({super.key, this.viewModel});
+
+  final ProfileViewModel? viewModel;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: Column(
-        children: [
-          // const YMargin(20),
-          // Row(
-          //   children: [
-          //     NormalText(
-          //       text: infoType!.toUpperCase(),
-          //       textColor: XColors.textColor(),
-          //       fontWeight: FontWeight.w700,
-          //       fontSize: 23,
-          //     ),
-          //   ],
-          // ),
-          const YMargin(35),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return ViewModelBuilder<ProfileViewModel>.reactive(
+        viewModelBuilder: () => viewModel!,
+        disposeViewModel: false,
+        builder: (context, model, child) {
+        return Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
             children: [
-              NormalText(
-                text:'You have not yet setup your business profile',
-                textColor: XColors.textColor(),
-                fontSize: 13,
-              ),
-              const YMargin(15),
-              MkInputField2(
-                label: "Business name",
-                keyboard: TextInputType.number,
-                isEnabled: true,
-                onChanged: (s){
+              // const YMargin(20),
+              // Row(
+              //   children: [
+              //     NormalText(
+              //       text: infoType!.toUpperCase(),
+              //       textColor: XColors.textColor(),
+              //       fontWeight: FontWeight.w700,
+              //       fontSize: 23,
+              //     ),
+              //   ],
+              // ),
+              const YMargin(35),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  NormalText(
+                    text:'You have not yet setup your business profile',
+                    textColor: XColors.textColor(),
+                    fontSize: 13,
+                  ),
+                  const YMargin(15),
+                  MkInputField2(
+                    label: "Business name",
+                    keyboard: TextInputType.number,
+                    isEnabled: true,
+                    onChanged: (s) {
+                      viewModel!.setUserTypeDetails(
+                          value: s,
+                          type: 'name',
+                          key: 'business'
+                      );
+                    },
+                  ),
+                  const YMargin(15),
+                  MkInputField2(
+                    label: "Business Reg. No",
+                    keyboard: TextInputType.number,
+                    isEnabled: true,
+                    onChanged: (s) {
 
-                },
+                      viewModel!.setUserTypeDetails(
+                          value: s,
+                          type: 'reg_no',
+                          key: 'business'
+                      );
+
+                    },
+
+                  ),
+                  // const YMargin(15),
+                  // const MkInputField2(
+                  //   label: "Business bank account",
+                  //   isEnabled: true,
+                  // ),
+                  // const YMargin(15),
+                  // MkInputField2(
+                  //   label: "Business bank name",
+                  //   keyboard: TextInputType.number,
+                  //   isEnabled: true,
+                  //   onChanged: (s) {
+                  //   },
+                  // ),
+                ],
+              ),
+              const YMargin(35),
+              XButton(
+                onPressed: !viewModel!.isBusy ? (){
+
+                  viewModel!.updateUserTypeProfile(
+                      onCallBack: (){
+                        popView(context);
+                        popView(context);
+                      },
+                      onErrorCallBack: (){
+
+                      }
+                  );
+
+                } : (){},
+                text: "Create",
+                height: 56,
+                isLoading: model.busy('user_type_loading'),
+                textColor: Colors.white,
+                buttonColor: XColors.primaryColor(),
+                progressColor: Colors.white,
+                radius: 26,
+                width: SizeConfig().sw(400) as double?,
               ),
               const YMargin(15),
-              const MkInputField2(
-                label: "Business bank account",
-                isEnabled: true,
-              ),
-              const YMargin(15),
-              MkInputField2(
-                label: "Business bank name",
-                keyboard: TextInputType.number,
-                isEnabled: true,
-                onChanged: (s) {
-                },
-              ),
             ],
           ),
-          const YMargin(35),
-          XButton(
-            onPressed: (){},
-            text: "Create",
-            height: 56,
-            textColor: Colors.white,
-            buttonColor: XColors.primaryColor(),
-            progressColor: Colors.white,
-            radius: 26,
-            width: SizeConfig().sw(400) as double?,
-          ),
-          const YMargin(15),
-        ],
-      ),
+        );
+      }
     );
   }
 
@@ -531,17 +577,30 @@ class MoreProfileActionPicks extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
 
-                      //popView(context);
+                      if(profileViewModel!.user!.businessDetails == null) {
 
-                      modalBottomSheetMenu(
-                        color: Colors.white,
-                        context: context,
-                        child: const BusinessSetupView(),
-                      );
+                        modalBottomSheetMenu(
+                          color: Colors.white,
+                          context: context,
+                          child: BusinessSetupView(
+                            viewModel: profileViewModel!,
+                          ),
+                        );
+
+                      } else {
+
+                        profileViewModel!.updateUserTypeProfile(
+                          updateTo: profileViewModel!.user!.userType == 'USER' ? 'BUSINESS' : 'USER',
+                          onCallBack: (){
+                            popView(context);
+                          }
+                        );
+
+                      }
 
                     },
                     child: NormalText(
-                      text:'Switch to Business',
+                      text:'Switch to ${profileViewModel!.user!.userType == 'USER' ? 'Business' : 'User'}',
                       textColor: XColors.textColor(),
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

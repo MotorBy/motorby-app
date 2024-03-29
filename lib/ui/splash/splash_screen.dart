@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_screen.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_view_model.dart';
@@ -42,18 +43,28 @@ class SplashScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        height: 250,
-                        width: 250,
-                        child: Image.asset('assets/images/auto/motorby-logo.png'),
+                      // Container(
+                      //   height: 280,
+                      //   width: 280,
+                      //   child: Image.asset('assets/images/motorby.jpeg'),
+                      // ),
+                      Center(
+                        child: SizedBox(
+                          height: 140,
+                          width: 140,
+                          child: SvgPicture.asset(
+                            'assets/images/motorby_m.svg',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
-                      const YMargin(5),
+                      const YMargin(15),
                       NormalText(
                         text:'Connect with your car in a better way...',
-                        textColor: XColors.textColor(),
+                        textColor: XColors.primaryColor(),
                         textAlign: TextAlign.center,
                         fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                       ),
                     ],
                   ),

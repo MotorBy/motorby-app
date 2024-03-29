@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -20,6 +21,7 @@ class SignupScreen extends StatelessWidget {
         viewModelBuilder: () => AuthViewModel(),
         builder: (context, model, child) {
         return Scaffold(
+          backgroundColor: XColors.white(),
           floatingActionButton: Container(
             width: 120,
             height: 60,
@@ -44,10 +46,15 @@ class SignupScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
-                    height: 170,
-                    width: 170,
-                    child: Image.asset('assets/images/auto/motorby-logo.png'),
+                  Center(
+                    child: SizedBox(
+                      height: 140,
+                      width: 140,
+                      child: SvgPicture.asset(
+                        'assets/images/motorby_m.svg',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                   const YMargin(80),
                   Row(

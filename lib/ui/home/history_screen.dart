@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
-import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key, this.homeViewModel, this.noEmptyData = true});
+  const HistoryScreen({
+    super.key,
+    this.homeViewModel,
+    this.noEmptyData = true
+  });
 
   final HomeViewModel? homeViewModel;
   final bool? noEmptyData;
@@ -29,24 +32,6 @@ class HistoryScreen extends StatelessWidget {
                 child: Icon(Icons.arrow_back_ios_rounded, size: 18, color: XColors.black(),)
             ),
           ),
-          floatingActionButton: Container(
-            height: 60,
-            width: 100,
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecorators.containerDecoration(
-              hasOutline: false,
-              color: XColors.primaryColor(),
-              outlineWidth: 2,
-              radius: 32,
-            ),
-            child: NormalText(
-              text: 'Add',
-              textColor: XColors.white(),
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-            ),
-          ),
           body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
@@ -61,19 +46,23 @@ class HistoryScreen extends StatelessWidget {
                   Column(
                     children: [
                       NormalText(
-                        text: 'Total expense',
+                        text: 'Total ${ model.currentBudgetTypeIndex == 4 ? 'breakdown' : 'expense' }',
                         textColor: XColors.textColor().withOpacity(0.6),
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
+                      const YMargin(15),
                       NormalText(
-                        text: 'N ${numberFormat(number: model.totalCostingAndValue![model.currentBudgetTypeIndex!].toDouble())}',
+                        text: model.currentBudgetTypeIndex != 4 ?
+                            'N ${numberFormat(number: model.totalCostingAndValue![model.currentBudgetTypeIndex!].toDouble())}'
+                            : model.totalCostingAndValue![model.currentBudgetTypeIndex!].toString(),
                         textColor: XColors.textColor(),
                         fontSize: 25,
                         fontWeight: FontWeight.w700,
                       ),
                     ],
                   ),
+
                   const YMargin(25),
 
                 ],
@@ -89,8 +78,7 @@ class HistoryScreen extends StatelessWidget {
                         date: model.fueling![index].date,
                       ),
                     );
-                    }
-                  ),
+                    }),
 
                 ]
                 else if (model.currentBudgetTypeIndex == 1) ... [
@@ -104,8 +92,7 @@ class HistoryScreen extends StatelessWidget {
                         date: model.servicing![index].date ?? '',
                       ),
                     );
-                  }
-                  ),
+                  }),
 
                 ]
                 else if (model.currentBudgetTypeIndex == 2) ... [
@@ -119,26 +106,22 @@ class HistoryScreen extends StatelessWidget {
                         date: model.repairing![index].date ?? '',
                       ),
                     );
-                  }
-                  ),
+                  }),
 
                 ]
                 else if (model.currentBudgetTypeIndex == 4) ... [
 
                   ...List.generate(model.breakdowns!.length, (index) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: HistoryListView(
                         body: 'Had breakdown',
-                        price: '',
-                        date: '10-1-2024',
+                        price: 'at ${model.breakdowns![index].location}',
+                        date: model.breakdowns![index].date,
                       ),
                     );
-                  }
-                  ),
-
+                  }),
                 ],
-
               ],
             ),
           ),

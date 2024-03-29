@@ -8,6 +8,25 @@ class VinCheckService {
 
   VinDataModel? vinDataModel;
 
+  Future collectVinNumber({String? vinNumber}) async {
+
+    String? vinUrl;
+
+    var response = await http.get(Uri.parse(vinUrl!),
+        headers: APIHelper().requestHeadersWithToken());
+
+    final json = JSON.jsonDecode(response.body);
+
+    if(response.statusCode == 200 || response.statusCode == 201 ) {
+
+    } else {
+      var error = json["message"];
+      print(error);
+      throw Exception(error);
+    }
+
+  }
+
   Future vinCheckSetup({String? vinType, String? vinNumber}) async {
 
     String? vinUrl;
@@ -21,16 +40,18 @@ class VinCheckService {
     }
 
     var response = await http.get(Uri.parse(vinUrl!),
-        headers: APIHelper().requestHeadersWithToken());
+        headers: APIHelper().requestRapidAPIHeaders);
 
     final json = JSON.jsonDecode(response.body);
 
-    if(response.statusCode == 200 || response.statusCode == 201) {
+    if(response.statusCode == 200 || response.statusCode == 201 && json["Status"] != 'FAILED') {
+      print(json);
       VinDataModel? vinRes = VinDataModel.fromJson(json);
       vinDataModel = vinRes;
       return vinRes;
     } else {
       var error = json["message"];
+      print(error);
       throw Exception(error);
     }
 

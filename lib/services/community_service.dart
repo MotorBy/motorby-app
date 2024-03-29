@@ -24,6 +24,8 @@ class CommunityService {
 
     final json = JSON.jsonDecode(response.body);
 
+    print(json.toString());
+
     if(response.statusCode == 200 || response.statusCode == 201) {
       CommunityModel res = CommunityModel.fromJson(json);
       communities = res.communities;
@@ -96,6 +98,30 @@ class CommunityService {
   }
 
   Future joinCommunity() async {
+
+    var joinData = {
+      "community_id": selectedCommunity!.id,
+      "user_id": persistService.getUserID
+    };
+
+    final jsonData = JSON.json.encode(formatObject(joinData));
+
+    var response = await http.post(Uri.parse(
+        APIService.joinCommunity),
+        headers: APIHelper().requestHeadersWithToken(),
+        body: jsonData
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+
+    } else {
+      var error = json["message"];
+      throw Exception(error);
+    }
 
   }
 

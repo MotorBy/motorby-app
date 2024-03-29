@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
+import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
@@ -14,6 +15,7 @@ enum CurrentView {
 
 class HomeViewModel extends BaseViewModel {
   final userService = serviceLocator<UserService>();
+  final persistentService = serviceLocator<PersistenceService>();
   final budgetingService = serviceLocator<BudgetingService>();
   final paymentService =  serviceLocator<AppPaymentService>();
 
@@ -57,9 +59,12 @@ class HomeViewModel extends BaseViewModel {
 
   CurrentView? currentViewState = CurrentView.cars;
 
-  Future init() async {
+  Future init({Function? onErrorLogout, Function? onCallBack}) async {
 
-    await userService.getUsers();
+    await userService.getUsers().onError((error, stackTrace) {
+      setError(error.toString());
+
+    });
     await budgetingService.getBudgets();
     await paymentService.getPlans();
 
@@ -75,8 +80,17 @@ class HomeViewModel extends BaseViewModel {
       }
     }
 
+    if(hasError) {
+
+      if(modelError.toString().contains('jwt expired')) {
+        if(onErrorLogout != null) {
+          onErrorLogout();
+        }
+      }
+
+    }
+
     notifyListeners();
-    
   }
 
   void getCurrentTotalValue({int? index}) {
@@ -200,6 +214,10 @@ class HomeViewModel extends BaseViewModel {
       budgetData["cause"] = value;
     }
     notifyListeners();
+  }
+
+  Future LogOut({Function? onCallBack}) async {
+    await persistentService.deleteAll();
   }
 
 

@@ -1,19 +1,24 @@
 import 'package:mobile_auto_drive/models/community_model.dart';
 import 'package:mobile_auto_drive/models/discussion_model.dart';
 import 'package:mobile_auto_drive/services/community_service.dart';
+import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
 class CommunityViewModel extends BaseViewModel {
   final userService = serviceLocator<UserService>();
+  final persistentService = serviceLocator<PersistenceService>();
   final communityService = serviceLocator<CommunityService>();
 
   List<Community>? communities = [];
   Community? selectedCommunity;
+  int? currentIndex = 0;
 
   List<Discussion> discussions = [];
   String? contentText = '';
+
+  String? userId = '';
 
   String? communityId;
 
@@ -23,6 +28,8 @@ class CommunityViewModel extends BaseViewModel {
 
   Future getCommunities() async {
     setBusy(true);
+
+    userId = persistentService.getUserID;
 
     await communityService.getCommunities().then((value) {
       communities = communityService.communities;
@@ -82,6 +89,22 @@ class CommunityViewModel extends BaseViewModel {
       setBusyForObject('discussion', false,);
     });
 
+  }
+
+  Future joinCommunity({Community? community, int? index}) async {
+    selectedCommunity = community;
+    currentIndex = index;
+
+    communityService.selectedCommunity = selectedCommunity;
+
+    setBusyForObject('join', true);
+    await communityService.joinCommunity().then((value) {
+      initialise();
+      notifyListeners();
+      setBusyForObject('join', false);
+    }).onError((error, stackTrace) {
+      setBusyForObject('join', false);
+    });
   }
 
   Future makeComments() async {

@@ -28,6 +28,7 @@ void main() {
     runApp(MyApp(isAuthed: isAuthed,));
 
   }, (error, stackTrace) {
+
     if (kDebugMode) {
       print(error);
       print(stackTrace);

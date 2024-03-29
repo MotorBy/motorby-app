@@ -8,6 +8,7 @@ import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/shop_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/services/vin_check_service.dart';
 
 final GetIt serviceLocator = GetIt.I;
 
@@ -22,5 +23,6 @@ Future locatorSetup() async {
   serviceLocator.registerLazySingleton(() => CommunityService());
   serviceLocator.registerLazySingleton(() => BudgetingService());
   serviceLocator.registerLazySingleton(() => AppPaymentService());
+  serviceLocator.registerLazySingleton(() => VinCheckService());
 
 }

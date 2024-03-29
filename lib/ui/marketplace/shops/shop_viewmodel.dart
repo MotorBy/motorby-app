@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:mobile_auto_drive/models/shops_model.dart';
 import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/shop_service.dart';
@@ -18,6 +19,15 @@ class ShopViewModel extends BaseViewModel {
   List<String> intoPicks = [];
   List<String> carMakePicks = [];
   File? logoPick;
+
+  final List<String> shopTypes = ["All", "Dealer", "Repair", "Detailing", "Servicing", "Parts"];
+
+  List<Shop>? shops = [];
+  Shop? currentShop;
+
+  Future initialise() async {
+    await getShop();
+  }
 
   Future createShop({Function? onCallBack, Function? onErrorCallBack}) async {
 
@@ -74,7 +84,14 @@ class ShopViewModel extends BaseViewModel {
   }
 
   Future getShop() async {
-
+    setBusyForObject('shops', true);
+    await shopService.getShops().then((value) {
+      shops = shopService.shopsModel!.shop;
+      setBusyForObject('shops', false);
+    }).onError((error, stackTrace) {
+      print(stackTrace);
+      setBusyForObject('shops', false);
+    });
   }
 
   void updateSelections({String? picks, String? type, bool? remove = false}) {
@@ -127,6 +144,11 @@ class ShopViewModel extends BaseViewModel {
       createData["email"] = data;
     }
 
+    notifyListeners();
+  }
+
+  void updateCurrentShop(Shop? shop){
+    currentShop = shop;
     notifyListeners();
   }
 

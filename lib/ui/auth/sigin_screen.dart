@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/signup_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
@@ -32,6 +33,7 @@ class _SignInScreenState extends State<SignInScreen> {
         viewModelBuilder: () => AuthViewModel(),
         builder: (context, model, child) {
         return Scaffold(
+          backgroundColor: XColors.white(),
           appBar: AppBar(
             backgroundColor: XColors.white(),
             surfaceTintColor: XColors.white(),
@@ -88,10 +90,15 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: const YMargin(10)
                   ),
                   Column(children: [
-                    Container(
-                      height: 170,
-                      width: 170,
-                      child: Image.asset('assets/images/auto/motorby-logo.png'),
+                    Center(
+                      child: SizedBox(
+                        height: 140,
+                        width: 140,
+                        child: SvgPicture.asset(
+                          'assets/images/motorby_m.svg',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ],),
                   const YMargin(80),

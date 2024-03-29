@@ -1,7 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/cars/vin_check_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
@@ -29,7 +31,15 @@ class HomeScreen extends StatelessWidget {
     return ViewModelBuilder<HomeViewModel>.reactive(
         viewModelBuilder: () => HomeViewModel(),
         disposeViewModel: false,
-        onViewModelReady: (model) => model.init(),
+        onViewModelReady: (model) => model.init(
+            onErrorLogout: (){
+              model.LogOut(
+                  onCallBack: () {
+                    popToFirst(context);
+                    navigateReplace(context, SignInScreen());
+              });
+            },
+        ),
         builder: (context, model, child) {
         return Scaffold(
           backgroundColor: Colors.white,
@@ -44,7 +54,8 @@ class HomeScreen extends StatelessWidget {
                   Icons.account_circle_outlined,
                   size: 28,
                   color: XColors.black(),
-                )),
+                ),
+            ),
             actions: [
               Row(
                 children: [
@@ -78,13 +89,15 @@ class HomeScreen extends StatelessWidget {
                 height: SizeConfig.screenHeightDp! - 60,
                 child: Column(
                   children: [
+
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 5),
+                                horizontal: 5, vertical: 5
+                            ),
                             decoration: BoxDecorators.containerDecoration(
                                 hasOutline: true,
                                 outlineWidth: 1,
@@ -109,8 +122,7 @@ class HomeScreen extends StatelessWidget {
                                 Row(
                                   children: [
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(horizontal: 10),
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
                                       child: Row(
                                         children: [
                                           NormalText(
@@ -384,15 +396,15 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const YMargin(25),
+                    const YMargin(45),
 
                     Row(
                       children: [
                         GestureDetector(
                           onTap: (){
-                            if(!isBusiness) {
-                              model.updateCurrentViewState();
-                            }
+                            // if(!isBusiness) {
+                            //   model.updateCurrentViewState();
+                            // }
                           },
                           child: Row(
                             children: [
@@ -428,42 +440,42 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const XMargin(25),
                         if(!isBusiness) ... [
-                          GestureDetector(
-                            onTap: (){
-                              model.updateCurrentViewState();
-                            },
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 2, horizontal: 10),
-                                  child: NormalText(
-                                    text: 'Your sale(s)',
-                                    textColor: model.currentViewState == CurrentView.sales ? XColors.textColor() : XColors.textColor().withOpacity(0.3),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    navigate(context, const AddCarsScreen(action: 'sell',));
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecorators.containerDecoration(
-                                        hasOutline: true,
-                                        outlineWidth: 2,
-                                        radius: 30,
-                                        outlineColor: XColors.primaryColor().withOpacity(0.1)),
-                                    child: Icon(
-                                      Icons.add,
-                                      size: 17,
-                                      color: XColors.primaryColor(),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
+                          // GestureDetector(
+                          //   onTap: (){
+                          //     model.updateCurrentViewState();
+                          //   },
+                          //   child: Row(
+                          //     children: [
+                          //       Padding(
+                          //         padding: const EdgeInsets.symmetric(
+                          //             vertical: 2, horizontal: 10),
+                          //         child: NormalText(
+                          //           text: 'Your sale(s)',
+                          //           textColor: model.currentViewState == CurrentView.sales ? XColors.textColor() : XColors.textColor().withOpacity(0.3),
+                          //           fontSize: 13,
+                          //         ),
+                          //       ),
+                          //       GestureDetector(
+                          //         onTap: () {
+                          //           navigate(context, const AddCarsScreen(action: 'sell',));
+                          //         },
+                          //         child: Container(
+                          //           padding: const EdgeInsets.all(2),
+                          //           decoration: BoxDecorators.containerDecoration(
+                          //               hasOutline: true,
+                          //               outlineWidth: 2,
+                          //               radius: 30,
+                          //               outlineColor: XColors.primaryColor().withOpacity(0.1)),
+                          //           child: Icon(
+                          //             Icons.add,
+                          //             size: 17,
+                          //             color: XColors.primaryColor(),
+                          //           ),
+                          //         ),
+                          //       )
+                          //     ],
+                          //   ),
+                          // ),
                         ]
                       ],
                     ),
@@ -565,8 +577,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                             ),
                             const YMargin(23),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
                               child: Row(
                                 crossAxisAlignment:
                                 CrossAxisAlignment.start,
@@ -583,10 +594,15 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                                     textColor: XColors.textColor(),
                                     fontSize: 13,
                                   ),
-                                  NormalText(
-                                    text: 'Sell',
-                                    textColor: XColors.textColor(),
-                                    fontSize: 13,
+                                  GestureDetector(
+                                    onTap: (){
+                                      navigate(context, const AddCarsScreen(action: 'sell',));
+                                    },
+                                    child: NormalText(
+                                      text: 'Sell',
+                                      textColor: XColors.textColor(),
+                                      fontSize: 13,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -712,25 +728,97 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const YMargin(35),
+                              Row(
+                                children: [
+                                  NormalText(
+                                    text:
+                                    'State',
+                                    textColor: XColors.textColor(),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                  ),
+                                ],
+                              ),
+                              const YMargin(35),
                               NormalText(
                                 text:
-                                'The valuation car will be calculated based on your overall '
-                                    'inputs on your current car, So please do well to make sure all data '
-                                    'are set currently to accurate get the value of your car',
+                                'With your data inputs on your car, we are able to use our '
+                                    'cutting edge analytic tools to determine two important '
+                                    'states of your car so you can know how best to keep maintaining it and keep track of it performance.',
                                 textColor: XColors.textColor(),
                                 fontSize: 12,
                               ),
                               const YMargin(35),
-                              XButton(
-                                onPressed: () {},
-                                text: "Continue",
-                                height: 56,
-                                textColor: Colors.white,
-                                buttonColor: XColors.primaryColor(),
-                                progressColor: Colors.white,
-                                radius: 26,
-                                width: SizeConfig().sw(400) as double?,
+                              Container(
+                                decoration: BoxDecorators.containerDecoration(
+                                    hasOutline: true,
+                                    outlineWidth: 1,
+                                    radius: 26,
+                                    outlineColor: XColors.primaryColor()
+                                        .withOpacity(0.1)
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 25,
+                                        width: 25,
+                                        child: Image.asset('assets/images/icons/car-health.png'),
+                                      ),
+                                      const XMargin(15),
+                                      NormalText(
+                                        text:
+                                        'Your car health',
+                                        textColor: XColors.textColor(),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
+                              const YMargin(15),
+                              Container(
+                                decoration: BoxDecorators.containerDecoration(
+                                    hasOutline: true,
+                                    outlineWidth: 1,
+                                    radius: 26,
+                                    outlineColor: XColors.primaryColor()
+                                        .withOpacity(0.1),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 25,
+                                        width: 25,
+                                        child: Image.asset('assets/images/icons/price-tag.png'),
+                                      ),
+                                      const XMargin(15),
+                                      NormalText(
+                                        text:
+                                        'Your car price valuation',
+                                        textColor: XColors.textColor(),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              //const YMargin(35),
+                              // XButton(
+                              //   onPressed: () {},
+                              //   text: "Continue",
+                              //   height: 56,
+                              //   textColor: Colors.white,
+                              //   buttonColor: XColors.primaryColor(),
+                              //   progressColor: Colors.white,
+                              //   radius: 26,
+                              //   width: SizeConfig().sw(400) as double?,
+                              // ),
                               const YMargin(35),
                             ],
                           ),
@@ -748,7 +836,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                         padding: const EdgeInsets.all(8.0),
                         child: NormalText(
                           maxLines: 2,
-                          text: 'Your ${viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex!].carName} valuation',
+                          text: 'Your ${viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex!].carName} state',
                           textColor:
                           XColors.primaryColor().withOpacity(0.7),
                           fontWeight: FontWeight.w700,
@@ -769,7 +857,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const YMargin(370),
+                  YMargin(MediaQuery.of(context).size.height - 380),
                   SizedBox(
                     height: 115,
                     width: 115,
@@ -792,8 +880,11 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                       const YMargin(20),
                       XButton(
                         onPressed: () {
-                          navigate(context, const AddCarsScreen(action: 'add',), onCallback: (){
-                            viewModel.init();
+                          navigate(
+                              context,
+                              const AddCarsScreen(action: 'add',),
+                              onCallback: (){
+                                viewModel.init();
                           });
                         },
                         text: 'Add a car',
@@ -806,7 +897,6 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                 ],
               ),
             )
-
           ],
         ],
       ),

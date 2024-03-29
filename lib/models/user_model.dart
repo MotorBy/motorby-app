@@ -3,24 +3,23 @@ class UserModel {
   String? message;
   Payload? payload;
 
-  UserModel({this.statusCode, this.message, this.payload});
+  UserModel({
+    this.statusCode,
+    this.message,
+    this.payload,
+  });
 
-  UserModel.fromJson(Map<String, dynamic> json) {
-    statusCode = json['statusCode'];
-    message = json['message'];
-    payload =
-    json['payload'] != null ? Payload.fromJson(json['payload']) : null;
-  }
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+    statusCode: json["statusCode"],
+    message: json["message"],
+    payload: Payload.fromJson(json["payload"]),
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['statusCode'] = statusCode;
-    data['message'] = message;
-    if (payload != null) {
-      data['payload'] = payload!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "statusCode": statusCode,
+    "message": message,
+    "payload": payload!.toJson(),
+  };
 }
 
 class Payload {
@@ -38,169 +37,187 @@ class Payload {
   String? userType;
   String? userId;
   String? referralCode;
-  //List<Null>? favourites;
-  String? createdAt;
-  String? updatedAt;
-  int? iV;
+  List<dynamic>? favourites;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  int? v;
 
-  Payload(
-      {this.paymentDetails,
-        this.statsDetails,
-        this.planDetails,
-        this.fullname,
-        this.firstname,
-        this.lastname,
-        this.email,
-        this.country,
-        this.state,
-        this.phonenumber,
-        this.userType,
-        this.userId,
-        this.referralCode,
-        //this.favourites,
-        this.businessDetails,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
+  Payload({
+    this.paymentDetails,
+    this.statsDetails,
+    this.planDetails,
+    this.businessDetails,
+    this.fullname,
+    this.firstname,
+    this.lastname,
+    this.email,
+    this.country,
+    this.state,
+    this.phonenumber,
+    this.userType,
+    this.userId,
+    this.referralCode,
+    this.favourites,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+  });
 
-  Payload.fromJson(Map<String, dynamic> json) {
-    paymentDetails = json['payment_details'] != null
-        ? PaymentDetails.fromJson(json['payment_details'])
-        : null;
-    statsDetails = json['stats_details'] != null
-        ? StatsDetails.fromJson(json['stats_details'])
-        : null;
-    planDetails = json['plan_details'] != null
-        ? PlanDetails.fromJson(json['plan_details'])
-        : null;
-    businessDetails: json["business_details"] != null
-        ? BusinessDetails.fromJson(json["business_details"])
-        : null;
-    fullname = json['fullname'];
-    firstname = json['firstname'];
-    lastname = json['lastname'];
-    email = json['email'];
-    country = json['country'];
-    state = json['state'];
-    phonenumber = json['phonenumber'];
-    userType = json['user_type'];
-    userId = json['user_id'];
-    referralCode = json['referral_code'];
-    // if (json['favourites'] != null) {
-    //   favourites = <Null>[];
-    //   json['favourites'].forEach((v) {
-    //     favourites!.add(Null.fromJson(v));
-    //   });
-    // }
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
-  }
+  factory Payload.fromJson(Map<String, dynamic> json) => Payload(
+    paymentDetails: json["payment_details"] != null ? PaymentDetails.fromJson(json["payment_details"]) : null,
+    statsDetails: json["payment_details"] != null ? StatsDetails.fromJson(json["stats_details"]) : null,
+    planDetails: json["payment_details"] != null ? PlanDetails.fromJson(json["plan_details"]) : null,
+    businessDetails: json["payment_details"] != null ? BusinessDetails.fromJson(json["business_details"]) : null,
+    fullname: json["fullname"],
+    firstname: json["firstname"],
+    lastname: json["lastname"],
+    email: json["email"],
+    country: json["country"],
+    state: json["state"],
+    phonenumber: json["phonenumber"],
+    userType: json["user_type"],
+    userId: json["user_id"],
+    referralCode: json["referral_code"],
+    favourites: json["favourites"] != null ? List<dynamic>.from(json["favourites"].map((x) => x)) : [],
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+    v: json["__v"],
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (paymentDetails != null) {
-      data['payment_details'] = paymentDetails!.toJson();
-    }
-    if (statsDetails != null) {
-      data['stats_details'] = statsDetails!.toJson();
-    }
-    if (planDetails != null) {
-      data['plan_details'] = planDetails!.toJson();
-    }
-    if(businessDetails != null) {
-      data["business_details"] = businessDetails!.toJson();
-    }
-    data['fullname'] = fullname;
-    data['firstname'] = firstname;
-    data['lastname'] = lastname;
-    data['email'] = email;
-    data['country'] = country;
-    data['state'] = state;
-    data['phonenumber'] = phonenumber;
-    data['user_type'] = userType;
-    data['user_id'] = userId;
-    data['referral_code'] = referralCode;
-    // if (favourites != null) {
-    //   data['favourites'] = favourites!.map((v) => v.toJson()).toList();
-    // }
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    data['__v'] = iV;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "payment_details": paymentDetails!.toJson(),
+    "stats_details": statsDetails!.toJson(),
+    "plan_details": planDetails!.toJson(),
+    "business_details": businessDetails!.toJson(),
+    "fullname": fullname,
+    "firstname": firstname,
+    "lastname": lastname,
+    "email": email,
+    "country": country,
+    "state": state,
+    "phonenumber": phonenumber,
+    "user_type": userType,
+    "user_id": userId,
+    "referral_code": referralCode,
+    "favourites": List<dynamic>.from(favourites!.map((x) => x)),
+    "createdAt": createdAt!.toIso8601String(),
+    "updatedAt": updatedAt!.toIso8601String(),
+    "__v": v,
+  };
+}
+
+class BusinessDetails {
+  String? businessName;
+  String? businessRegNo;
+
+  BusinessDetails({
+    this.businessName,
+    this.businessRegNo,
+  });
+
+  factory BusinessDetails.fromJson(Map<String, dynamic> json) => BusinessDetails(
+    businessName: json["business_name"],
+    businessRegNo: json["business_reg_no"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "business_name": businessName,
+    "business_reg_no": businessRegNo,
+  };
 }
 
 class PaymentDetails {
+  AuthPayment? authPayment;
   String? type;
+  String? lastPayment;
 
-  PaymentDetails({this.type});
+  PaymentDetails({
+    this.authPayment,
+    this.type,
+    this.lastPayment,
+  });
 
-  PaymentDetails.fromJson(Map<String, dynamic> json) {
-    type = json['type'];
-  }
+  factory PaymentDetails.fromJson(Map<String, dynamic> json) => PaymentDetails(
+    authPayment: AuthPayment.fromJson(json["auth_payment"]),
+    type: json["type"],
+    lastPayment: json["last_payment"],
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['type'] = type;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "auth_payment": authPayment!.toJson(),
+    "type": type,
+    "last_payment": lastPayment,
+  };
 }
 
-class StatsDetails {
-  int? discussions;
+class AuthPayment {
+  String? authCode;
+  String? last4;
+  String? expYear;
+  String? expMonth;
+  String? bank;
 
-  StatsDetails({this.discussions});
+  AuthPayment({
+    this.authCode,
+    this.last4,
+    this.expYear,
+    this.expMonth,
+    this.bank,
+  });
 
-  StatsDetails.fromJson(Map<String, dynamic> json) {
-    discussions = json['discussions'];
-  }
+  factory AuthPayment.fromJson(Map<String, dynamic> json) => AuthPayment(
+    authCode: json["auth_code"],
+    last4: json["last4"],
+    expYear: json["exp_year"],
+    expMonth: json["exp_month"],
+    bank: json["bank"],
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['discussions'] = discussions;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "auth_code": authCode,
+    "last4": last4,
+    "exp_year": expYear,
+    "exp_month": expMonth,
+    "bank": bank,
+  };
 }
 
 class PlanDetails {
   String? businessPlan;
   String? userPlan;
-  String? lastPlanUpdate;
+  DateTime? lastPlanUpdate;
 
-  PlanDetails({this.businessPlan, this.userPlan, this.lastPlanUpdate});
-
-  PlanDetails.fromJson(Map<String, dynamic> json) {
-    businessPlan = json['business_plan'];
-    userPlan = json['user_plan'];
-    lastPlanUpdate = json['last_plan_update'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['business_plan'] = businessPlan;
-    data['user_plan'] = userPlan;
-    data['last_plan_update'] = lastPlanUpdate;
-    return data;
-  }
-}
-
-class BusinessDetails {
-  String? businessName;
-  String? businessPlan;
-
-  BusinessDetails({
-    this.businessName,
+  PlanDetails({
     this.businessPlan,
+    this.userPlan,
+    this.lastPlanUpdate,
   });
 
-  factory BusinessDetails.fromJson(Map<String, dynamic> json) => BusinessDetails(
-    businessName: json["business_name"],
+  factory PlanDetails.fromJson(Map<String, dynamic> json) => PlanDetails(
     businessPlan: json["business_plan"],
+    userPlan: json["user_plan"],
+    lastPlanUpdate: DateTime.parse(json["last_plan_update"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "business_name": businessName,
     "business_plan": businessPlan,
+    "user_plan": userPlan,
+    "last_plan_update": lastPlanUpdate!.toIso8601String(),
+  };
+}
+
+class StatsDetails {
+  int? discussions;
+
+  StatsDetails({
+    this.discussions,
+  });
+
+  factory StatsDetails.fromJson(Map<String, dynamic> json) => StatsDetails(
+    discussions: json["discussions"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "discussions": discussions,
   };
 }

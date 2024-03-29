@@ -20,7 +20,10 @@ dependencies:
   firebase_core: ^2.24.2
   cloud_firestore: ^4.0.4
   shared_preferences: ^2.0.13
-  flutter_paystack_max: 1.0.1
+  #flutter_paystack_max: 1.0.1
+  flutter_svg: ^2.0.7
+  flutter_paystack_max:
+     path: ../mobile_auto_drive/flutter_paystack_max
   http: ^1.2.0
   image_picker: 1.0.7
   image_cropper: 5.0.0

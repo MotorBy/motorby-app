@@ -9,18 +9,18 @@ import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class ShopsScreen extends StatelessWidget {
   ShopsScreen({super.key});
 
-  final List<String> shopTypes = ["All", "Dealer", "Repair", "Detailing", "Servicing", "Parts"];
-
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ShopViewModel>.reactive(
         viewModelBuilder: () => ShopViewModel(),
+        onViewModelReady: (model) => model.initialise(),
         disposeViewModel: false,
         builder: (context, model, child) {
         return Scaffold(
@@ -31,6 +31,7 @@ class ShopsScreen extends StatelessWidget {
               },
               child: const Row(
                 children: [
+                  XMargin(20),
                   Icon(Icons.arrow_back_ios_rounded, size: 21, color: Colors.purpleAccent,),
                 ],
               ),
@@ -54,7 +55,7 @@ class ShopsScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                      ...List.generate(shopTypes.length, (index) => Padding(
+                      ...List.generate(model.shopTypes.length, (index) => Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           alignment: Alignment.center,
@@ -66,7 +67,7 @@ class ShopsScreen extends StatelessWidget {
                               outlineColor: Colors.purpleAccent.withOpacity(0.2)
                           ),
                           child: NormalText(
-                            text: shopTypes[index],
+                            text: model.shopTypes[index],
                             textColor: XColors.textColor().withOpacity(0.4),
                             fontWeight: FontWeight.w500,
                             fontSize: 13,
@@ -75,18 +76,35 @@ class ShopsScreen extends StatelessWidget {
                       )),
                     ],),
                   ),
-                  const YMargin(20),
-                  ...List.generate(5, (index) {
-                    return GestureDetector(
-                      onTap: (){
-                        navigate(context, const ShopDetailsScreen());
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: ShopListItem(),
+                  if(model.busy('shops')) ... [
+
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height - 350,
+                      child: const Center(
+                          child: Loader()
                       ),
-                    );
-                  }),
+                    ),
+
+                  ] else if(!model.busy('shops') && model.shops!.isNotEmpty) ... [
+
+                    const YMargin(20),
+                    ...List.generate(model.shops!.length, (index) {
+                      return GestureDetector(
+                        onTap: (){
+                          model.updateCurrentShop(model.shops![index]);
+                          navigate(context, ShopDetailsScreen(
+                            shopViewModel: model,
+                          ));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: ShopListItem(
+                            name: model.shops![index].name,
+                          ),
+                        ),
+                      );
+                    }),
+                  ]
                 ],
               ),
             ),
@@ -98,7 +116,16 @@ class ShopsScreen extends StatelessWidget {
 }
 
 class ShopListItem extends StatelessWidget {
-  const ShopListItem({super.key});
+  const ShopListItem({
+    super.key,
+    this.name,
+    this.logo,
+    this.distance
+  });
+
+  final String? name;
+  final String? distance;
+  final String? logo;
 
   @override
   Widget build(BuildContext context) {
@@ -111,21 +138,21 @@ class ShopListItem extends StatelessWidget {
         children: [
           const YMargin(20),
           Container(
-            height: 40,
-            width: 40,
+            height: 23,
+            width: 23,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(
                 32,
               ),
             ),
-            child: Image.asset('assets/images/auto/bmw_logo.jpeg'),
+            child: Image.asset('assets/images/icons/online_store.png'),
           ),
-          const XMargin(10),
+          const XMargin(20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               NormalText(
-                text: 'Auto shop',
+                text: name ?? 'Auto shop',
                 textColor: XColors.textColor(),
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
@@ -133,7 +160,7 @@ class ShopListItem extends StatelessWidget {
               Row(
                 children: [
                   NormalText(
-                    text: 'Few kms away',
+                    text: distance ?? 'some kms away',
                     textColor: XColors.textColor(),
                     fontWeight: FontWeight.w500,
                     fontSize: 11,

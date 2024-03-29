@@ -28,6 +28,9 @@ class UserService {
 
     final json = JSON.jsonDecode(response.body);
 
+    print(json.toString());
+    print(persistService.getUserToken);
+
     if(response.statusCode == 200 || response.statusCode == 201) {
       UserModel? user = UserModel.fromJson(json);
       userModel = user;
@@ -45,10 +48,12 @@ class UserService {
     final jsonData = JSON.json.encode(data);
 
     var response = await http.put(
-        Uri.parse(APIService.getUser(id: persistService.getUserID)),
+        Uri.parse('${APIService.getUser(id: persistService.getUserID)}/update'),
         body: jsonData,
         headers: APIHelper().requestHeadersWithToken()
     );
+
+    print(response.body);
 
     final json = JSON.jsonDecode(response.body);
 

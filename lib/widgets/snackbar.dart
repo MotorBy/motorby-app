@@ -6,10 +6,11 @@ void showSnackBar({
   String? label = 'DISMISS',
   Function? onPressed,
   BuildContext? context,
+  bool? error = false,
   int? duration,
 }) {
   ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-    backgroundColor: XColors.primaryColor(),
+    backgroundColor: error == false ? XColors.primaryColor() : Colors.red,
     content: Text(
       message == null
           ? 'An error occurred'

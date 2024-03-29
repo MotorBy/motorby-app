@@ -103,7 +103,7 @@ class InfoDetailsView extends StatelessWidget {
                         MkInputField2(
                           controller: model.dateInputController,
                           label: "Date",
-                          isEnabled: true,
+                          isEnabled: false,
                           suffixIcon: GestureDetector(
                             onTap: () async {
                               DateTime? startPickedDate = await showDatePicker(
@@ -243,7 +243,7 @@ class InfoDetailsView extends StatelessWidget {
                         MkInputField2(
                           controller: model.addressInputController,
                           label: "Place fixed",
-                          isEnabled: true,
+                          isEnabled: false,
                           onChanged: (s) {
                             model.updateBudgetData(value: s, type: 'location');
                           },

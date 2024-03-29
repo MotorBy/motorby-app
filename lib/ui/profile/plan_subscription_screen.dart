@@ -9,6 +9,7 @@ import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -86,12 +87,24 @@ class PlanSubscriptionScreen extends StatelessWidget {
                         await PaymentService.showPaymentModal(
                           context,
                           transaction: initTrans,
-                        );
+                        ).then((value) async {
+                          await model.verifyPayStackPayment(
+                            onCallBack: (){
+                              showSnackBar(
+                                  context: context,
+                                  message: 'Successfully subscribed'
+                              );
+                            },
+                            onErrorCallBack: (){
+
+                            }
+                          );
+                        });
                       }
                   );
                 },
                 text: 'Subscribe',
-                isLoading: false,
+                isLoading: model.isBusy,
                 buttonColor: XColors.primaryColor(),
                 width: 120,
               ),
@@ -148,7 +161,7 @@ class PlanSubscriptionScreen extends StatelessWidget {
                               hasOutline: true,
                               outlineWidth: 2,
                               radius: 26,
-                              outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                              outlineColor: XColors.primaryColor2().withOpacity(0.8)
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +199,7 @@ class PlanSubscriptionScreen extends StatelessWidget {
                               hasOutline: true,
                               outlineWidth: 2,
                               radius: 26,
-                              outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                              outlineColor: XColors.primaryColor2().withOpacity(0.8)
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +237,7 @@ class PlanSubscriptionScreen extends StatelessWidget {
                               hasOutline: true,
                               outlineWidth: 2,
                               radius: 26,
-                              outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                              outlineColor: XColors.primaryColor2().withOpacity(0.8)
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

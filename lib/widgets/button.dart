@@ -96,10 +96,9 @@ class XButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius ?? 28),
             side: BorderSide(
-                color: buttonColor == null
-                    ? buttonColor!.withOpacity(0.3)
-                    : XColors.background(),
-                width: 1),
+                color: XColors.primaryColor(),
+                width: 1
+            ),
           ),
         ),
         child: !isLoading

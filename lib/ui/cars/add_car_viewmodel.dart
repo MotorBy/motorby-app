@@ -5,6 +5,7 @@ import 'package:mobile_auto_drive/models/sales_model.dart';
 import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/services/vin_check_service.dart';
 import 'package:mobile_auto_drive/utils/image_handling.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
@@ -12,6 +13,7 @@ import 'package:stacked/stacked.dart';
 class AddCarViewModel extends BaseViewModel {
   final persistService = serviceLocator<PersistenceService>();
   final userService = serviceLocator<UserService>();
+  final vinService = serviceLocator<VinCheckService>();
 
   bool isBusinessOrForSale = false;
   List<File> addImagesList = [];
@@ -35,7 +37,7 @@ class AddCarViewModel extends BaseViewModel {
   String? airBag;
   String? airConditioner;
   String? speakers;
-  String? vinNumber;
+  String? vinNumber = '';
 
   Map<String, dynamic> setCarData = {
 
@@ -248,8 +250,19 @@ class AddCarViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future makeVinCheck() async {
-
+  Future makeVinCheck({Function? onCallBack, Function(String e)? onErrorCallBack}) async {
+    setBusy(true);
+    await vinService.vinCheckSetup(
+      vinType: 'basic',
+      vinNumber: vinNumber
+    ).then((value) {
+      setBusy(false);
+      onCallBack!();
+    }).onError((error, stackTrace) {
+      print(stackTrace);
+      onErrorCallBack!(error.toString());
+      setBusy(false);
+    });
   }
 
 

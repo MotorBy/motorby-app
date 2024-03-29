@@ -18,7 +18,6 @@ class CommunityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<CommunityViewModel>.reactive(
         viewModelBuilder: () => CommunityViewModel(),
-        disposeViewModel: false,
         onViewModelReady: (model) async => await model.initialise(),
         builder: (context, model, child) {
         return Scaffold(
@@ -102,6 +101,7 @@ class CommunityScreen extends StatelessWidget {
                                       context,
                                       DiscussionsScreen(
                                         title: model.communities![index].name,
+                                        showPostButton: model.communities![index].userList!.contains(model.userId),
                                       )
                                   );
                                 },
@@ -158,36 +158,51 @@ class CommunityScreen extends StatelessWidget {
                                             ],
                                           ),
                                           const Expanded(child: XMargin(15)),
-                                          Row(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  //navigate(context, const MarketPlace());
-                                                },
-                                                child: Container(
-                                                  padding: const EdgeInsets
+                                          if(!model.communities![index].userList!.contains(model.userId)) ... [
+                                            if(model.currentIndex == index && model.busy('join') == true) ... [
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                child: const Loader(
+                                                  width: 1,
+                                                )
+                                              )
+                                            ] else ... [
+                                              Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      model.joinCommunity(
+                                                        community: model.communities![index],
+                                                        index: index
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      padding: const EdgeInsets
                                                           .symmetric(
-                                                      vertical: 5,
-                                                      horizontal: 5),
-                                                  decoration: BoxDecorators
-                                                      .containerDecoration(
-                                                    hasOutline: true,
-                                                    outlineWidth: 0.5,
-                                                    radius: 26,
-                                                    outlineColor:
+                                                          vertical: 5,
+                                                          horizontal: 5),
+                                                      decoration: BoxDecorators
+                                                          .containerDecoration(
+                                                        hasOutline: true,
+                                                        outlineWidth: 0.5,
+                                                        radius: 26,
+                                                        outlineColor:
                                                         XColors.primaryColor()
-                                                            .withOpacity(0.1),
-                                                  ),
-                                                  child: NormalText(
-                                                    text: 'Join',
-                                                    textColor:
+                                                            .withOpacity(0.3),
+                                                      ),
+                                                      child: NormalText(
+                                                        text: 'Join',
+                                                        textColor:
                                                         XColors.textColor(),
-                                                    fontSize: 11,
+                                                        fontSize: 11,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                ],
                                               ),
                                             ],
-                                          ),
+                                          ]
                                         ],
                                       ),
                                       const YMargin(16),

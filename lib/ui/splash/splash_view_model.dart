@@ -6,12 +6,11 @@ class SplashViewModel extends BaseViewModel {
 
   void initialise({bool? authNewState,
     Function? onNewCallBack,
-    Function? onLoggedCallBack}){
+    Function? onLoggedCallBack}) {
 
     if (kDebugMode) {
       print("is Logged in: ${authNewState!}");
     }
-
 
     Future.delayed(const Duration(seconds: 2), () {
 

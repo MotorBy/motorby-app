@@ -84,12 +84,12 @@ class Comment {
 
   Comment({
     this.comment,
-    //this.user,
+    this.user,
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) => Comment(
     comment: json["comment"],
-    //user: User.fromJson(json["user"]),
+    user: User.fromJson(json["user"]),
   );
 
   Map<String, dynamic> toJson() => {
