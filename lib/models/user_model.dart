@@ -65,9 +65,9 @@ class Payload {
 
   factory Payload.fromJson(Map<String, dynamic> json) => Payload(
     paymentDetails: json["payment_details"] != null ? PaymentDetails.fromJson(json["payment_details"]) : null,
-    statsDetails: json["payment_details"] != null ? StatsDetails.fromJson(json["stats_details"]) : null,
-    planDetails: json["payment_details"] != null ? PlanDetails.fromJson(json["plan_details"]) : null,
-    businessDetails: json["payment_details"] != null ? BusinessDetails.fromJson(json["business_details"]) : null,
+    statsDetails: json["stats_details"] != null ? StatsDetails.fromJson(json["stats_details"]) : null,
+    planDetails: json["plan_details"] != null ? PlanDetails.fromJson(json["plan_details"]) : null,
+    businessDetails: json["business_details"] != null ? BusinessDetails.fromJson(json["business_details"]) : null,
     fullname: json["fullname"],
     firstname: json["firstname"],
     lastname: json["lastname"],
@@ -138,7 +138,7 @@ class PaymentDetails {
   });
 
   factory PaymentDetails.fromJson(Map<String, dynamic> json) => PaymentDetails(
-    authPayment: AuthPayment.fromJson(json["auth_payment"]),
+    authPayment: json["auth_payment"] != null ? AuthPayment.fromJson(json["auth_payment"]) : null,
     type: json["type"],
     lastPayment: json["last_payment"],
   );
@@ -196,7 +196,7 @@ class PlanDetails {
   factory PlanDetails.fromJson(Map<String, dynamic> json) => PlanDetails(
     businessPlan: json["business_plan"],
     userPlan: json["user_plan"],
-    lastPlanUpdate: DateTime.parse(json["last_plan_update"]),
+    lastPlanUpdate: json["last_plan_update"] != null ? DateTime.parse(json["last_plan_update"]) : null,
   );
 
   Map<String, dynamic> toJson() => {

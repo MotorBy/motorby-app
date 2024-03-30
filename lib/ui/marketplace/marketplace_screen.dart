@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/components/coming_soon_view.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/car_sales_screen.dart';
@@ -46,28 +49,99 @@ class MarketPlace extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      alignment: Alignment.center,
-                      width: 100,
-                      decoration: BoxDecorators.containerDecoration(
-                          hasOutline: true,
-                          outlineWidth: 2,
-                          radius: 32,
-                          outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            NormalText(
-                              text: 'All',
-                              textColor: XColors.textColor(),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ],
+                    GestureDetector(
+                      onTap: (){
+                        if(pickOptionsBeforeNav!) {
+                          modalBottomSheetMenu(
+                              height: 150,
+                              context: context,
+                              color: XColors.background(),
+                              child: Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: Column(
+                                  children: [
+                                    const YMargin(40),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+
+                                        GestureDetector(
+                                          onTap: (){
+                                            model.setPickedCarMake(v: 'all');
+                                            navigate(context, const CarSalesScreen());
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecorators.containerDecoration(
+                                                hasOutline: true,
+                                                outlineWidth: 2,
+                                                radius: 32,
+                                                outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                            ),
+                                            child: NormalText(
+                                              text: 'Sales',
+                                              textColor: XColors.textColor(),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ),
+
+                                        GestureDetector(
+                                          onTap: (){
+                                            navigate(context, ShopsScreen());
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecorators.containerDecoration(
+                                                hasOutline: true,
+                                                outlineWidth: 2,
+                                                radius: 32,
+                                                outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                            ),
+                                            child: NormalText(
+                                              text: 'Shops',
+                                              textColor: XColors.textColor(),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ),
+
+                                      ],),
+                                    const YMargin(0),
+                                  ],
+                                ),
+                              )
+                          );
+                        }
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 100,
+                        decoration: BoxDecorators.containerDecoration(
+                            hasOutline: true,
+                            outlineWidth: 2,
+                            radius: 32,
+                            outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              NormalText(
+                                text: 'All',
+                                textColor: XColors.textColor(),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -75,8 +149,8 @@ class MarketPlace extends StatelessWidget {
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       alignment: WrapAlignment.center,
-                      spacing: 16.0, // gap between adjacent chips
-                      runSpacing: 16.0, // gap between lines
+                      spacing: 19.0, // gap between adjacent chips
+                      runSpacing: 21.0, // gap between lines
                       children: <Widget>[
                         ...List.generate(carMakeData.length, (index) => GestureDetector(
                           onTap: (){
@@ -90,11 +164,12 @@ class MarketPlace extends StatelessWidget {
                                     padding: const EdgeInsets.all(18.0),
                                     child: Column(
                                       children: [
-                                        const YMargin(20),
+                                        const YMargin(40),
                                         Row(
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           children: [
+
                                             GestureDetector(
                                               onTap: (){
                                                 navigate(context, const CarSalesScreen());
@@ -116,6 +191,7 @@ class MarketPlace extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
+
                                             GestureDetector(
                                               onTap: (){
                                                 navigate(context, ShopsScreen());
@@ -136,9 +212,34 @@ class MarketPlace extends StatelessWidget {
                                                   fontSize: 13,
                                                 ),
                                               ),
-                                            )
+                                            ),
+
+                                            if(isBusiness) ... [
+                                              GestureDetector(
+                                                onTap: (){
+                                                  navigate(context, const AddCarsScreen(action: 'sell',));
+                                                },
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  padding: const EdgeInsets.all(8),
+                                                  decoration: BoxDecorators.containerDecoration(
+                                                      hasOutline: true,
+                                                      outlineWidth: 2,
+                                                      radius: 32,
+                                                      outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                                  ),
+                                                  child: NormalText(
+                                                    text: 'New sale',
+                                                    textColor: XColors.textColor(),
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              )
+                                            ]
+
                                           ],),
-                                        const YMargin(20),
+                                        const YMargin(0),
                                       ],
                                     ),
                                   )
@@ -155,7 +256,7 @@ class MarketPlace extends StatelessWidget {
                                 outlineColor: model.carMake == carMakeData[index]['name'] ? Colors.purpleAccent : Colors.purpleAccent.withOpacity(0.1)
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(5.0),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,

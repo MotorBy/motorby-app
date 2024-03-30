@@ -118,6 +118,11 @@ class SignupScreen extends StatelessWidget {
                       isEnabled: true,
                     ),
                     const YMargin(20),
+                    const MkInputField2(
+                      label: "Business contact",
+                      isEnabled: true,
+                    ),
+                    const YMargin(20),
                     MkInputField2(
                       label: "Business type",
                       isEnabled: false,

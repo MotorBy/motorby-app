@@ -41,17 +41,29 @@ class AuthViewModel extends BaseViewModel {
 
   void updateRegData({dynamic data, String? dataType, }) {
     if(dataType == 'firstname') {
-
+      regData['firstname'] = data;
     } else if(dataType == 'secondname'){
-
+      regData['secondname'] = data;
+    } else if(dataType == 'country'){
+      regData['country'] = data;
+    } else if(dataType == 'state'){
+      regData['country'] = data;
+    } else if(dataType == 'referralcode'){
+      regData['referral_code'] = data;
+    } else if(dataType == 'bname'){
+      regData['business_details']['business_name'] = data;
+    } else if(dataType == 'bcontact'){
+      regData['business_details']['business_contact'] = data;
+    } else if(dataType == 'bemail'){
+      regData['business_details']['business_email'] = data;
     }
 
   }
 
 
-  Future signup() async {
+  Future signup({Map<String, dynamic>? signupData}) async {
 
-    authService.createUser().then((value) {
+    authService.createUser(data: signupData).then((value) {
 
     }).onError((error, stackTrace) {
 

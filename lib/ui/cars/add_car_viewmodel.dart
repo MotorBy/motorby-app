@@ -4,6 +4,7 @@ import 'dart:convert' as JSON;
 import 'package:mobile_auto_drive/models/sales_model.dart';
 import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/services/vin_check_service.dart';
 import 'package:mobile_auto_drive/utils/image_handling.dart';
@@ -13,6 +14,7 @@ import 'package:stacked/stacked.dart';
 class AddCarViewModel extends BaseViewModel {
   final persistService = serviceLocator<PersistenceService>();
   final userService = serviceLocator<UserService>();
+  final salesService = serviceLocator<SalesService>();
   final vinService = serviceLocator<VinCheckService>();
 
   bool isBusinessOrForSale = false;
@@ -48,7 +50,9 @@ class AddCarViewModel extends BaseViewModel {
     if(initAction != 'sell') {
       isBusinessOrForSale = false;
     } else {
-      isBusinessOrForSale = !isBusiness;
+      if(isBusiness || initAction == 'sell') {
+        isBusinessOrForSale = true;
+      }
     }
 
     action = initAction;
@@ -57,10 +61,7 @@ class AddCarViewModel extends BaseViewModel {
     if(action == 'sell') {
       setCarData = {
         "car_details" : {},
-        "sales_details" : {
-          "is_promoted": false,
-          "is_sold": false,
-        }
+        "sales_details" : {}
       };
     } else if(action == 'add') {
       setCarData = {
@@ -114,6 +115,7 @@ class AddCarViewModel extends BaseViewModel {
   }
 
   void updateSetCarData({dynamic data, String? dataType, }) {
+    setBusy(false);
 
     if(action == "sell") {
       if(dataType == 'make') {
@@ -135,20 +137,20 @@ class AddCarViewModel extends BaseViewModel {
         setCarData['car_details']['vin_number'] = data!;
 
       } else if(dataType == "selling price") {
-        setCarData['sales_details']['amount_for_sale'] = data!;
+        setCarData['sales_details']['amount_for_sale'] = int.parse(data!);
 
       } else if(dataType == "units") {
-        setCarData['sales_details']['units_left'] = data!;
+        setCarData['sales_details']['units_left'] = int.parse(data!);
 
       } else if(dataType == "color") {
         setCarData['car_details']['color'] = data!;
 
       } else if(dataType == "seats") {
-        setCarData['car_details']['seats'] = data!;
+        setCarData['car_details']['seats'] = int.parse(data!);
         seats = data;
 
       } else if(dataType == "speakers") {
-        setCarData['car_details']['speakers'] = data!;
+        setCarData['car_details']['speakers'] = int.parse(data!);
         speakers = data;
 
       } else if(dataType == "gear") {
@@ -226,22 +228,42 @@ class AddCarViewModel extends BaseViewModel {
   }
 
   Future uploadCar({Function? onCallBack, Function? onErrorCallBack}) async {
+
     await uploadFilesToCloud();
 
     setCarData['images'] = addedImagesUrlList;
     setCarData['by'] = persistService.getUserID;
-
-    print(setCarData);
+    setCarData['user_id'] = persistService.getUserID;
 
     setBusy(true);
-    await userService.addACar(carData: setCarData).then((value) {
-      setBusy(false);
-      onCallBack!();
-    }).onError((error, stackTrace) {
-      setBusy(false);
-      print(stackTrace.toString());
-      onErrorCallBack!();
-    });
+    if(action == 'sell') {
+
+      var saleData = {
+        'user_id' : persistService.getUserID,
+        'data': setCarData,
+      };
+
+      await salesService.makeSales(salesData: saleData).then((value) {
+        setBusy(false);
+        onCallBack!();
+      }).onError((error, stackTrace) {
+        setBusy(false);
+        print(stackTrace.toString());
+        onErrorCallBack!();
+      });
+
+    } else {
+
+      await userService.addACar(carData: setCarData).then((value) {
+        setBusy(false);
+        onCallBack!();
+      }).onError((error, stackTrace) {
+        setBusy(false);
+        print(stackTrace.toString());
+        onErrorCallBack!();
+      });
+
+    }
 
   }
 

@@ -435,7 +435,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                     ),
                     const YMargin(15),
                     MkInputField2(
-                      controller: _mileageController,
+                      //controller: ,
                       label: "Selling price",
                       isEnabled: true,
                       keyboard: TextInputType.number,
@@ -448,10 +448,10 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       children: [
                         Expanded(
                           child: MkInputField2(
-                            controller: _mileageController,
+                            //controller: _mileageController,
                             label: "Color",
                             isEnabled: true,
-                            keyboard: TextInputType.number,
+                            keyboard: TextInputType.text,
                             onChanged: (s){
                               model.updateSetCarData(data: s, dataType: 'color');
                             },
@@ -460,12 +460,12 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         const XMargin(10),
                         Expanded(
                           child: MkInputField2(
-                            controller: _mileageController,
+                            //controller: _mileageController,
                             label: "Unit(s)",
                             isEnabled: true,
                             keyboard: TextInputType.number,
                             onChanged: (s){
-                              model.updateSetCarData(data: s, dataType: 'unit');
+                              model.updateSetCarData(data: s, dataType: 'units');
                             },
                           ),
                         ),

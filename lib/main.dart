@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
@@ -12,7 +13,7 @@ void main() {
   runZonedGuarded(() async {
 
     WidgetsFlutterBinding.ensureInitialized();
-    //await Firebase.initializeApp();
+    await Firebase.initializeApp();
 
     await locatorSetup();
     await PersistenceService.getInstance();

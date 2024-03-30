@@ -66,7 +66,7 @@ class UserService {
 
   }
 
-  Future addACar({Map<String, dynamic>? carData}) async {
+  Future addACar({Map<String, dynamic>? carData, String? action = 'add'}) async {
 
     final jsonData = JSON.json.encode(carData);
 
@@ -76,6 +76,8 @@ class UserService {
         headers: APIHelper().requestHeadersWithToken(), body: jsonData);
 
     final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
 
     if (json["statusCode"] == 200 || json["statusCode"] == 201) {
       await budgetService.getBudgets();

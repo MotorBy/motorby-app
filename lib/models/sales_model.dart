@@ -106,6 +106,7 @@ class SalesDetails {
   int? amountForSale;
   bool? isSold;
   bool? forSale;
+  int? units;
   bool? isPromoted;
   String? promotionId;
 
@@ -114,12 +115,14 @@ class SalesDetails {
         this.amountForSale,
         this.isSold,
         this.forSale,
+        this.units,
         this.isPromoted,
         this.promotionId});
 
   SalesDetails.fromJson(Map<String, dynamic> json) {
     salesId = json['sales_id'];
     amountForSale = json['amount_for_sale'];
+    units = json['units_left'];
     isSold = json['is_sold'];
     forSale = json['for_sale'];
     isPromoted = json['is_promoted'];
@@ -130,6 +133,7 @@ class SalesDetails {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['sales_id'] = salesId;
     data['amount_for_sale'] = amountForSale;
+    data['units_left'] = units;
     data['is_sold'] = isSold;
     data['for_sale'] = forSale;
     data['is_promoted'] = isPromoted;

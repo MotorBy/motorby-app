@@ -63,9 +63,10 @@ class HomeViewModel extends BaseViewModel {
 
     await userService.getUsers().onError((error, stackTrace) {
       setError(error.toString());
-
     });
-    await budgetingService.getBudgets();
+    await budgetingService.getBudgets().onError((error, stackTrace) {
+      setError(error.toString());
+    });
     await paymentService.getPlans();
 
     budgetingModel = budgetingService.budgetingModel;
@@ -81,13 +82,13 @@ class HomeViewModel extends BaseViewModel {
     }
 
     if(hasError) {
-
-      if(modelError.toString().contains('jwt expired')) {
+      if(modelError.toString().contains('jwt expired') || modelError.toString().contains('Failed/Invalid Token')) {
+        print(hasError);
+        print(modelError);
         if(onErrorLogout != null) {
           onErrorLogout();
         }
       }
-
     }
 
     notifyListeners();

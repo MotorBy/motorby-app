@@ -13,6 +13,8 @@ class SalesViewModel extends BaseViewModel {
   SalesListModel? salesListModel;
   SalesModel? currentSalesModel;
 
+  bool? hasData = false;
+
   bool? isBusiness;
 
   Future getAllSales() async {
@@ -27,10 +29,12 @@ class SalesViewModel extends BaseViewModel {
     } else {
 
       if(salesService.salesListModel!.payload!.isNotEmpty) {
+        hasData = true;
         if(salesService.salesListModel!.payload![0].carDetails!.carMake == carMake) {
           salesListModel = salesService.salesListModel;
           notifyListeners();
         } else {
+          hasData = false;
           reloadSales();
         }
       } else {
@@ -50,7 +54,13 @@ class SalesViewModel extends BaseViewModel {
 
     await salesService.getSales(carMake: carMake).then((value) {
       setBusyForObject('sales-loading', false);
+
+      if(salesService.salesListModel!.payload!.isNotEmpty){
+        hasData = true;
+      }
+
     }).onError((error, stackTrace) {
+      print(stackTrace.toString());
       setBusyForObject('sales-loading', false);
       setError(error!.toString());
     });

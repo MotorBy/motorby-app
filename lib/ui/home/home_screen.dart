@@ -35,7 +35,6 @@ class HomeScreen extends StatelessWidget {
             onErrorLogout: (){
               model.LogOut(
                   onCallBack: () {
-                    popToFirst(context);
                     navigateReplace(context, SignInScreen());
               });
             },
@@ -102,7 +101,8 @@ class HomeScreen extends StatelessWidget {
                                 hasOutline: true,
                                 outlineWidth: 1,
                                 outlineColor:
-                                    XColors.primaryColor().withOpacity(0.1)),
+                                    XColors.primaryColor().withOpacity(0.1),
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

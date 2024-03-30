@@ -41,11 +41,13 @@ class CarSalesScreen extends StatelessWidget {
               child: const Icon(Icons.arrow_back_ios_rounded, size: 21, color: Colors.purpleAccent,),
             ),
             actions: [
-              Container(
-                height: 50,
-                width: 50,
-                child: Image.asset('assets/images/auto/${model.carMake!.toLowerCase()}_logo.jpeg'),
-              ),
+              if(model.carMake! != 'all') ... [
+                Container(
+                  height: 50,
+                  width: 50,
+                  child: Image.asset('assets/images/auto/${model.carMake!.toLowerCase()}_logo.jpeg'),
+                ),
+              ],
               const XMargin(60),
               GestureDetector(
                 onTap: (){
@@ -72,7 +74,7 @@ class CarSalesScreen extends StatelessWidget {
               const XMargin(30),
             ],
           ),
-          floatingActionButton: !isBusiness ? XButton(
+          floatingActionButton: isBusiness ? XButton(
             onPressed: () {
               navigate(context, const AddCarsScreen(action: 'sell',));
             },
@@ -94,7 +96,7 @@ class CarSalesScreen extends StatelessWidget {
                           children: [
                             const YMargin(10),
 
-                            if(model.salesListModel == null && model.hasError) ... [
+                            if(model.hasData != true && model.busy('sales-loading') == false) ... [
 
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
@@ -109,7 +111,7 @@ class CarSalesScreen extends StatelessWidget {
                             ],
 
                             ...List.generate(
-                              model.salesListModel != null ? model.salesListModel!.payload!.length : 6,
+                              model.hasData == true ? model.salesListModel!.payload!.length : 6,
                                   (index) => Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
@@ -119,9 +121,9 @@ class CarSalesScreen extends StatelessWidget {
                                   },
                                   child: Shimmer(
                                     child: ShimmerLoading(
-                                      isLoading: model.busy('sales-loading') || model.salesListModel == null,
+                                      isLoading: model.busy('sales-loading') || model.hasData != true,
                                       child: _buildItem(
-                                          isLoading: model.busy('sales-loading') || model.salesListModel == null,
+                                          isLoading: model.busy('sales-loading') || model.hasData != true,
                                           currentSaleIndex: index,
                                           viewModel: model
                                       ),
@@ -130,6 +132,7 @@ class CarSalesScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
+
                             const YMargin(10),
                           ],
                         ),

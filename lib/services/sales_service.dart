@@ -14,14 +14,18 @@ class SalesService {
 
     String? getSUrl = APIService.getSales;
 
-    if(currentCarMake != null) {
+    if(currentCarMake != null && currentCarMake != 'all') {
       getSUrl = "$getSUrl?car_make=$currentCarMake";
+    } else {
+      getSUrl = getSUrl;
     }
 
     var response = await http.get(Uri.parse(getSUrl),
         headers: APIHelper().requestHeadersWithToken());
 
     final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
 
     if(response.statusCode == 200 || response.statusCode == 201) {
 
