@@ -3,17 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
+import 'package:mobile_auto_drive/ui/home/home_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../widgets/snackbar.dart';
+
 class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+  SignupScreen({super.key});
+
+  final TextEditingController regAsController = TextEditingController();
+  final TextEditingController businessController = TextEditingController();
+  final TextEditingController countryController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,23 +30,25 @@ class SignupScreen extends StatelessWidget {
         builder: (context, model, child) {
         return Scaffold(
           backgroundColor: XColors.white(),
-          floatingActionButton: Container(
+          floatingActionButton: XButton(
+            onPressed: () {
+              model.signup(
+                  onCallBack: (){
+                    navigateReplace(context, HomeScreen());
+                  },
+                onErrorCallBack: (){
+                  showSnackBar(
+                      error: true,
+                      context: context,
+                      message: 'Error creating your account'
+                  );
+                }
+              );
+            },
+            text: 'Sign up',
+            isLoading: model.isBusy,
+            buttonColor: XColors.primaryColor(),
             width: 120,
-            height: 60,
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 8),
-            decoration: BoxDecorators.containerDecoration(
-              hasOutline: false,
-              color: XColors.primaryColor(),
-              outlineWidth: 2,
-              radius: 32,
-            ),
-            child: NormalText(
-              text: 'Sign up',
-              textColor: XColors.white(),
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-            ),
           ),
           body: Container(
             height: MediaQuery.of(context).size.height -  60,
@@ -46,6 +56,7 @@ class SignupScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  const YMargin(30),
                   Center(
                     child: SizedBox(
                       height: 140,
@@ -56,7 +67,7 @@ class SignupScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const YMargin(80),
+                  const YMargin(50),
                   Row(
                     children: [
                       Expanded(
@@ -64,7 +75,7 @@ class SignupScreen extends StatelessWidget {
                           label: "First name",
                           isEnabled: true,
                           onChanged: (s){
-
+                            model.updateRegData(data: s, dataType: 'firstname');
                           },
                         ),
                       ),
@@ -74,7 +85,7 @@ class SignupScreen extends StatelessWidget {
                           label: "Second name",
                           isEnabled: true,
                           onChanged: (s){
-
+                            model.updateRegData(data: s, dataType: 'lastname');
                           },
                         ),
                       ),
@@ -82,16 +93,26 @@ class SignupScreen extends StatelessWidget {
                   ),
                   const YMargin(20),
                   MkInputField2(
+                    label: "Phonenumber",
+                    isEnabled: true,
+                    keyboard: TextInputType.number,
+                    onChanged: (s){
+                      model.updateRegData(data: s, dataType: 'phonenumber');
+                    },
+                  ),
+                  const YMargin(20),
+                  MkInputField2(
                     label: "Email address",
                     isEnabled: true,
                     validator: EmailValidator.validate,
                     onChanged: (s){
-
+                      model.updateRegData(data: s, dataType: 'email');
                     },
                   ),
                   const YMargin(20),
                   MkInputField2(
                     label: "Register as",
+                    controller: regAsController,
                     isEnabled: false,
                     suffixIcon: GestureDetector(
                       onTap: (){
@@ -104,6 +125,7 @@ class SignupScreen extends StatelessWidget {
                             "Business"
                           ],
                           selected: (s) {
+                            regAsController.text = s!;
                             model.updateRegAsPro(v: s == 'User' ? false : true);
                           },
                         );
@@ -113,19 +135,34 @@ class SignupScreen extends StatelessWidget {
                   ),
                   if(model.registerAsPro == true) ... [
                     const YMargin(20),
-                    const MkInputField2(
+                    MkInputField2(
                       label: "Business name",
                       isEnabled: true,
+                      onChanged: (s){
+                        model.updateRegData(data: s, dataType: 'bname');
+                      },
                     ),
                     const YMargin(20),
-                    const MkInputField2(
+                    MkInputField2(
                       label: "Business contact",
                       isEnabled: true,
+                      onChanged: (s){
+                        model.updateRegData(data: s, dataType: 'bcontact');
+                      },
+                    ),
+                    const YMargin(20),
+                    MkInputField2(
+                      label: "Business email",
+                      isEnabled: true,
+                      onChanged: (s){
+                        model.updateRegData(data: s, dataType: 'bemail');
+                      },
                     ),
                     const YMargin(20),
                     MkInputField2(
                       label: "Business type",
                       isEnabled: false,
+                      controller: businessController,
                       suffixIcon: GestureDetector(
                         onTap: (){
                           listHelperPicker(
@@ -141,7 +178,8 @@ class SignupScreen extends StatelessWidget {
                               "Rental",
                               "Insurance",],
                             selected: (s) {
-
+                              businessController.text = s!;
+                              model.updateRegData(data: s, dataType: 'btype');
                             },
                           );
                         },
@@ -156,6 +194,7 @@ class SignupScreen extends StatelessWidget {
                         child: MkInputField2(
                           label: "Country",
                           isEnabled: false,
+                          controller: countryController,
                           suffixIcon: GestureDetector(
                             onTap: (){
                               listHelperPicker(
@@ -167,7 +206,8 @@ class SignupScreen extends StatelessWidget {
                                   "Ghana",
                                 ],
                                 selected: (s) {
-
+                                  countryController.text = s!;
+                                  model.updateRegData(data: s, dataType: 'country');
                                 },
                               );
                             },
@@ -176,25 +216,34 @@ class SignupScreen extends StatelessWidget {
                         ),
                       ),
                       const XMargin(10),
-                      const Expanded(
+                      Expanded(
                         child: MkInputField2(
                           label: "State",
                           isEnabled: true,
+                          onChanged: (s){
+                            model.updateRegData(data: s, dataType: 'state');
+                          },
                         ),
                       ),
                     ],
                   ),
                   const YMargin(20),
-                  const MkInputField2(
+                  MkInputField2(
                     label: "Password",
                     isPassword: true,
                     validator: PasswordValidator.validate,
                     isEnabled: true,
+                    onChanged: (s){
+                      model.updateRegData(data: s, dataType: 'password');
+                    },
                   ),
                   const YMargin(20),
-                  const MkInputField2(
+                  MkInputField2(
                     label: "Referral code",
                     isEnabled: true,
+                    onChanged: (s){
+                      model.updateRegData(data: s, dataType: 'referralcode');
+                    },
                   ),
                   const YMargin(20),
                   Row(children: [

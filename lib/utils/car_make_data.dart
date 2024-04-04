@@ -53,7 +53,7 @@ var carMakeData = [
     },
     {
       "name" : "Mercedes",
-      "logo" : "assets/images/auto/mercedes_b_logo.jpeg",
+      "logo" : "assets/images/auto/mercedes-benz_logo.jpeg",
     },
     {
       "name" : "Tesla",

@@ -136,7 +136,7 @@ class CarSalesScreen extends StatelessWidget {
                             const YMargin(10),
                           ],
                         ),
-                      )
+                )
             ),
           ),
         );
@@ -241,7 +241,7 @@ class CarSalesScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 NormalText(
-                  text: '${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carMake!}  ${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carModel!}  ${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carYear!}',
+                  text: '${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carMake != null ? viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carMake! : ''}  ${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carModel!}  ${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carYear!}',
                   textColor: XColors.black(),
                   fontWeight: FontWeight.w700,
                   fontSize: 17,
@@ -269,7 +269,7 @@ class CarSalesScreen extends StatelessWidget {
                     NormalText(
                       text: viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.gear,
                       textColor: XColors.black(),
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
                   ],
@@ -285,7 +285,7 @@ class CarSalesScreen extends StatelessWidget {
                     NormalText(
                       text: viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.seats.toString(),
                       textColor: XColors.black(),
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
                   ],
@@ -302,7 +302,7 @@ class CarSalesScreen extends StatelessWidget {
                     NormalText(
                       text: viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.mileage.toString(),
                       textColor: XColors.black(),
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
                   ],
@@ -328,140 +328,8 @@ class CarSalesScreen extends StatelessWidget {
       );
     }
   }
-
-
 }
 
-class CarListItem extends ViewModelWidget<SalesViewModel> {
-  const CarListItem({super.key, this.currentSaleIndex});
-
-  final int? currentSaleIndex;
-
-  @override
-  Widget build(BuildContext context, viewModel) {
-    return Container(
-      decoration: BoxDecorators.containerDecoration(
-          hasOutline: true,
-          outlineWidth: 1,
-          outlineColor: Colors.black.withOpacity(0.05)),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14.0),
-            child: Align(
-              alignment: Alignment.topCenter,
-              heightFactor: 0.9,
-              child: Image.network(
-                viewModel.salesListModel!.payload![currentSaleIndex!].images![0],
-                fit: BoxFit.cover,
-                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 180,
-                    color: Colors.black12.withOpacity(0.1),
-                  );
-                },
-              ),
-            ),
-          ),
-          const YMargin(10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                NormalText(
-                  text: '${viewModel.salesListModel!.payload![currentSaleIndex!].carDetails!.carMake!}  ${viewModel.salesListModel!.payload![currentSaleIndex!].carDetails!.carModel!}  ${viewModel.salesListModel!.payload![currentSaleIndex!].carDetails!.carYear!}',
-                  textColor: XColors.black(),
-                  fontWeight: FontWeight.w700,
-                  fontSize: 17,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(8),
-                  child: const Icon(Icons.favorite_border, color: Colors.purpleAccent, size: 19,),
-                )
-              ],
-            ),
-          ),
-          const YMargin(5),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 20,
-                      child:
-                          Image.asset('assets/images/icons/gearbox.png'),
-                    ),
-                    const XMargin(5),
-                    NormalText(
-                      text: viewModel.salesListModel!.payload![currentSaleIndex!].carDetails!.gear,
-                      textColor: XColors.black(),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 11,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 20,
-                      child: Image.asset('assets/images/icons/seat.png'),
-                    ),
-                    const XMargin(5),
-                    NormalText(
-                      text: viewModel.salesListModel!.payload![currentSaleIndex!].carDetails!.seats.toString(),
-                      textColor: XColors.black(),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 11,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 20,
-                      child:
-                          Image.asset('assets/images/icons/odometer.png'),
-                    ),
-                    const XMargin(5),
-                    NormalText(
-                      text: viewModel.salesListModel!.payload![currentSaleIndex!].carDetails!.mileage.toString(),
-                      textColor: XColors.black(),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 11,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const YMargin(5),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              NormalText(
-                text: 'N ${amtFormatter(viewModel.salesListModel!.payload![currentSaleIndex!].salesDetails!.amountForSale)}',
-                textColor: XColors.black(),
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-              ),
-              const XMargin(15),
-            ],
-          ),
-          const YMargin(15),
-        ],
-      ),
-    );
-  }
-}
 
 class FilterView extends StatelessWidget {
   const FilterView({super.key});

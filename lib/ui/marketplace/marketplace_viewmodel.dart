@@ -12,7 +12,13 @@ class MarketplaceViewModel extends BaseViewModel {
 
   void setPickedCarMake({String? v}){
     carMake = v;
-    salesService.currentCarMake = carMake;
+
+    if(v == 'Mercedes') {
+      salesService.currentCarMake = '${carMake!}-Benz';
+    } else {
+      salesService.currentCarMake = carMake;
+    }
+
     notifyListeners();
   }
 

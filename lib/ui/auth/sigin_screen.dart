@@ -124,7 +124,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     const XMargin(10),
                     GestureDetector(
                       onTap: (){
-                        navigateReplace(context, const SignupScreen());
+                        navigateReplace(context, SignupScreen());
                       },
                       child: NormalText(
                         text: 'Sign up',

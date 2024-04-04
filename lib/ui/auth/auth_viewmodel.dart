@@ -36,18 +36,21 @@ class AuthViewModel extends BaseViewModel {
     });
 
     //ErrorLogging().showError((await authService.loginUser(email: email, password: password)) as Future);
-
   }
 
   void updateRegData({dynamic data, String? dataType, }) {
     if(dataType == 'firstname') {
       regData['firstname'] = data;
-    } else if(dataType == 'secondname'){
-      regData['secondname'] = data;
+    } else if(dataType == 'lastname'){
+      regData['lastname'] = data;
+    } else if(dataType == 'email'){
+      regData['email'] = data;
+    } else if(dataType == 'phonenumber'){
+      regData['phonenumber'] = data;
     } else if(dataType == 'country'){
       regData['country'] = data;
     } else if(dataType == 'state'){
-      regData['country'] = data;
+      regData['state'] = data;
     } else if(dataType == 'referralcode'){
       regData['referral_code'] = data;
     } else if(dataType == 'bname'){
@@ -56,25 +59,37 @@ class AuthViewModel extends BaseViewModel {
       regData['business_details']['business_contact'] = data;
     } else if(dataType == 'bemail'){
       regData['business_details']['business_email'] = data;
+    } else if(dataType == 'btype'){
+      regData['business_details']['business_type'] = data;
+    } else if(dataType == 'password'){
+      regData['password'] = data;
     }
 
+    print(regData);
   }
 
 
-  Future signup({Map<String, dynamic>? signupData}) async {
-
-    authService.createUser(data: signupData).then((value) {
-
+  Future signup({Function? onCallBack, Function? onErrorCallBack}) async {
+    setBusy(true);
+    authService.createUser(data: regData).then((value) {
+      setBusy(false);
+      if(onCallBack != null) {
+        onCallBack();
+      }
     }).onError((error, stackTrace) {
-
+      setBusy(false);
+      if(onErrorCallBack != null) {
+        onErrorCallBack();
+      }
     });
-
   }
   
   void updateRegAsPro({bool? v}){
     registerAsPro = v;
     if(registerAsPro!) {
       regData['business_details'] = {};
+    } else {
+      regData['business_details'] = null;
     }
     notifyListeners();
   }

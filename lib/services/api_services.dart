@@ -14,7 +14,7 @@ class APIService {
   static const String PAYMENT = 'payment';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
-  static const String prod = '';
+  static const String prod = 'http://20.102.116.11:8000/api/v1/';
 
   static const String vinUrl = 'https://vin-decoder19.p.rapidapi.com';
 
@@ -31,7 +31,7 @@ class APIService {
   static const String payAuthCharge = "$paystackAPI/charge_authorization";
   static const String payInit = "$paystackAPI/initialize";
 
-  static String authUser = "$root$USER/signup";
+  static String authUser = "$root$USER/create";
   static String loginUser = "$root$USER/login";
   static String getUser({String? id}) => "$root$USER/$id";
   static String makePayment = "$root$PAYMENT/create-payment";

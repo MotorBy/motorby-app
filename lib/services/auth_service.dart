@@ -25,6 +25,11 @@ class AuthService {
 
     if (json["statusCode"] == 200 || json["statusCode"] == 201) {
 
+      await loginUser(
+          email: data!['email'],
+          password: data['password']
+      );
+
     } else {
       var error = json["message"];
       throw Exception(error);

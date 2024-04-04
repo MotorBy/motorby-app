@@ -35,6 +35,7 @@ class HomeScreen extends StatelessWidget {
             onErrorLogout: (){
               model.LogOut(
                   onCallBack: () {
+                    popView(context);
                     navigateReplace(context, SignInScreen());
               });
             },
@@ -294,57 +295,57 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const XMargin(10),
-                          GestureDetector(
-                            onTap: (){
-                              modalBottomSheetMenu(
-                                  context: context,
-                                  child: const ComingSoon(),
-                                  color: XColors.background()
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
-                              decoration: BoxDecorators.containerDecoration(
-                                  hasOutline: true,
-                                  outlineWidth: 1,
-                                  outlineColor:
-                                  XColors.primaryColor().withOpacity(0.1)),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 2, horizontal: 10),
-                                        child: NormalText(
-                                          text: 'Any issues?',
-                                          textColor: XColors.textColor(),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                        const EdgeInsets.symmetric(horizontal: 10),
-                                        child: NormalText(
-                                          text: 'Fix now, pay later',
-                                          textColor: XColors.textColor().withOpacity(0.4),
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
+                          // const XMargin(10),
+                          // GestureDetector(
+                          //   onTap: (){
+                          //     modalBottomSheetMenu(
+                          //         context: context,
+                          //         child: const ComingSoon(),
+                          //         color: XColors.background()
+                          //     );
+                          //   },
+                          //   child: Container(
+                          //     padding: const EdgeInsets.symmetric(
+                          //         horizontal: 5, vertical: 5),
+                          //     decoration: BoxDecorators.containerDecoration(
+                          //         hasOutline: true,
+                          //         outlineWidth: 1,
+                          //         outlineColor:
+                          //         XColors.primaryColor().withOpacity(0.1)),
+                          //     child: Column(
+                          //       crossAxisAlignment: CrossAxisAlignment.start,
+                          //       children: [
+                          //         Row(
+                          //           children: [
+                          //             Padding(
+                          //               padding: const EdgeInsets.symmetric(
+                          //                   vertical: 2, horizontal: 10),
+                          //               child: NormalText(
+                          //                 text: 'Any issues?',
+                          //                 textColor: XColors.textColor(),
+                          //                 fontSize: 12,
+                          //               ),
+                          //             ),
+                          //           ],
+                          //         ),
+                          //         Row(
+                          //           children: [
+                          //             Padding(
+                          //               padding:
+                          //               const EdgeInsets.symmetric(horizontal: 10),
+                          //               child: NormalText(
+                          //                 text: 'Fix now, pay later',
+                          //                 textColor: XColors.textColor().withOpacity(0.4),
+                          //                 fontSize: 20,
+                          //                 fontWeight: FontWeight.w900,
+                          //               ),
+                          //             ),
+                          //           ],
+                          //         )
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
                           const XMargin(10),
                           GestureDetector(
                             onTap: (){
