@@ -7,8 +7,11 @@ import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
+
+import '../../components/coming_soon_view.dart';
 
 class CarSaleDetailScreen extends StatelessWidget {
   const CarSaleDetailScreen({super.key, this.salesViewModel});
@@ -30,6 +33,26 @@ class CarSaleDetailScreen extends StatelessWidget {
               },
               child: const Icon(Icons.arrow_back_ios_rounded, size: 21, color: Colors.purpleAccent,),
             ),
+            actions: [
+              if(model.currentSalesModel!.by! == model.userModel!.payload!.referralProfile!.userId) ... [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecorators.containerDecoration(
+                      hasOutline: true,
+                      outlineWidth: 2,
+                      radius: 26,
+                      outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                  ),
+                  child: NormalText(
+                    text: 'update sales',
+                    textColor: XColors.textColor(),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+              const XMargin(25),
+            ],
           ),
           floatingActionButton: Container(
             height: 60,
@@ -57,10 +80,16 @@ class CarSaleDetailScreen extends StatelessWidget {
               children: [
                 const XMargin(12),
                 XButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    modalBottomSheetMenu(
+                        context: context,
+                        child: const ComingSoon(),
+                        color: XColors.background()
+                    );
+                  },
                   text: 'Place bids',
-                  isLoading: model.busy('sold-out'),
-                  buttonColor: XColors.primaryColor(),
+                  isLoading: false,
+                  buttonColor: XColors.primaryColor().withOpacity(0.3),
                   width: 110,
                 ),
                 const XMargin(12),

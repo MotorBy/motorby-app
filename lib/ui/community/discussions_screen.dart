@@ -113,7 +113,7 @@ class DiscussionsScreen extends StatelessWidget {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 NormalText(
-                                                  text: '${model.discussions[index].user!.fullname}',
+                                                  text: model.discussions[index].user != null ? '${model.discussions[index].user!.fullname}' : 'user',
                                                   textColor: XColors.textColor().withOpacity(0.6),
                                                   maxLines: 2,
                                                   fontWeight: FontWeight.w700,

@@ -1,4 +1,5 @@
 import 'package:mobile_auto_drive/models/sales_model.dart';
+import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
@@ -13,6 +14,8 @@ class SalesViewModel extends BaseViewModel {
   SalesListModel? salesListModel;
   SalesModel? currentSalesModel;
 
+  UserModel? userModel;
+
   bool? hasData = false;
 
   bool? isBusiness;
@@ -20,6 +23,8 @@ class SalesViewModel extends BaseViewModel {
   Future getAllSales() async {
     carMake = salesService.currentCarMake;
     isBusiness = userService.isBusiness;
+
+    userModel = userService.userModel;
 
     if(salesService.salesListModel == null) {
 
