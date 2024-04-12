@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/ui/marketplace/shops/create_shop_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/shops/shop_details_screen.dart';
@@ -10,6 +11,7 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/loader.dart';
+import 'package:mobile_auto_drive/widgets/shimmer_loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -76,35 +78,46 @@ class ShopsScreen extends StatelessWidget {
                       )),
                     ],),
                   ),
-                  if(model.busy('shops')) ... [
 
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height - 350,
-                      child: const Center(
-                          child: Loader()
+                  if(model.hasData != true && model.busy('shops') == false) ... [
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+                      child: NormalText(
+                        text: 'No shops opened for now, check back later.',
+                        textColor: XColors.black(),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
                       ),
                     ),
 
-                  ] else if(!model.busy('shops') && model.shops!.isNotEmpty) ... [
+                  ],
 
-                    const YMargin(20),
-                    ...List.generate(model.shops!.length, (index) {
-                      return GestureDetector(
-                        onTap: (){
+                  ...List.generate(
+                    model.hasData == true ? model.shops!.length : 6,
+                        (index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
                           model.updateCurrentShop(model.shops![index]);
                           navigate(context, ShopDetailsScreen(
                             shopViewModel: model,
                           ));
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: ShopListItem(
-                            name: model.shops![index].name,
+                        child: Shimmer(
+                          child: ShimmerLoading(
+                            isLoading: model.busy('shops') || model.hasData != true,
+                            child: _buildItem(
+                                isLoading: model.busy('shops') || model.hasData != true,
+                                model: model,
+                                currentIndex: index
+                            ),
                           ),
                         ),
-                      );
-                    }),
-                  ]
+                      ),
+                    ),
+                  ),
+
                 ],
               ),
             ),
@@ -113,6 +126,71 @@ class ShopsScreen extends StatelessWidget {
       }
     );
   }
+
+  Widget _buildItem({
+    bool? isLoading = false,
+    ShopViewModel? model,
+    int? currentIndex
+  }) {
+    if (isLoading!) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  height: 34,
+                  width: 34,
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 24,
+                      width: 230,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Container(
+                      height: 24,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: ShopListItem(
+            name: model!.shops![currentIndex!].name,
+          ),
+        ),
+      );
+    }
+  }
+
 }
 
 class ShopListItem extends StatelessWidget {

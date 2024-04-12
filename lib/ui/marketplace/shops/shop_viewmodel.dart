@@ -20,10 +20,12 @@ class ShopViewModel extends BaseViewModel {
   List<String> carMakePicks = [];
   File? logoPick;
 
-  final List<String> shopTypes = ["All", "Dealer", "Repair", "Detailing", "Servicing", "Parts"];
+  final List<String> shopTypes = ["All", "Dealership", "Repair", "Detailing", "Servicing", "Parts"];
 
   List<Shop>? shops = [];
   Shop? currentShop;
+
+  bool? hasData = false;
 
   Future initialise() async {
     await getShop();
@@ -34,8 +36,8 @@ class ShopViewModel extends BaseViewModel {
     createData['into'] = intoPicks;
     createData['support_make'] = carMakePicks;
     createData['opened_by'] = persistService.getUserID;
-    createData['country'] = userService.userModel!.payload!.country;
-    createData['state'] = userService.userModel!.payload!.state ?? '';
+    createData['country'] = userService.userModel!.payload!.user!.country;
+    createData['state'] = userService.userModel!.payload!.user!.state ?? '';
 
     setBusy(true);
 
@@ -88,9 +90,13 @@ class ShopViewModel extends BaseViewModel {
     await shopService.getShops().then((value) {
       shops = shopService.shopsModel!.shop;
       setBusyForObject('shops', false);
+      if(shops!.isNotEmpty) {
+        hasData = true;
+      }
     }).onError((error, stackTrace) {
       print(stackTrace);
       setBusyForObject('shops', false);
+      hasData = false;
     });
   }
 
