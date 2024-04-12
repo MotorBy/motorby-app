@@ -41,45 +41,46 @@ class _SignInScreenState extends State<SignInScreen> {
             backgroundColor: XColors.white(),
             surfaceTintColor: XColors.white(),
             automaticallyImplyLeading: false,
-              actions: [
-                Row(
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      navigate(context, const MarketPlace());
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: NormalText(
-                        text:'Marketplace',
-                        textColor: XColors.textColor(),
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                  Icon(Icons.shopping_basket, size: 18, color: XColors.primaryColor(),),
-                  const XMargin(10)
-                ],
-              ),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: (){
-                        navigate(context, CommunityScreen());
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: NormalText(
-                          text:'Community',
-                          textColor: XColors.textColor(),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    Icon(Icons.supervisor_account_outlined, size: 18, color: XColors.primaryColor(),),
-                    const XMargin(10)
-                  ],
-                ),
+              actions: const [
+                ///TODO:allow smooth guest mode for none users
+              //   Row(
+              //   children: [
+              //     GestureDetector(
+              //       onTap: (){
+              //         navigate(context, const MarketPlace());
+              //       },
+              //       child: Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: NormalText(
+              //           text:'Marketplace',
+              //           textColor: XColors.textColor(),
+              //           fontSize: 13,
+              //         ),
+              //       ),
+              //     ),
+              //     Icon(Icons.shopping_basket, size: 18, color: XColors.primaryColor(),),
+              //     const XMargin(10)
+              //   ],
+              // ),
+              //   Row(
+              //     children: [
+              //       GestureDetector(
+              //         onTap: (){
+              //           navigate(context, CommunityScreen());
+              //         },
+              //         child: Padding(
+              //           padding: const EdgeInsets.all(8.0),
+              //           child: NormalText(
+              //             text:'Community',
+              //             textColor: XColors.textColor(),
+              //             fontSize: 13,
+              //           ),
+              //         ),
+              //       ),
+              //       Icon(Icons.supervisor_account_outlined, size: 18, color: XColors.primaryColor(),),
+              //       const XMargin(10)
+              //     ],
+              //   ),
               ],
             ),
           body: Form(
@@ -116,8 +117,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     const YMargin(20),
                     MkInputField2(
                       label: "Password",
-                      validator: PasswordValidator.validate,
+                      //validator: PasswordValidator.validate,
                       isEnabled: true,
+                      isPassword: true,
                       controller: passwordTextController,
                     ),
                     const YMargin(20),

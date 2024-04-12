@@ -16,7 +16,12 @@ class CommunityViewModel extends BaseViewModel {
   int? currentIndex = 0;
 
   List<Discussion> discussions = [];
+
+  Discussion? currentDiscussion;
+  int? currentDiscussionIndex = 0;
+
   String? contentText = '';
+  String? commentText = '';
 
   String? userId = '';
 
@@ -46,7 +51,7 @@ class CommunityViewModel extends BaseViewModel {
     setBusy(true);
 
     await communityService.getDiscussions().then((value) {
-      discussions = communityService.discussions;
+      discussions = communityService.discussions.reversed.toList();
       setBusy(false);
     }).onError((error, stackTrace) {
       print(stackTrace);
@@ -68,8 +73,12 @@ class CommunityViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void onContentUpdate({String? s}) {
-    contentText = s;
+  void onContentUpdate({String? s, bool? isComment = false}) {
+    if(isComment!) {
+      commentText = s;
+    } else {
+      contentText = s;
+    }
     notifyListeners();
   }
 
@@ -77,7 +86,7 @@ class CommunityViewModel extends BaseViewModel {
     setBusyForObject('discussion', true,);
 
     await communityService.addDiscussions(content: contentText).then((value) {
-      discussions = communityService.discussions;
+      discussions = communityService.discussions.reversed.toList();
       setBusyForObject('discussion', false,);
 
       if(onCallBack != null) {
@@ -89,6 +98,41 @@ class CommunityViewModel extends BaseViewModel {
       setBusyForObject('discussion', false,);
     });
 
+  }
+
+  Future addComments({String? discussionId, Function? onCallBack, Function(String? e)? onErrorCallBack,}) async {
+    setBusyForObject('comment', true,);
+
+    await communityService.addComments(
+        comment: commentText,
+        discussionId: discussionId
+    ).then((value) async {
+
+      await getDiscussions();
+
+      discussions = communityService.discussions.reversed.toList();
+      currentDiscussion = discussions[currentDiscussionIndex!];
+
+      setBusyForObject('comment', false,);
+
+      if(onCallBack != null) {
+        onCallBack();
+      }
+
+    }).onError((error, stackTrace) {
+      print(stackTrace);
+      onErrorCallBack!(error.toString());
+      setBusyForObject('discussion', false,);
+    });
+
+  }
+
+  void setCurrentDiscussion({int? currentIndex}){
+
+    currentDiscussionIndex = currentIndex;
+    currentDiscussion = discussions[currentDiscussionIndex!];
+
+    notifyListeners();
   }
 
   Future joinCommunity({Community? community, int? index}) async {

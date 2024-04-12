@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/sales_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -34,7 +35,7 @@ class CarSaleDetailScreen extends StatelessWidget {
               child: const Icon(Icons.arrow_back_ios_rounded, size: 21, color: Colors.purpleAccent,),
             ),
             actions: [
-              if(model.currentSalesModel!.by! == model.userModel!.payload!.referralProfile!.userId) ... [
+              if(model.isSalesMaker()) ... [
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecorators.containerDecoration(
@@ -56,7 +57,7 @@ class CarSaleDetailScreen extends StatelessWidget {
           ),
           floatingActionButton: Container(
             height: 60,
-            child: isABusiness! ? Row(
+            child: model.isSalesMaker() ? Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 XButton(
@@ -71,7 +72,7 @@ class CarSaleDetailScreen extends StatelessWidget {
                   onPressed: () {},
                   text: 'Promote',
                   isLoading: model.busy('sold-out'),
-                  buttonColor: XColors.primaryColor(),
+                  buttonColor: XColors.primaryColor().withOpacity(0.3),
                   width: 120,
                 ),
               ],
@@ -150,10 +151,10 @@ class CarSaleDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           NormalText(
-                            text: '${model.currentSalesModel!.carDetails!.carMake!} ${model.currentSalesModel!.carDetails!.carModel!} ${model.currentSalesModel!.carDetails!.carYear!}',
+                            text: model.currentSalesModel!.name ?? 'Car',
                             textColor: XColors.black(),
                             fontWeight: FontWeight.w700,
-                            fontSize: 19,
+                            fontSize: model.currentSalesModel!.name != null ? model.currentSalesModel!.name!.length > 23 ? 13 : 16 : 12,
                           ),
                           Container(
                             alignment: Alignment.center,
@@ -231,7 +232,7 @@ class CarSaleDetailScreen extends StatelessWidget {
                                   ),
                                   const XMargin(5),
                                   NormalText(
-                                    text: '124km',
+                                    text: '12km',
                                     textColor: XColors.black(),
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13,
@@ -257,7 +258,7 @@ class CarSaleDetailScreen extends StatelessWidget {
                                   ),
                                   const XMargin(5),
                                   NormalText(
-                                    text: '3',
+                                    text: '2',
                                     textColor: XColors.black(),
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13,
@@ -290,7 +291,7 @@ class CarSaleDetailScreen extends StatelessWidget {
                                   ),
                                   const XMargin(5),
                                   NormalText(
-                                    text: '10',
+                                    text: '15',
                                     textColor: XColors.black(),
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13,
@@ -306,14 +307,15 @@ class CarSaleDetailScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // NormalText(
+                        //   text: 'posted by: ${model.currentSalesModel!.salesDetails!.amountForSale}',
+                        //   textColor: XColors.black(),
+                        //   fontWeight: FontWeight.w400,
+                        //   fontSize: 11,
+                        // ),
+                        const XMargin(25),
                         NormalText(
-                          text: 'posted by: MADAutos',
-                          textColor: XColors.black(),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 11,
-                        ),
-                        NormalText(
-                          text: 'N 11 million',
+                          text: 'N ${amtFormatter(model.currentSalesModel!.salesDetails!.amountForSale)}',
                           textColor: XColors.black(),
                           fontWeight: FontWeight.w900,
                           fontSize: 19,
@@ -333,7 +335,7 @@ class CarSaleDetailScreen extends StatelessWidget {
                               fontSize: 11,
                             ),
                             NormalText(
-                              text: 'Brand new',
+                              text: model.currentSalesModel!.carDetails!.conditions ?? 'Foreign used',
                               textColor: XColors.black(),
                               fontWeight: FontWeight.w700,
                               fontSize: 16,

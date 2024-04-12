@@ -225,7 +225,7 @@ class MkInputField2 extends StatelessWidget {
           Positioned(
               right: 20,
               top: 0,
-              bottom: hasError.value == false ? 0 : 25,
+              bottom: 0,
               child: suffixIcon!
           )
         ]

@@ -93,7 +93,32 @@ class CommunityService {
 
   }
 
-  Future addComments() async {
+  Future addComments({String? discussionId, String? comment}) async {
+
+    var commentData = {
+      "discussion_id" : discussionId,
+      "comment" : comment,
+      "user": persistService.getUserID
+    };
+
+    final jsonData = JSON.json.encode(formatObject(commentData));
+
+    var response = await http.post(Uri.parse(
+        APIService.addComments),
+        headers: APIHelper().requestHeadersWithToken(),
+        body: jsonData
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+
+    } else {
+      var error = json["message"];
+      throw Exception(error);
+    }
 
   }
 

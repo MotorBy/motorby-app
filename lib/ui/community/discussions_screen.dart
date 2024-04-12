@@ -7,6 +7,7 @@ import 'package:mobile_auto_drive/ui/community/community_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/loader.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -133,6 +134,7 @@ class DiscussionsScreen extends StatelessWidget {
                                                     children: [
                                                       GestureDetector(
                                                         onTap: (){
+                                                          model.setCurrentDiscussion(currentIndex: index);
                                                           modalBottomSheetMenu(
                                                               context: context,
                                                               child: CommentsView(
@@ -222,84 +224,129 @@ class DiscussionsScreen extends StatelessWidget {
 }
 
 class CommentsView extends StatelessWidget {
-  const CommentsView({super.key, this.discussion, this.model});
+  CommentsView({super.key, this.discussion, this.model});
 
   final CommunityViewModel? model;
   final Discussion? discussion;
 
+  TextEditingController commentTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 580,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const YMargin(25),
-          NormalText(
-            text: 'Comments',
-            textColor: XColors.primaryColor2(),
-            maxLines: 2,
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
-          const YMargin(25),
-          Container(
-            height: 350,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ...List.generate(
-                    discussion!.comments!.length,
-                    (index) => Column(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                NormalText(
-                                  text: discussion!.comments![index].user!.fullname,
-                                  textColor: XColors.textColor().withOpacity(0.6),
-                                  maxLines: 2,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                ),
-                                const YMargin(10),
-                                NormalText(
-                                  text: discussion!.comments![index].comment,
-                                  textColor: XColors.textColor(),
-                                  fontSize: 15,
-                                ),
-                              ],
+    return ViewModelBuilder<CommunityViewModel>.reactive(
+        viewModelBuilder: () => model!,
+        disposeViewModel: false,
+        builder: (context, model, child) {
+        return Container(
+          height: 580,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const YMargin(25),
+              NormalText(
+                text: 'Comments',
+                textColor: XColors.primaryColor2(),
+                maxLines: 2,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+              const YMargin(25),
+              Container(
+                height: 350,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      ...List.generate(
+                        model.currentDiscussion!.comments!.reversed.toList().length,
+                        (index) => Column(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  NormalText(
+                                    text: model.currentDiscussion!.comments!.reversed.toList()[index].user != null ? model.currentDiscussion!.comments!.reversed.toList()[index].user!.fullname : 'user',
+                                    textColor: XColors.textColor().withOpacity(0.6),
+                                    maxLines: 2,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                  const YMargin(10),
+                                  NormalText(
+                                    text: model.currentDiscussion!.comments!.reversed.toList()[index].comment,
+                                    textColor: XColors.textColor(),
+                                    fontSize: 15,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                            Divider(
+                              thickness: 0.7,
+                              color: XColors.primaryColor().withOpacity(0.2),
+                            ),
+                          ],
                         ),
-                        Divider(
-                          thickness: 0.7,
-                          color: XColors.primaryColor().withOpacity(0.2),
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const YMargin(40),
+              Row(
+                children: [
+                  Expanded(
+                    child: MkInputField2(
+                      label: "drop comment",
+                      isEnabled: true,
+                      controller: commentTextController,
+                      onChanged: (s){
+                        model.onContentUpdate(s: s, isComment: true);
+                      },
                     ),
                   ),
+                  const XMargin(10),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child:  model.busy('comment') == true ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Loader(
+                        strokeWidth: 5,
+                      ),
+                    ) : GestureDetector(
+                        onTap: () async {
+                          if(model.commentText!.isNotEmpty || model.busy('comment') != true) {
+                            await model.addComments(
+                                discussionId: discussion!.id,
+                                onCallBack: (){
+                                  commentTextController.text = '';
+                                },
+                                onErrorCallBack: (e){
+                                  showSnackBar(
+                                      context: context,
+                                      error: true,
+                                      message: e
+                                  );
+                                }
+                            );
+                          }
+                        },
+                        child: RotationTransition(
+                            turns: const AlwaysStoppedAnimation(-35/ 360),
+                            child: Icon(Icons.send_rounded, color: XColors.primaryColor(),)
+                        )
+                    ),
+                  )
                 ],
               ),
-            ),
+              const YMargin(40),
+            ],
           ),
-          const YMargin(40),
-          MkInputField2(
-            label: "drop comment",
-            isEnabled: true,
-            suffixIcon: const Icon(Icons.send_rounded),
-            onChanged: (s){
-
-            },
-          ),
-          const YMargin(40),
-        ],
-      ),
+        );
+      }
     );
   }
 }

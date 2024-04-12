@@ -39,6 +39,7 @@ class APIService {
   static String getCommunities = "$root$COMMUNITY/get-communities";
   static String getDiscussions = "$root$COMMUNITY/get-discussions";
   static String addDiscussions = "$root$COMMUNITY/discuss/";
+  static String addComments = "$root$COMMUNITY/comment/";
   static String joinCommunity = "$root$COMMUNITY/join/";
 
   static String getSales = "$root$SALES/";

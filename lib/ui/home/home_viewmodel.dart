@@ -70,6 +70,7 @@ class HomeViewModel extends BaseViewModel {
     setBusyForObject('home-loading', true);
 
     await userService.getUsers().onError((error, stackTrace) {
+      print(stackTrace.toString());
       setError(error.toString());
     });
     await budgetingService.getBudgets().onError((error, stackTrace) {
@@ -81,9 +82,9 @@ class HomeViewModel extends BaseViewModel {
 
     if(budgetingModel != null) {
 
-      currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
-
       if(budgetingModel!.budget!.isNotEmpty) {
+
+        currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
 
         hasAddedCar = true;
         totalCarsAdded = budgetingModel!.budget!.length;

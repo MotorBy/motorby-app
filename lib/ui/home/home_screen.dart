@@ -2,7 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
@@ -29,7 +28,7 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +48,9 @@ class HomeScreen extends StatelessWidget {
             surfaceTintColor: XColors.white(),
             leading: GestureDetector(
                 onTap: () {
-                  navigate(context, const ProfileScreen());
+                  if(model.userService.userModel != null) {
+                    navigate(context, const ProfileScreen());
+                  }
                 },
                 child: Icon(
                   Icons.account_circle_outlined,

@@ -73,4 +73,8 @@ class SalesViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool isSalesMaker(){
+    return currentSalesModel!.by! == userModel!.payload!.referralProfile!.userId;
+  }
+
 }
