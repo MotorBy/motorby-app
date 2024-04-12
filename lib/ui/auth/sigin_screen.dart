@@ -10,6 +10,7 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -23,9 +24,11 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final TextEditingController emailTextController = TextEditingController();
 
+  final TextEditingController emailTextController = TextEditingController();
   final TextEditingController passwordTextController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -79,85 +82,99 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ],
             ),
-          body: Container(
-            height: MediaQuery.of(context).size.height,
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height - 650,
-                      child: const YMargin(10)
-                  ),
-                  Column(children: [
-                    Center(
-                      child: SizedBox(
-                        height: 140,
-                        width: 140,
-                        child: SvgPicture.asset(
-                          'assets/images/motorby_m.svg',
-                          fit: BoxFit.contain,
+          body: Form(
+            key: _formKey,
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height - 650,
+                        child: const YMargin(10)
+                    ),
+                    Column(children: [
+                      Center(
+                        child: SizedBox(
+                          height: 140,
+                          width: 140,
+                          child: SvgPicture.asset(
+                            'assets/images/motorby_m.svg',
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
+                    ],),
+                    const YMargin(80),
+                    MkInputField2(
+                      label: "Email address",
+                      isEnabled: true,
+                      validator: EmailValidator.validate,
+                      controller: emailTextController,
                     ),
-                  ],),
-                  const YMargin(80),
-                  MkInputField2(
-                    label: "Email address",
-                    isEnabled: true,
-                    controller: emailTextController,
-                  ),
-                  const YMargin(20),
-                  MkInputField2(
-                    label: "Password",
-                    isEnabled: true,
-                    controller: passwordTextController,
-                  ),
-                  const YMargin(20),
-                  Row(children: [
-                    NormalText(
-                      text: 'Don\'t have an account?',
-                      textColor: XColors.textColor(),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13,
+                    const YMargin(20),
+                    MkInputField2(
+                      label: "Password",
+                      validator: PasswordValidator.validate,
+                      isEnabled: true,
+                      controller: passwordTextController,
                     ),
-                    const XMargin(10),
-                    GestureDetector(
-                      onTap: (){
-                        navigateReplace(context, SignupScreen());
-                      },
-                      child: NormalText(
-                        text: 'Sign up',
-                        textColor: XColors.primaryColor(),
-                        fontWeight: FontWeight.w700,
+                    const YMargin(20),
+                    Row(children: [
+                      NormalText(
+                        text: 'Don\'t have an account?',
+                        textColor: XColors.textColor(),
+                        fontWeight: FontWeight.w500,
                         fontSize: 13,
                       ),
-                    ),
-                  ],),
-                  const YMargin(30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      XButton(
-                        onPressed: () {
-
-                          model.login(
-                              email: emailTextController.text,
-                              password: passwordTextController.text,
-                              onCallBack: (){
-                                navigateReplace(context, HomeScreen());
-                              }
-                          );
-
+                      const XMargin(10),
+                      GestureDetector(
+                        onTap: (){
+                          navigateReplace(context, SignupScreen());
                         },
-                        text: 'Login',
-                        isLoading: model.isBusy,
-                        buttonColor: XColors.primaryColor(),
-                        width: 120,
+                        child: NormalText(
+                          text: 'Sign up',
+                          textColor: XColors.primaryColor(),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
-                    ],
-                  )
-                ],
+                    ],),
+                    const YMargin(30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        XButton(
+                          onPressed: () {
+
+                           if(_formKey.currentState!.validate()) {
+
+                             model.login(
+                                 email: emailTextController.text,
+                                 password: passwordTextController.text,
+                                 onCallBack: (){
+                                   navigateReplace(context, HomeScreen());
+                                 },
+                               onErrorBack: (e){
+                                 showSnackBar(
+                                     context: context,
+                                     message: e,
+                                     error: true
+                                 );
+                               }
+                             );
+                           }
+                          },
+                          text: 'Login',
+                          isLoading: model.isBusy,
+                          buttonColor: XColors.primaryColor(),
+                          width: 120,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
