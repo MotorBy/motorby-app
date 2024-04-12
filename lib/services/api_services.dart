@@ -14,7 +14,7 @@ class APIService {
   static const String PAYMENT = 'payment';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
-  static const String prod = 'http://20.102.116.11:8000/api/v1/';
+  static const String prod = 'https://api.motorby.co/api/v1/';
 
   static const String vinUrl = 'https://vin-decoder19.p.rapidapi.com';
 
