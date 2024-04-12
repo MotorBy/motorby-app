@@ -21,7 +21,7 @@ class AuthViewModel extends BaseViewModel {
     String? email,
     String? password,
     Function? onCallBack,
-    Function? onErrorBack }) async {
+    Function(String? e)? onErrorBack }) async {
 
     setBusy(true);
     await authService.loginUser(email: email, password: password).then((value) {
@@ -31,7 +31,7 @@ class AuthViewModel extends BaseViewModel {
       setBusy(false);
       print(stackTrace);
       if(onErrorBack != null) {
-        onErrorBack();
+        onErrorBack(error.toString());
       }
     });
 

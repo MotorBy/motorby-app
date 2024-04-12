@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
 
 bool get isBusiness => serviceLocator<UserService>().userModel != null
-    ? serviceLocator<UserService>().userModel!.payload!.userType! != 'USER'
+    ? serviceLocator<UserService>().userModel!.payload!.user!.userType != 'USER'
     : false;
 
 class UserService {
@@ -34,7 +34,7 @@ class UserService {
     if(response.statusCode == 200 || response.statusCode == 201) {
       UserModel? user = UserModel.fromJson(json);
       userModel = user;
-      isBusiness = userModel!.payload!.userType != 'USER';
+      isBusiness = userModel!.payload!.user!.userType != 'USER';
       return userModel;
     } else {
       var error = json["message"];

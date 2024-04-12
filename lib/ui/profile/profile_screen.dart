@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/plan_subscription_screen.dart';
@@ -76,47 +77,19 @@ class ProfileScreen extends StatelessWidget {
               // )
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Icon(Icons.account_circle_outlined, size: 38, color: Colors.purpleAccent,),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecorators.containerDecoration(
-                              hasOutline: true,
-                              outlineWidth: 2,
-                              radius: 26,
-                              outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                          ),
-                          child: !model.busy('user_type_loading') ? NormalText(
-                            text: 'as ${model.user!.userType!.toLowerCase()}',
-                            textColor: XColors.textColor(),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ) : const Loader(
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                        const XMargin(10),
-                        GestureDetector(
-                          onTap: (){
-                            modalBottomSheetMenu(
-                                color: Colors.white,
-                                context: context,
-                                child: MoreProfileActionPicks(
-                                  profileViewModel: model,
-                                ),
-                            );
-                          },
-                          child: Container(
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(Icons.account_circle_outlined, size: 38, color: Colors.purpleAccent,),
+                      Row(
+                        children: [
+                          Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecorators.containerDecoration(
                                 hasOutline: true,
@@ -124,301 +97,396 @@ class ProfileScreen extends StatelessWidget {
                                 radius: 26,
                                 outlineColor: Colors.purpleAccent.withOpacity(0.2)
                             ),
-                            child: const Icon(Icons.more_vert_rounded, size: 15,),
+                            child: !model.busy('user_type_loading') ? NormalText(
+                              text: 'as ${model.user!.userType!.toLowerCase()}',
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ) : const Loader(
+                              height: 20,
+                              width: 20,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const YMargin(30),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    NormalText(
-                      text:'Full name',
-                      textColor: XColors.textColor(),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
-                    ),
-                    NormalText(
-                      text: model.user != null ? model.user!.fullname : "",
-                      textColor: XColors.textColor(),
-                      fontSize: 12,
-                    ),
-                  ],
-                ),
-                const YMargin(20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    NormalText(
-                      text:'Email',
-                      textColor: XColors.textColor(),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
-                    ),
-                    Row(
-                      children: [
-                        NormalText(
-                          text: model.user != null ? model.user!.email : '',
-                          textColor: XColors.textColor(),
-                          fontSize: 12,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const YMargin(70),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        NormalText(
-                          text:'Cars',
-                          textColor: XColors.textColor(),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                        Row(
-                          children: [
-                            NormalText(
-                              text:'0',
-                              textColor: XColors.textColor(),
-                              fontSize: 12,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        NormalText(
-                          text:'Sales',
-                          textColor: XColors.textColor(),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                        Row(
-                          children: [
-                            NormalText(
-                              text:'0',
-                              textColor: XColors.textColor(),
-                              fontSize: 12,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        NormalText(
-                          text:'Sold',
-                          textColor: XColors.textColor(),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                        Row(
-                          children: [
-                            NormalText(
-                              text:'0',
-                              textColor: XColors.textColor(),
-                              fontSize: 12,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        NormalText(
-                          text:'Shops',
-                          textColor: XColors.textColor(),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                        Row(
-                          children: [
-                            NormalText(
-                              text:'0',
-                              textColor: XColors.textColor(),
-                              fontSize: 12,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const YMargin(70),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecorators.containerDecoration(
-                          hasOutline: true,
-                          outlineWidth: 1,
-                          radius: 16,
-                          outlineColor: Colors.purpleAccent.withOpacity(0.1)
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              NormalText(
-                                text: 'Total set budget',
-                                textColor: XColors.textColor().withOpacity(0.5),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
+                          const XMargin(10),
+                          GestureDetector(
+                            onTap: (){
+                              modalBottomSheetMenu(
+                                  color: Colors.white,
+                                  context: context,
+                                  child: MoreProfileActionPicks(
+                                    profileViewModel: model,
+                                  ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecorators.containerDecoration(
+                                  hasOutline: true,
+                                  outlineWidth: 2,
+                                  radius: 26,
+                                  outlineColor: Colors.purpleAccent.withOpacity(0.2)
                               ),
-                              const XMargin(30),
-                              Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecorators.containerDecoration(
-                                    hasOutline: true,
-                                    outlineWidth: 2,
-                                    radius: 26,
-                                    outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                                ),
-                                child: const Icon(Icons.edit, color: Colors.purpleAccent, size: 12,),
-                              ),
-                            ],
-                          ),
-                          const YMargin(10),
-                          NormalText(
-                            text: 'N 0,0',
-                            textColor: XColors.textColor(),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 21,
+                              child: const Icon(Icons.more_vert_rounded, size: 15,),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    const YMargin(15),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecorators.containerDecoration(
-                          hasOutline: true,
-                          outlineWidth: 1,
-                          radius: 16,
-                          outlineColor: Colors.purpleAccent.withOpacity(0.1)
+                    ],
+                  ),
+                  const YMargin(30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NormalText(
+                        text:'Full name',
+                        textColor: XColors.textColor(),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      NormalText(
+                        text: model.user != null ? model.user!.fullname : "",
+                        textColor: XColors.textColor(),
+                        fontSize: 12,
+                      ),
+                    ],
+                  ),
+                  const YMargin(20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NormalText(
+                        text:'Email',
+                        textColor: XColors.textColor(),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              NormalText(
-                                text: 'Current plan',
-                                textColor: XColors.textColor().withOpacity(0.5),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                              const XMargin(30),
-                              GestureDetector(
-                                onTap: (){
-                                  if(model.planModel != null) {
-                                    navigate(context, PlanSubscriptionScreen(profileViewModel: model,));
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecorators.containerDecoration(
-                                      hasOutline: true,
-                                      outlineWidth: 2,
-                                      radius: 26,
-                                      outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                                  ),
-                                  child: NormalText(
-                                    text: 'Change',
-                                    textColor: XColors.textColor(),
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const YMargin(10),
                           NormalText(
-                            text: model.userPlan!.toUpperCase(),
+                            text: model.user != null ? model.user!.email : '',
                             textColor: XColors.textColor(),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                         ],
                       ),
-                    ),
-                    const YMargin(15),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecorators.containerDecoration(
-                          hasOutline: true,
-                          outlineWidth: 1,
-                          radius: 16,
-                          outlineColor: Colors.purpleAccent.withOpacity(0.1)
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    ],
+                  ),
+                  const YMargin(70),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
                         children: [
+                          NormalText(
+                            text:'Cars',
+                            textColor: XColors.textColor(),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
                           Row(
                             children: [
                               NormalText(
-                                text: 'Payment method',
-                                textColor: XColors.textColor().withOpacity(0.5),
-                                fontWeight: FontWeight.w500,
+                                text: '${model.user!.statsDetails!.addCars ?? 0}',
+                                textColor: XColors.textColor(),
                                 fontSize: 12,
                               ),
-                              const XMargin(30),
-                              GestureDetector(
-                                onTap: (){
-                                  listHelperPicker(
-                                    height: 200,
-                                    context: context,
-                                    title: 'Payment option',
-                                    listString: [
-                                      "Credit card",
-                                      "Bank Transfer",
-                                      "Current plan",],
-                                    selected: (s) {
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          NormalText(
+                            text:'Sales',
+                            textColor: XColors.textColor(),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                          Row(
+                            children: [
+                              NormalText(
+                                text:'${model.user!.statsDetails!.sales ?? 0}',
+                                textColor: XColors.textColor(),
+                                fontSize: 12,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          NormalText(
+                            text:'Sold',
+                            textColor: XColors.textColor(),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                          Row(
+                            children: [
+                              NormalText(
+                                text:'${model.user!.statsDetails!.sold ?? 0}',
+                                textColor: XColors.textColor(),
+                                fontSize: 12,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      if(model.user!.businessDetails != null) ... [
+                        Column(
+                          children: [
+                            NormalText(
+                              text:'Shops',
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                            Row(
+                              children: [
+                                NormalText(
+                                  text:'${model.user!.statsDetails!.shops ?? 0}',
+                                  textColor: XColors.textColor(),
+                                  fontSize: 12,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                  const YMargin(30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Container(
+                      //   padding: const EdgeInsets.all(8),
+                      //   decoration: BoxDecorators.containerDecoration(
+                      //       hasOutline: true,
+                      //       outlineWidth: 1,
+                      //       radius: 16,
+                      //       outlineColor: Colors.purpleAccent.withOpacity(0.1)
+                      //   ),
+                      //   child: Column(
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     children: [
+                      //       Row(
+                      //         children: [
+                      //           NormalText(
+                      //             text: 'Total set budget',
+                      //             textColor: XColors.textColor().withOpacity(0.5),
+                      //             fontWeight: FontWeight.w500,
+                      //             fontSize: 12,
+                      //           ),
+                      //           const XMargin(30),
+                      //           Container(
+                      //             padding: const EdgeInsets.all(3),
+                      //             decoration: BoxDecorators.containerDecoration(
+                      //                 hasOutline: true,
+                      //                 outlineWidth: 2,
+                      //                 radius: 26,
+                      //                 outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                      //             ),
+                      //             child: const Icon(Icons.edit, color: Colors.purpleAccent, size: 12,),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //       const YMargin(10),
+                      //       NormalText(
+                      //         text: 'N 0,0',
+                      //         textColor: XColors.textColor(),
+                      //         fontWeight: FontWeight.w700,
+                      //         fontSize: 21,
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      const YMargin(15),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecorators.containerDecoration(
+                            hasOutline: true,
+                            outlineWidth: 1,
+                            radius: 16,
+                            outlineColor: Colors.purpleAccent.withOpacity(0.1)
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                NormalText(
+                                  text: 'Current plan',
+                                  textColor: XColors.textColor().withOpacity(0.5),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                                const XMargin(30),
+                                GestureDetector(
+                                  onTap: (){
+                                    if(model.planModel != null) {
+                                      navigate(context, PlanSubscriptionScreen(profileViewModel: model,));
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecorators.containerDecoration(
+                                        hasOutline: true,
+                                        outlineWidth: 2,
+                                        radius: 26,
+                                        outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                    ),
+                                    child: NormalText(
+                                      text: 'Change',
+                                      textColor: XColors.textColor(),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const YMargin(10),
+                            NormalText(
+                              text: model.userPlan!.toUpperCase(),
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const YMargin(15),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecorators.containerDecoration(
+                            hasOutline: true,
+                            outlineWidth: 1,
+                            radius: 16,
+                            outlineColor: Colors.purpleAccent.withOpacity(0.1)
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                NormalText(
+                                  text: 'Payment method',
+                                  textColor: XColors.textColor().withOpacity(0.5),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                                const XMargin(30),
+                                GestureDetector(
+                                  onTap: (){
+                                    listHelperPicker(
+                                      height: 200,
+                                      context: context,
+                                      title: 'Payment option',
+                                      listString: [
+                                        "Credit card",
+                                        "Bank Transfer",
+                                        "Current plan",],
+                                      selected: (s) {
 
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecorators.containerDecoration(
-                                      hasOutline: true,
-                                      outlineWidth: 2,
-                                      radius: 26,
-                                      outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                                  ),
-                                  child: NormalText(
-                                    text: 'Change',
-                                    textColor: XColors.textColor(),
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecorators.containerDecoration(
+                                        hasOutline: true,
+                                        outlineWidth: 2,
+                                        radius: 26,
+                                        outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                    ),
+                                    child: NormalText(
+                                      text: 'Change',
+                                      textColor: XColors.textColor(),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const YMargin(10),
-                          NormalText(
-                            text: 'Bank Transfer',
-                            textColor: XColors.textColor(),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ],
+                              ],
+                            ),
+                            const YMargin(10),
+                            NormalText(
+                              text: 'Bank Transfer',
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const YMargin(15),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecorators.containerDecoration(
+                            hasOutline: true,
+                            outlineWidth: 1,
+                            radius: 16,
+                            outlineColor: Colors.purpleAccent.withOpacity(0.1)
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                NormalText(
+                                  text: 'Referral code',
+                                  textColor: XColors.textColor().withOpacity(0.5),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                              ],
+                            ),
+                            const YMargin(10),
+                            GestureDetector(
+                              onTap: (){
+
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                child: NormalText(
+                                  text: model.userModel!.payload!.referralProfile!.referralCode ?? '',
+                                  textColor: XColors.textColor(),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            const YMargin(7),
+                            const Divider(thickness: 0.4,),
+                            const YMargin(10),
+                            Row(
+                              children: [
+                                NormalText(
+                                  text: 'Earnings',
+                                  textColor: XColors.textColor().withOpacity(0.5),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                              ],
+                            ),
+                            const YMargin(10),
+                            Container(
+                              padding: const EdgeInsets.all(3),
+                              child: NormalText(
+                                text: model.userModel!.payload!.referralProfile!.totalEarnings.toString() ?? '0',
+                                textColor: XColors.textColor(),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 19,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -433,7 +501,7 @@ class CarBudgetAmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
+      child: const Column(
         children: [
 
         ],
@@ -443,9 +511,11 @@ class CarBudgetAmountInput extends StatelessWidget {
 }
 
 class BusinessSetupView extends StatelessWidget {
-  const BusinessSetupView({super.key, this.viewModel});
+  BusinessSetupView({super.key, this.viewModel});
 
   final ProfileViewModel? viewModel;
+
+  final TextEditingController btypeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -453,34 +523,37 @@ class BusinessSetupView extends StatelessWidget {
         viewModelBuilder: () => viewModel!,
         disposeViewModel: false,
         builder: (context, model, child) {
-        return Padding(
+          return Padding(
           padding: const EdgeInsets.all(18.0),
           child: Column(
             children: [
-              // const YMargin(20),
-              // Row(
-              //   children: [
-              //     NormalText(
-              //       text: infoType!.toUpperCase(),
-              //       textColor: XColors.textColor(),
-              //       fontWeight: FontWeight.w700,
-              //       fontSize: 23,
-              //     ),
-              //   ],
-              // ),
-              const YMargin(35),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: (){
+                        popView(context);
+                      },
+                        child: const Icon(Icons.close_rounded)
+                    ),
+                  )
+              ],),
+              const YMargin(15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   NormalText(
-                    text:'You have not yet setup your business profile',
+                    text: model.user!.businessDetails == null ? 'You have not yet setup your business profile' : 'You can make updates to your business profile here',
                     textColor: XColors.textColor(),
                     fontSize: 13,
                   ),
-                  const YMargin(15),
+                  const YMargin(35),
                   MkInputField2(
                     label: "Business name",
-                    keyboard: TextInputType.number,
+                    initialValue: model.user!.businessDetails == null ? '' : model.user!.businessDetails!.businessName!,
                     isEnabled: true,
                     onChanged: (s) {
                       viewModel!.setUserTypeDetails(
@@ -496,15 +569,56 @@ class BusinessSetupView extends StatelessWidget {
                     keyboard: TextInputType.number,
                     isEnabled: true,
                     onChanged: (s) {
-
                       viewModel!.setUserTypeDetails(
                           value: s,
                           type: 'reg_no',
                           key: 'business'
                       );
-
                     },
-
+                  ),
+                  const YMargin(15),
+                  MkInputField2(
+                    label: "Business contact",
+                    isEnabled: true,
+                    onChanged: (s) {
+                      viewModel!.setUserTypeDetails(
+                          value: s,
+                          type: 'bcontact',
+                          key: 'business'
+                      );
+                    },
+                  ),
+                  const YMargin(20),
+                  MkInputField2(
+                    label: "Business type",
+                    isEnabled: false,
+                    controller: btypeController,
+                    suffixIcon: GestureDetector(
+                      onTap: (){
+                        listHelperPicker(
+                          height: 210,
+                          context: context,
+                          title: 'Business type',
+                          listString: [
+                            "Dealership",
+                            "Repair",
+                            "Servicing",
+                            "Detailing",
+                            "Part sales",
+                            "Rental",
+                            "Insurance",],
+                          selected: (s) {
+                            btypeController.text = s!;
+                            viewModel!.setUserTypeDetails(
+                                value: s,
+                                type: 'btype',
+                                key: 'business'
+                            );
+                          },
+                        );
+                      },
+                      child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
+                    ),
                   ),
                   // const YMargin(15),
                   // const MkInputField2(
@@ -536,7 +650,7 @@ class BusinessSetupView extends StatelessWidget {
                   );
 
                 } : (){},
-                text: "Create",
+                text: model.user!.businessDetails == null ? "Create" : "Update",
                 height: 56,
                 isLoading: model.busy('user_type_loading'),
                 textColor: Colors.white,
@@ -608,11 +722,22 @@ class MoreProfileActionPicks extends StatelessWidget {
                   ),
                   if(model.hasBusiness!) ... [
                     const YMargin(45),
-                    NormalText(
-                      text:'Update Business',
-                      textColor: XColors.textColor(),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                    GestureDetector(
+                      onTap: (){
+                        modalBottomSheetMenu(
+                          color: Colors.white,
+                          context: context,
+                          child: BusinessSetupView(
+                            viewModel: profileViewModel!,
+                          ),
+                        );
+                      },
+                      child: NormalText(
+                        text:'Update Business',
+                        textColor: XColors.textColor(),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                   const YMargin(45),

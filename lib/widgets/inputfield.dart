@@ -92,7 +92,7 @@ class MkInputField extends StatelessWidget {
 }
 
 class MkInputField2 extends StatelessWidget {
-  const MkInputField2(
+  MkInputField2(
       {super.key, this.controller,
         required this.label,
         this.currentNode,
@@ -100,7 +100,7 @@ class MkInputField2 extends StatelessWidget {
         this.nextNode,
         this.isPassword = false,
         this.autoValidate = false,
-        this.errorText,
+        this.errorText = '',
         this.onChanged,
         this.validator,
         this.borderColor,
@@ -142,6 +142,8 @@ class MkInputField2 extends StatelessWidget {
   final Color? borderColor;
   final Widget? suffixIcon;
 
+  final ValueNotifier<bool> hasError = ValueNotifier<bool>(false);
+
   @override
   Widget build(BuildContext context) {
 
@@ -155,7 +157,14 @@ class MkInputField2 extends StatelessWidget {
           keyboardType: keyboard,
           obscureText: isPassword,
           onChanged: onChanged,
-          validator: validator,
+          validator: (s) {
+            if(validator != null) {
+              return validator!(s);
+            } else {
+              hasError.value = false;
+              return null;
+            }
+          },
           focusNode: currentNode,
           inputFormatters: inputFormatters,
           onSaved: (String? value) {
@@ -171,6 +180,9 @@ class MkInputField2 extends StatelessWidget {
           textInputAction: textInputAction,
           decoration: InputDecoration(
             fillColor: XColors.primaryColor().withOpacity(0.0),
+            filled: true,
+            hintStyle: const TextStyle(color: Colors.grey),
+            hintText: hint,
             enabledBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(11.0)),
               borderSide: BorderSide(
@@ -185,12 +197,24 @@ class MkInputField2 extends StatelessWidget {
                   width: 1
               ),
             ),
-            hintStyle: const TextStyle(color: Colors.grey),
-            hintText: hint,
+            errorBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(11.0)),
+                borderSide: BorderSide(color: Colors.red)
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(11.0)),
+                borderSide: BorderSide(
+                    color: Colors.red,
+                    width: 2
+                )
+            ),
             focusedBorder: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-                borderSide: BorderSide(color: XColors.primaryColor())),
-            filled: true,
+                borderRadius: const BorderRadius.all(Radius.circular(11.0)),
+                borderSide: BorderSide(
+                    color: XColors.primaryColor(),
+                    width: 2
+                )
+            ),
             contentPadding: const EdgeInsets.only(bottom: 17, left: 10.0, right: 10.0, top: 17),
             labelText: label,
             labelStyle: TextStyle(color: XColors.textColor(), fontWeight: FontWeight.w400),
@@ -201,7 +225,7 @@ class MkInputField2 extends StatelessWidget {
           Positioned(
               right: 20,
               top: 0,
-              bottom: 0,
+              bottom: hasError.value == false ? 0 : 25,
               child: suffixIcon!
           )
         ]
@@ -447,6 +471,16 @@ class EmailValidator {
       return "Enter a valid Email address";
     } else if (val.isEmpty) {
       return "Enter your Email address";
+    } else {
+      return null;
+    }
+  }
+}
+
+class AnyInputValidator {
+  static String? emptyValidate(String? val, {String? inputName}) {
+    if (val!.isEmpty) {
+      return "Enter your ${inputName ?? 'Details'}";
     } else {
       return null;
     }

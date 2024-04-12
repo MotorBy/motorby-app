@@ -15,7 +15,7 @@ class ProfileViewModel extends BaseViewModel {
   final paymentService =  serviceLocator<AppPaymentService>();
 
   UserModel? userModel;
-  Payload? user;
+  User? user;
 
   PlanModel? planModel;
 
@@ -41,8 +41,8 @@ class ProfileViewModel extends BaseViewModel {
 
     await getUserProfile();
 
-    if(userModel!.payload!.businessDetails != null) {
-      if(userModel!.payload!.businessDetails!.businessName != null) {
+    if(userModel!.payload!.user!.businessDetails != null) {
+      if(userModel!.payload!.user!.businessDetails!.businessName != null) {
         hasBusiness = true;
       }
     }
@@ -89,17 +89,17 @@ class ProfileViewModel extends BaseViewModel {
 
     if(userService.userModel != null) {
       userModel = userService.userModel;
-      user = userModel!.payload;
+      user = userModel!.payload!.user;
     } else {
       await userService.getUsers();
       userModel = userService.userModel;
-      user = userModel!.payload;
+      user = userModel!.payload!.user;
     }
 
-    if(userModel!.payload!.userType == 'USER') {
-      userPlan = userModel!.payload!.planDetails!.userPlan;
+    if(userModel!.payload!.user!.userType == 'USER') {
+      userPlan = userModel!.payload!.user!.planDetails!.userPlan;
     } else {
-      userPlan = userModel!.payload!.planDetails!.businessPlan;
+      userPlan = userModel!.payload!.user!.planDetails!.businessPlan;
     }
 
   }
@@ -117,6 +117,12 @@ class ProfileViewModel extends BaseViewModel {
         updateData['business_details']['business_name'] = value;
       } else if(type == 'reg_no') {
         updateData['business_details']['business_reg_no'] = value;
+      } else if(type == 'bemail') {
+        updateData['business_details']['business_email'] = value;
+      } else if(type == 'bcontact') {
+        updateData['business_details']['business_contact'] = value;
+      } else if(type == 'btype') {
+        updateData['business_details']['business_type'] = value;
       }
     } else if(key == 'user') {
       updateData['user_type'] = 'USER';
