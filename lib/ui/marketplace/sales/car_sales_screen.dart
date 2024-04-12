@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
@@ -224,7 +226,7 @@ class CarSalesScreen extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: Colors.black.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: ClipRRect(
@@ -241,10 +243,10 @@ class CarSalesScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 NormalText(
-                  text: '${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carMake != null ? viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carMake! : ''}  ${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carModel!}  ${viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.carYear!}',
+                  text: viewModel.salesListModel!.payload![currentSaleIndex].name ?? 'Car',
                   textColor: XColors.black(),
                   fontWeight: FontWeight.w700,
-                  fontSize: 17,
+                  fontSize: viewModel.salesListModel!.payload![currentSaleIndex].name != null ? viewModel.salesListModel!.payload![currentSaleIndex].name!.length > 23 ? 13 : 16 : 12,
                 ),
                 Container(
                   alignment: Alignment.center,
@@ -253,7 +255,7 @@ class CarSalesScreen extends StatelessWidget {
                 )
               ],
             ),
-            const YMargin(15),
+            const YMargin(18),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -268,7 +270,7 @@ class CarSalesScreen extends StatelessWidget {
                     const XMargin(5),
                     NormalText(
                       text: viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.gear,
-                      textColor: XColors.black(),
+                      textColor: XColors.black().withOpacity(0.7),
                       fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
@@ -284,7 +286,7 @@ class CarSalesScreen extends StatelessWidget {
                     const XMargin(5),
                     NormalText(
                       text: viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.seats.toString(),
-                      textColor: XColors.black(),
+                      textColor: XColors.black().withOpacity(0.7),
                       fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
@@ -301,7 +303,7 @@ class CarSalesScreen extends StatelessWidget {
                     const XMargin(5),
                     NormalText(
                       text: viewModel.salesListModel!.payload![currentSaleIndex].carDetails!.mileage.toString(),
-                      textColor: XColors.black(),
+                      textColor: XColors.black().withOpacity(0.7),
                       fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
@@ -328,6 +330,7 @@ class CarSalesScreen extends StatelessWidget {
       );
     }
   }
+
 }
 
 

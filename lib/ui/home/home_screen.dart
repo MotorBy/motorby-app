@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
@@ -11,6 +12,7 @@ import 'package:mobile_auto_drive/ui/components/coming_soon_view.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_screen.dart';
+import 'package:mobile_auto_drive/ui/marketplace/shops/shops_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
@@ -19,7 +21,10 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/inputfield.dart';
+import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -33,11 +38,7 @@ class HomeScreen extends StatelessWidget {
         disposeViewModel: false,
         onViewModelReady: (model) => model.init(
             onErrorLogout: (){
-              model.LogOut(
-                  onCallBack: () {
-                    popView(context);
-                    navigateReplace(context, SignInScreen());
-              });
+              navigateReplace(context, SignInScreen());
             },
         ),
         builder: (context, model, child) {
@@ -85,7 +86,7 @@ class HomeScreen extends StatelessWidget {
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Container(
+              child: SizedBox(
                 height: SizeConfig.screenHeightDp! - 60,
                 child: Column(
                   children: [
@@ -149,7 +150,7 @@ class HomeScreen extends StatelessWidget {
                           const XMargin(10),
                           GestureDetector(
                             onTap: (){
-                              navigate(context, CommunityScreen());
+                              navigate(context, const CommunityScreen());
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -418,24 +419,37 @@ class HomeScreen extends StatelessWidget {
                                   fontSize: 13,
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  navigate(context, const AddCarsScreen(action: 'add',));
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(2),
-                                  decoration: BoxDecorators.containerDecoration(
-                                      hasOutline: true,
-                                      outlineWidth: 2,
-                                      radius: 30,
-                                      outlineColor: XColors.primaryColor().withOpacity(0.1)),
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 17,
-                                    color: XColors.primaryColor(),
+                              if(model.busy('home-loading') == false ) ... [
+                                GestureDetector(
+                                  onTap: () {
+                                    navigate(context, const AddCarsScreen(action: 'add',));
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecorators.containerDecoration(
+                                        hasOutline: true,
+                                        outlineWidth: 2,
+                                        radius: 30,
+                                        outlineColor: XColors.primaryColor().withOpacity(0.1)),
+                                    child: Icon(
+                                      Icons.add,
+                                      size: 17,
+                                      color: XColors.primaryColor(),
+                                    ),
                                   ),
-                                ),
-                              )
+                                )
+                              ] else ... [
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: Loader(
+                                      strokeWidth: 5,
+                                    ),
+                                  ),
+                                )
+                              ]
                             ],
                           ),
                         ),
@@ -484,15 +498,10 @@ class HomeScreen extends StatelessWidget {
                     const YMargin(15),
 
                     if(model.currentViewState == CurrentView.cars) ... [
-
                       const BudgetCars(),
-
                     ] else ... [
-
                       const SaleCars(),
-
                     ]
-
                   ],
                 ),
               ),
@@ -509,7 +518,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
 
   @override
   Widget build(BuildContext context, viewModel) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height - 240,
       child: Column(
         children: [
@@ -546,21 +555,20 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                           outlineColor: XColors.primaryColor()
                               .withOpacity(0.1)),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                         child: Column(
                           children: [
+                            const YMargin(5),
                             Row(
                               mainAxisAlignment:
                               MainAxisAlignment.spaceBetween,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
                                   child: NormalText(
                                     text: viewModel.budgetingModel!.budget![index].carName,
                                     textColor: XColors.textColor(),
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -576,7 +584,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                                 )
                               ],
                             ),
-                            const YMargin(23),
+                            const YMargin(35),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10),
                               child: Row(
@@ -590,18 +598,33 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                                   //   textColor: XColors.textColor(),
                                   //   fontSize: 13,
                                   // ),
-                                  NormalText(
-                                    text: 'Fix/Service',
-                                    textColor: XColors.textColor(),
-                                    fontSize: 13,
+                                  GestureDetector(
+                                    onTap: (){
+                                      navigate(context, ShopsScreen());
+                                    },
+                                    child: NormalText(
+                                      text: 'Fix/Service',
+                                      textColor: XColors.textColor().withOpacity(0.7),
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
                                   ),
                                   GestureDetector(
                                     onTap: (){
-                                      navigate(context, const AddCarsScreen(action: 'sell',));
+
+                                      modalBottomSheetMenu(
+                                        color: Colors.white,
+                                        context: context,
+                                        child: SellAddedCar(
+                                          homeViewModel: viewModel,
+                                        ),
+                                      );
+
                                     },
                                     child: NormalText(
                                       text: 'Sell',
-                                      textColor: XColors.textColor(),
+                                      textColor: XColors.textColor().withOpacity(0.7),
+                                      fontWeight: FontWeight.w600,
                                       fontSize: 13,
                                     ),
                                   ),
@@ -868,7 +891,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
+                      SizedBox(
                         width: MediaQuery.of(context).size.width - 200,
                         child: NormalText(
                           text: 'Add your car here to manage and keep track of all the activities '
@@ -911,7 +934,7 @@ class SaleCars extends ViewModelWidget<HomeViewModel> {
   @override
   Widget build(BuildContext context, HomeViewModel viewModel) {
     return SingleChildScrollView(
-      child: Container(
+      child: SizedBox(
         height: MediaQuery.of(context).size.height - 240,
         child: Column(
           children: [
@@ -936,7 +959,7 @@ class SaleCars extends ViewModelWidget<HomeViewModel> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(14.0),
-                        child: Container(
+                        child: SizedBox(
                           height: 55,
                           width: 70,
                           child: Image.asset('assets/images/car_placeholder.jpeg', fit: BoxFit.cover,),
@@ -966,6 +989,190 @@ class SaleCars extends ViewModelWidget<HomeViewModel> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SellAddedCar extends StatelessWidget {
+  SellAddedCar({super.key, this.homeViewModel});
+
+  final HomeViewModel? homeViewModel;
+
+  final _formKey = GlobalKey<FormState>();
+
+  TextEditingController saleAmountController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<HomeViewModel>.reactive(
+        viewModelBuilder: () => homeViewModel!,
+        disposeViewModel: false,
+        builder: (context, model, child) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              NormalText(
+                text:
+                    'You will be selling your car here, and it will appear in the marketplace.',
+                textColor: XColors.textColor(),
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
+              const YMargin(15),
+              if(model.currentCar!.images!.isNotEmpty) ... [
+
+                CarouselSlider(
+                    options: CarouselOptions(
+                        reverse: false,
+                        autoPlay: false,
+                        viewportFraction: 0.9,
+                        height: 350,
+                        enableInfiniteScroll: false,
+                        autoPlayInterval: const Duration(seconds: 5),
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        scrollDirection: Axis.horizontal,
+                        scrollPhysics: const BouncingScrollPhysics()
+                    ),
+                    items: [
+                      ...List.generate(model.currentCar!.images!.length, (index) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: 300,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.network(
+                              model.currentCar!.images![index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),)
+                    ]
+                ),
+
+              ] else ... [
+
+                const YMargin(15),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        //model.pickImages();
+                      },
+                      child: Container(
+                        decoration: BoxDecorators.containerDecoration(
+                            hasOutline: true,
+                            outlineWidth: 2,
+                            radius: 32,
+                            outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              NormalText(
+                                text: 'Add Images (${model.addImagesList.length})',
+                                textColor: XColors.black(),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                              const XMargin(10),
+                              Icon(Icons.add, size: 17, color: XColors.black(),),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const YMargin(5),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      ...List.generate(
+                        model.addImagesList.length,
+                            (index) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(14.0),
+                            child: SizedBox(
+                                width: 110,
+                                height: 110,
+                                child: Image.file(
+                                  model.addImagesList[index],
+                                  fit: BoxFit.cover,
+                                )),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                const YMargin(25),
+
+              ],
+              const YMargin(15),
+              Form(
+                key: _formKey,
+                child: MkInputField2(
+                  label: "Valued mount",
+                  controller: saleAmountController,
+                  validator: (v){
+                    return AnyInputValidator.emptyValidate(v, inputName: 'Amount for sale');
+                  },
+                  isEnabled: true,
+                ),
+              ),
+              const YMargin(35),
+              XButton(
+                onPressed: () async {
+                  if(_formKey.currentState!.validate()) {
+                    await model.putAddedCarOnSale(
+                      amount: int.parse(saleAmountController.text),
+                      carId: model.currentCar!.sId,
+                      onCallBack: (){
+                        popView(context);
+                        showSnackBar(
+                            context: context,
+                            message: 'Car successfully added to marketplace'
+                        );
+                      },
+                      onErrorCallBack: (e){
+                        popView(context);
+                        showSnackBar(
+                            context: context,
+                            message: e.toString(),
+                            error: true
+                        );
+                      }
+                    );
+                  }
+                },
+                text: 'Sell',
+                height: 56,
+                textColor: Colors.white,
+                buttonColor: XColors.primaryColor(),
+                progressColor: Colors.white,
+                isLoading: model.isBusy,
+                radius: 26,
+                width: SizeConfig().sw(400) as double?,
+              ),
+              const YMargin(15),
+            ],
+          ),
+        );
+      }
     );
   }
 }

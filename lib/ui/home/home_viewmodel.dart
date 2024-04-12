@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
@@ -18,10 +21,13 @@ class HomeViewModel extends BaseViewModel {
   final persistentService = serviceLocator<PersistenceService>();
   final budgetingService = serviceLocator<BudgetingService>();
   final paymentService =  serviceLocator<AppPaymentService>();
+  final salesService = serviceLocator<SalesService>();
 
   bool hasAddedCar = false;
 
   BudgetingModel? budgetingModel;
+  CarId? currentCar;
+  List<File> addImagesList = [];
 
   final TextEditingController amountInputController = TextEditingController();
   final TextEditingController dateInputController = TextEditingController();
@@ -61,6 +67,8 @@ class HomeViewModel extends BaseViewModel {
 
   Future init({Function? onErrorLogout, Function? onCallBack}) async {
 
+    setBusyForObject('home-loading', true);
+
     await userService.getUsers().onError((error, stackTrace) {
       setError(error.toString());
     });
@@ -72,6 +80,9 @@ class HomeViewModel extends BaseViewModel {
     budgetingModel = budgetingService.budgetingModel;
 
     if(budgetingModel != null) {
+
+      currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
+
       if(budgetingModel!.budget!.isNotEmpty) {
 
         hasAddedCar = true;
@@ -81,11 +92,12 @@ class HomeViewModel extends BaseViewModel {
       }
     }
 
+    setBusyForObject('home-loading', false);
+
     if(hasError) {
       if(modelError.toString().contains('jwt expired') || modelError.toString().contains('Failed/Invalid Token')) {
-        print(hasError);
-        print(modelError);
         if(onErrorLogout != null) {
+          await logOut();
           onErrorLogout();
         }
       }
@@ -124,6 +136,7 @@ class HomeViewModel extends BaseViewModel {
     currentBudgetViewIndex = v;
     getCurrentTotalValue(index: currentBudgetViewIndex);
 
+    currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
     notifyListeners();
   }
 
@@ -217,7 +230,29 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future LogOut({Function? onCallBack}) async {
+  Future putAddedCarOnSale({int? amount, String? carId, Function? onCallBack, Function(String e)? onErrorCallBack}) async {
+    setBusy(true);
+    var saleData = {
+      'user_id' : persistentService.getUserID,
+      'data': {
+        "amount_for_sale" : amount,
+        "units_left": 1
+      },
+      'car_id': carId
+    };
+
+    await salesService.makeSales(salesData: saleData).then((value) {
+      setBusy(false);
+      onCallBack!();
+    }).onError((error, stackTrace) {
+      setBusy(false);
+      print(stackTrace.toString());
+      onErrorCallBack!(error.toString());
+    });
+
+  }
+
+  Future logOut() async {
     await persistentService.deleteAll();
   }
 

@@ -84,7 +84,7 @@ class AddCarViewModel extends BaseViewModel {
   }
 
   Future pickImages() async {
-    if(5 - addImagesList.length != 0) {
+    if(addImagesList.length <= 8) {
       await pickImage(
           allowCropping: false,
           onCallBack: (image) {
@@ -104,14 +104,14 @@ class AddCarViewModel extends BaseViewModel {
 
     for (var element in addImagesList) {
       await FirebaseService().uploadFileToStorage(
-          storagePath: 'cars/${element.path.split('/')[element.path.split('/').length - 1]}',
+          storagePath: 'cars/${setCarData['car_details']['car_make']}/${element.path.split('/')[element.path.split('/').length - 1]}',
           filePath: element.path,
           onCallBack: (s){
             addedImagesUrlList.add(s);
-            //setBusy(false);
           }
       );
     }
+
   }
 
   void updateSetCarData({dynamic data, String? dataType, }) {
