@@ -33,6 +33,7 @@ class SalesModel {
   String? by;
   int? views;
   int? saves;
+  String? name;
   String? country;
   String? state;
   bool? allowBidding;
@@ -46,6 +47,7 @@ class SalesModel {
         this.by,
         this.views,
         this.saves,
+        this.name,
         this.country,
         this.state,
         this.allowBidding,
@@ -59,6 +61,7 @@ class SalesModel {
     by = json['by'];
     views = json['views'];
     saves = json['saves'];
+    name = json['name'];
     country = json['country'];
     state = json['state'];
     allowBidding = json['allow_bidding'];
@@ -85,6 +88,7 @@ class SalesModel {
     data['saves'] = saves;
     data['country'] = country;
     data['state'] = state;
+    data['name'] = name;
     data['allow_bidding'] = allowBidding;
     data['images'] = images;
     if (salesDetails != null) {

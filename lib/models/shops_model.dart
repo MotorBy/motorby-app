@@ -12,7 +12,7 @@ class ShopsModel {
   factory ShopsModel.fromJson(Map<String, dynamic> json) => ShopsModel(
     statusCode: json["statusCode"],
     message: json["message"],
-    shop: List<Shop>.from(json["payload"].map((x) => Shop.fromJson(x))),
+    shop: json["payload"] != null ? List<Shop>.from(json["payload"].map((x) => Shop.fromJson(x))) : [],
   );
 
   Map<String, dynamic> toJson() => {

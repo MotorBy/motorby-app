@@ -1,3 +1,27 @@
+// class UserModel {
+//   int? statusCode;
+//   String? message;
+//   User? payload;
+//
+//   UserModel({
+//     this.statusCode,
+//     this.message,
+//     this.payload,
+//   });
+//
+//   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+//     statusCode: json["statusCode"],
+//     message: json["message"],
+//     payload: User.fromJson(json["payload"]),
+//   );
+//
+//   Map<String, dynamic> toJson() => {
+//     "statusCode": statusCode,
+//     "message": message,
+//     "payload": payload!.toJson(),
+//   };
+// }
+
 class UserModel {
   int? statusCode;
   String? message;
@@ -23,6 +47,26 @@ class UserModel {
 }
 
 class Payload {
+  User? user;
+  ReferralProfile? referralProfile;
+
+  Payload({
+    this.user,
+    this.referralProfile,
+  });
+
+  factory Payload.fromJson(Map<String, dynamic> json) => Payload(
+    user: User.fromJson(json["user"]),
+    referralProfile: ReferralProfile.fromJson(json["referral_profile"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "user": user!.toJson(),
+    "referral_profile": referralProfile!.toJson(),
+  };
+}
+
+class User {
   PaymentDetails? paymentDetails;
   StatsDetails? statsDetails;
   PlanDetails? planDetails;
@@ -42,7 +86,7 @@ class Payload {
   DateTime? updatedAt;
   int? v;
 
-  Payload({
+  User({
     this.paymentDetails,
     this.statsDetails,
     this.planDetails,
@@ -63,7 +107,7 @@ class Payload {
     this.v,
   });
 
-  factory Payload.fromJson(Map<String, dynamic> json) => Payload(
+  factory User.fromJson(Map<String, dynamic> json) => User(
     paymentDetails: json["payment_details"] != null ? PaymentDetails.fromJson(json["payment_details"]) : null,
     statsDetails: json["stats_details"] != null ? StatsDetails.fromJson(json["stats_details"]) : null,
     planDetails: json["plan_details"] != null ? PlanDetails.fromJson(json["plan_details"]) : null,
@@ -79,8 +123,8 @@ class Payload {
     userId: json["user_id"],
     referralCode: json["referral_code"],
     favourites: json["favourites"] != null ? List<dynamic>.from(json["favourites"].map((x) => x)) : [],
-    createdAt: DateTime.parse(json["createdAt"]),
-    updatedAt: DateTime.parse(json["updatedAt"]),
+    createdAt: json["createdAt"] != null ? DateTime.parse(json["createdAt"]) : null,
+    updatedAt: json["updatedAt"] != null ? DateTime.parse(json["updatedAt"]) : null,
     v: json["__v"],
   );
 
@@ -100,6 +144,50 @@ class Payload {
     "user_id": userId,
     "referral_code": referralCode,
     "favourites": List<dynamic>.from(favourites!.map((x) => x)),
+    "createdAt": createdAt!.toIso8601String(),
+    "updatedAt": updatedAt!.toIso8601String(),
+    "__v": v,
+  };
+}
+
+class ReferralProfile {
+  String? id;
+  String? userId;
+  int? totalEarnings;
+  String? referralCode;
+  String? referredCode;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  int? v;
+
+  ReferralProfile({
+    this.id,
+    this.userId,
+    this.totalEarnings,
+    this.referralCode,
+    this.referredCode,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+  });
+
+  factory ReferralProfile.fromJson(Map<String, dynamic> json) => ReferralProfile(
+    id: json["_id"],
+    userId: json["user_id"],
+    totalEarnings: json["total_earnings"],
+    referralCode: json["referral_code"],
+    referredCode: json["referred_code"],
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+    v: json["__v"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "_id": id,
+    "user_id": userId,
+    "total_earnings": totalEarnings,
+    "referral_code": referralCode,
+    "referred_code": referredCode,
     "createdAt": createdAt!.toIso8601String(),
     "updatedAt": updatedAt!.toIso8601String(),
     "__v": v,
@@ -208,16 +296,35 @@ class PlanDetails {
 
 class StatsDetails {
   int? discussions;
+  int? addCars;
+  int? shops;
+  int? sold;
+  int? sales;
+  int? communities;
 
   StatsDetails({
     this.discussions,
+    this.addCars,
+    this.shops,
+    this.sold,
+    this.sales,
+    this.communities
   });
 
   factory StatsDetails.fromJson(Map<String, dynamic> json) => StatsDetails(
     discussions: json["discussions"],
+    addCars: json['added_cars'],
+    shops: json['shops'],
+    sold: json['sold'],
+    sales: json['sales'],
+    communities: json['communities']
   );
 
   Map<String, dynamic> toJson() => {
     "discussions": discussions,
+    "added_cars": addCars,
+    "shops": shops,
+    "sales": sales,
+    "communities": communities
   };
 }

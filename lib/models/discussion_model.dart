@@ -60,7 +60,7 @@ class Discussion {
     createdAt: DateTime.parse(json["createdAt"]),
     updatedAt: DateTime.parse(json["updatedAt"]),
     v: json["__v"],
-    user: User.fromJson(json["user"]),
+    user: json["user"] != null ? User.fromJson(json["user"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -89,7 +89,7 @@ class Comment {
 
   factory Comment.fromJson(Map<String, dynamic> json) => Comment(
     comment: json["comment"],
-    user: User.fromJson(json["user"]),
+    user: json["user"] != null ? User.fromJson(json["user"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
