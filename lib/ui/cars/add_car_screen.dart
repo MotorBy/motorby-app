@@ -114,7 +114,8 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                                             child: Image.file(
                                               model.addImagesList[index],
                                               fit: BoxFit.cover,
-                                            )),
+                                            ),
+                                        ),
                                       ),
                                     ),
                             )

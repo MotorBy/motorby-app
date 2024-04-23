@@ -88,4 +88,29 @@ class UserService {
 
   }
 
+  Future updateCar({Map<String, dynamic>? data, String? carId}) async {
+
+    final jsonData = JSON.json.encode(data);
+
+    print(jsonData.toString());
+
+    var response = await http.put(
+        Uri.parse(APIService.updateCars(carId: carId!)),
+        body: jsonData,
+        headers: APIHelper().requestHeadersWithToken()
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+      //await getUsers();
+    } else {
+      var error = json["message"];
+      throw Exception(error);
+    }
+
+  }
+
 }

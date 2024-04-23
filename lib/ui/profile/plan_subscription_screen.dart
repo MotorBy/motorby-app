@@ -84,22 +84,48 @@ class PlanSubscriptionScreen extends StatelessWidget {
                         print(e);
                       },
                       onShowPayModal: (initTrans) async {
-                        await PaymentService.showPaymentModal(
-                          context,
-                          transaction: initTrans,
-                        ).then((value) async {
-                          await model.verifyPayStackPayment(
-                            onCallBack: (){
-                              showSnackBar(
-                                  context: context,
-                                  message: 'Successfully subscribed'
-                              );
-                            },
-                            onErrorCallBack: (){
+                        if(initTrans != null) {
 
-                            }
+                          await PaymentService.showPaymentModal(
+                            context,
+                            transaction: initTrans,
+                          ).then((value) async {
+                            await model.verifyPayment(
+                                onCallBack: (){
+                                  showSnackBar(
+                                      context: context,
+                                      message: 'Successfully subscribed'
+                                  );
+                                },
+                                onErrorCallBack: (){
+                                  showSnackBar(
+                                      error: true,
+                                      context: context,
+                                      message: 'Error with making your subscription'
+                                  );
+                                }
+                            );
+                          });
+
+                        } else {
+
+                          await model.verifyPayment(
+                              freeSub: true,
+                              onCallBack: (){
+                                showSnackBar(
+                                    context: context,
+                                    message: 'Successfully subscribed'
+                                );
+                              },
+                              onErrorCallBack: (){
+                                showSnackBar(
+                                    error: true,
+                                    context: context,
+                                    message: 'Error with making your subscription'
+                                );
+                              }
                           );
-                        });
+                        }
                       }
                   );
                 },

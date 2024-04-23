@@ -39,8 +39,6 @@ class AppPaymentService {
   Future createPayment({Map<String, dynamic>? payment}) async {
     final jsonData = JSON.json.encode(formatObject(payment));
 
-    log('helloo.... ${jsonData.toString()}');
-
     var response = await http.post(Uri.parse(APIService.makePayment),
         headers: APIHelper().requestHeadersWithToken(), body: jsonData);
 

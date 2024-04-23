@@ -216,6 +216,25 @@ class ProfileScreen extends StatelessWidget {
                       Column(
                         children: [
                           NormalText(
+                            text:'Discussions',
+                            textColor: XColors.textColor(),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                          Row(
+                            children: [
+                              NormalText(
+                                text:'${model.user!.statsDetails!.discussions ?? 0}',
+                                textColor: XColors.textColor(),
+                                fontSize: 12,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          NormalText(
                             text:'Sold',
                             textColor: XColors.textColor(),
                             fontWeight: FontWeight.w700,
@@ -740,17 +759,20 @@ class MoreProfileActionPicks extends StatelessWidget {
                       ),
                     ),
                   ],
-                  const YMargin(45),
-                  NormalText(
-                    text:'Reset Budget',
-                    textColor: XColors.textColor(),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  // const YMargin(45),
+                  // NormalText(
+                  //   text:'Reset Budget',
+                  //   textColor: XColors.textColor(),
+                  //   fontSize: 14,
+                  //   fontWeight: FontWeight.w600,
+                  // ),
                   const YMargin(45),
                   GestureDetector(
                     onTap: (){
-                      navigate(context, SignInScreen());
+                      model.logOut().then((value) {
+                        popView(context);
+                        navigateReplace(context, SignInScreen());
+                      });
                     },
                     child: NormalText(
                       text:'Logout',

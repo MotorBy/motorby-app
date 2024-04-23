@@ -39,7 +39,7 @@ class ShopsScreen extends StatelessWidget {
               ),
             ),
           ),
-          floatingActionButton: !isBusiness ? XButton(
+          floatingActionButton: isBusiness ? XButton(
             onPressed: () {
               navigate(context, const CreateShopScreen());
             },

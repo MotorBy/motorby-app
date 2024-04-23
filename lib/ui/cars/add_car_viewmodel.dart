@@ -45,7 +45,10 @@ class AddCarViewModel extends BaseViewModel {
 
   };
 
-  void init({bool? forSale = false, String? initAction, Function? dataSetup}) {
+  void init({
+    bool? forSale = false,
+    String? initAction,
+    Function? dataSetup}) {
 
     if(initAction != 'sell') {
       isBusinessOrForSale = false;
@@ -75,12 +78,21 @@ class AddCarViewModel extends BaseViewModel {
 
   }
 
-  void addCars() {
-
+  void setUrlImage({List<String>? urlImageList}){
+    if(urlImageList != null) {
+      addedImagesUrlList = urlImageList;
+    }
+    notifyListeners();
   }
 
-  void putCarOnSale() {
+  void updateImagePicks({int? index, type}) {
+    if(type == 'file') {
+      addImagesList.removeAt(index!);
+    } else {
+      addedImagesUrlList.removeAt(index!);
+    }
 
+    notifyListeners();
   }
 
   Future pickImages() async {
@@ -104,7 +116,7 @@ class AddCarViewModel extends BaseViewModel {
 
     for (var element in addImagesList) {
       await FirebaseService().uploadFileToStorage(
-          storagePath: 'cars/${setCarData['car_details']['car_make']}/${element.path.split('/')[element.path.split('/').length - 1]}',
+          storagePath: 'cars/${salesService.currentCarMake!.toLowerCase()}/${element.path.split('/')[element.path.split('/').length - 1]}',
           filePath: element.path,
           onCallBack: (s){
             addedImagesUrlList.add(s);
@@ -120,7 +132,7 @@ class AddCarViewModel extends BaseViewModel {
     if(action == "sell") {
       if(dataType == 'make') {
         setCarData['car_details']['car_make'] = data!;
-
+        salesService.currentCarMake = data!;
       } else if(dataType == 'year') {
         setCarData['car_details']['car_year'] = data!;
 
@@ -173,7 +185,7 @@ class AddCarViewModel extends BaseViewModel {
 
       if(dataType == 'make') {
         setCarData['car_make'] = data!;
-
+        salesService.currentCarMake = data!;
       } else if(dataType == 'year') {
         setCarData['car_year'] = data!;
 
@@ -255,6 +267,39 @@ class AddCarViewModel extends BaseViewModel {
     } else {
 
       await userService.addACar(carData: setCarData).then((value) {
+        setBusy(false);
+        onCallBack!();
+      }).onError((error, stackTrace) {
+        setBusy(false);
+        print(stackTrace.toString());
+        onErrorCallBack!();
+      });
+
+    }
+
+  }
+
+  Future updateCarImage({Function? onCallBack, Function? onErrorCallBack, bool? fromSale = false}) async {
+    await uploadFilesToCloud();
+
+    var dataToUpdate = {
+      "images" : addedImagesUrlList
+    };
+
+    if(fromSale!) {
+
+      await salesService.updateSales(salesData: dataToUpdate).then((value) {
+        setBusy(false);
+        onCallBack!();
+      }).onError((error, stackTrace) {
+        setBusy(false);
+        print(stackTrace.toString());
+        onErrorCallBack!();
+      });
+
+    } else {
+
+      await userService.updateCar(data: dataToUpdate, carId: salesService.currentCar!.sId).then((value) {
         setBusy(false);
         onCallBack!();
       }).onError((error, stackTrace) {

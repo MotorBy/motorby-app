@@ -4,6 +4,7 @@ import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/models/plan_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
+import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/key_consts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -12,6 +13,7 @@ import '../../utils/locator_setup.dart';
 
 class ProfileViewModel extends BaseViewModel {
   final userService = serviceLocator<UserService>();
+  final persistentService = serviceLocator<PersistenceService>();
   final paymentService =  serviceLocator<AppPaymentService>();
 
   UserModel? userModel;
@@ -161,50 +163,108 @@ class ProfileViewModel extends BaseViewModel {
 
   Future makePayment({
     Function(String? error)? onInitialisedError,
-    Function(PaystackInitializedTraction initTransc)? onShowPayModal}) async {
+    Function(PaystackInitializedTraction? initTransc)? onShowPayModal}) async {
     const secretKey = PSKey;
 
-    final request = PaystackTransactionRequest(
-      reference: 'MBY-${DateTime.now().microsecondsSinceEpoch}',
-      secretKey: secretKey,
-      email: 'teamexceptos@gmail.com',
-      amount: currentAmount! * 100,
-      currency: PaystackCurrency.ngn,
-      channel: [
-        PaystackPaymentChannel.mobileMoney,
-        PaystackPaymentChannel.card,
-        PaystackPaymentChannel.ussd,
-        PaystackPaymentChannel.bankTransfer,
-        PaystackPaymentChannel.bank,
-      ],
-    );
+    if(currentPlan?.toUpperCase() != 'FREE') {
 
-    final initializedTransaction = await PaymentService.initializeTransaction(request);
+      final request = PaystackTransactionRequest(
+        reference: 'MBY-${DateTime.now().microsecondsSinceEpoch}',
+        secretKey: secretKey,
+        email: 'teamexceptos@gmail.com',
+        amount: currentAmount! * 100,
+        currency: PaystackCurrency.ngn,
+        channel: [
+          PaystackPaymentChannel.mobileMoney,
+          PaystackPaymentChannel.card,
+          PaystackPaymentChannel.ussd,
+          PaystackPaymentChannel.bankTransfer,
+          PaystackPaymentChannel.bank,
+        ],
+      );
 
-    if (!initializedTransaction.status) {
-      if(onInitialisedError != null) {
-        onInitialisedError(initializedTransaction.message);
+      final initializedTransaction = await PaymentService.initializeTransaction(request);
+
+      if (!initializedTransaction.status) {
+        if(onInitialisedError != null) {
+          onInitialisedError(initializedTransaction.message);
+        }
+        return;
+      } else {
+        currentPayRef = initializedTransaction.data?.reference ?? request.reference;
+        onShowPayModal!(initializedTransaction);
       }
-      return;
-    } else {
-      currentPayRef = initializedTransaction.data?.reference ?? request.reference;
-    }
 
-    onShowPayModal!(initializedTransaction);
+    } else {
+      currentPayRef = 'MBY-${DateTime.now().microsecondsSinceEpoch}';
+      onShowPayModal!(null);
+    }
 
   }
 
-  Future verifyPayStackPayment({Function? onCallBack, Function? onErrorCallBack}) async {
+  Future verifyPayment({Function? onCallBack, Function? onErrorCallBack, bool? freeSub = false}) async {
 
     setBusy(true);
 
-    await PaymentService.verifyTransaction(
-      paystackSecretKey: PSKey,
-      currentPayRef!,
-    ).then((value) async {
+    if(freeSub == false) {
 
-      paymentService.paystackTransactionVerified = value;
-      log("verifying: ${paymentService.paystackTransactionVerified!.toJson().toString()}");
+      await PaymentService.verifyTransaction(
+        paystackSecretKey: PSKey,
+        currentPayRef!,
+      ).then((value) async {
+
+        paymentService.paystackTransactionVerified = value;
+
+        var payData = {
+          "last_plan_update" : DateTime.now().toString(),
+          "for": "PLAN",
+          "by": userService.persistService.getUserID,
+          "plan" : currentPlan?.toUpperCase(),
+          "reference": currentPayRef,
+          "status": paymentService.paystackTransactionVerified!.data.gatewayResponse,
+          "amount": currentAmount,
+          "provider": 'Paystack',
+          "auth_payment": paymentService.paystackTransactionVerified!.data.authorization != null ? {
+            "auth_code" : paymentService.paystackTransactionVerified!.data.authorization!.authorizationCode ,
+            "last4" : paymentService.paystackTransactionVerified!.data.authorization!.last4,
+            "exp_year" : paymentService.paystackTransactionVerified!.data.authorization!.expYear,
+            "exp_month" : paymentService.paystackTransactionVerified!.data.authorization!.expMonth,
+            "exp_bank" : paymentService.paystackTransactionVerified!.data.authorization!.bank
+          } : null,
+        };
+
+        if(paymentService.paystackTransactionVerified!.data.gatewayResponse == 'Successful' ||
+            paymentService.paystackTransactionVerified!.data.gatewayResponse == 'Approved') {
+
+          await paymentService.createPayment(
+            payment: payData,
+          ).then((value) {
+
+            if(onCallBack != null) {
+              setBusy(false);
+              onCallBack();
+            }
+
+          }).onError((error, stackTrace) {
+            setBusy(false);
+            print(stackTrace);
+            if(onErrorCallBack != null) {
+              onErrorCallBack();
+            }
+          });
+
+        } else {
+
+          setBusy(false);
+          if(onErrorCallBack != null) {
+            onErrorCallBack();
+          }
+
+        }
+
+      });
+
+    } else {
 
       var payData = {
         "last_plan_update" : DateTime.now().toString(),
@@ -212,25 +272,37 @@ class ProfileViewModel extends BaseViewModel {
         "by": userService.persistService.getUserID,
         "plan" : currentPlan?.toUpperCase(),
         "reference": currentPayRef,
-        "status": paymentService.paystackTransactionVerified!.data.gatewayResponse,
+        "status": 'Success',
         "amount": currentAmount,
-        "provider": 'Paystack',
+        "provider": 'App',
         "auth_payment": null,
       };
 
       await paymentService.createPayment(
         payment: payData,
-      ).onError((error, stackTrace) {
+      ).then((value) {
         setBusy(false);
+
+        if(onCallBack != null) {
+          setBusy(false);
+          onCallBack();
+        }
+
+      }).onError((error, stackTrace) {
+        setBusy(false);
+
+        if(onErrorCallBack != null) {
+          onErrorCallBack();
+        }
+
       });
 
-      if(onCallBack != null) {
-        setBusy(false);
-        onCallBack();
-      }
+    }
 
-    });
+  }
 
+  Future logOut() async {
+    await persistentService.deleteAll();
   }
 
 }

@@ -40,6 +40,7 @@ class SalesModel {
   List<String>? images;
   SalesDetails? salesDetails;
   CarDetails? carDetails;
+  SellerDetails? sellerDetails;
   List<BiddingPrices>? biddingPrices;
 
   SalesModel(
@@ -53,6 +54,7 @@ class SalesModel {
         this.allowBidding,
         this.images,
         this.salesDetails,
+        this.sellerDetails,
         this.carDetails,
         this.biddingPrices});
 
@@ -71,6 +73,9 @@ class SalesModel {
         : null;
     carDetails = json['car_details'] != null
         ? CarDetails.fromJson(json['car_details'])
+        : null;
+    sellerDetails = json['seller_details'] != null
+        ? SellerDetails.fromJson(json['seller_details'])
         : null;
     if (json['bidding_prices'] != null) {
       biddingPrices = <BiddingPrices>[];
@@ -96,6 +101,9 @@ class SalesModel {
     }
     if (carDetails != null) {
       data['car_details'] = carDetails!.toJson();
+    }
+    if (sellerDetails != null) {
+      data['seller_details'] = sellerDetails!.toJson();
     }
     if (biddingPrices != null) {
       data['bidding_prices'] =
@@ -154,7 +162,7 @@ class CarDetails {
   String? gear;
   int? seats;
   String? airConditioner;
-  String? conditions;
+  String? condition;
   String? carMake;
   String? carModel;
   String? carYear;
@@ -169,7 +177,7 @@ class CarDetails {
         this.gear,
         this.seats,
         this.airConditioner,
-        this.conditions,
+        this.condition,
         this.carMake,
         this.carModel,
         this.carYear,
@@ -185,7 +193,7 @@ class CarDetails {
     gear = json['gear'];
     seats = json['seats'];
     airConditioner = json['air_conditioner'];
-    conditions = json['conditions'];
+    condition = json['condition'];
     carMake = json['car_make'];
     carModel = json['car_model'];
     carYear = json['car_year'];
@@ -202,7 +210,7 @@ class CarDetails {
     data['gear'] = gear;
     data['seats'] = seats;
     data['air_conditioner'] = airConditioner;
-    data['conditions'] = conditions;
+    data['condition'] = condition;
     data['car_make'] = carMake;
     data['car_model'] = carModel;
     data['car_year'] = carYear;
@@ -233,6 +241,31 @@ class BiddingPrices {
     data['price_quote'] = priceQuote;
     data['is_accepted'] = isAccepted;
     data['date_time'] = dateTime;
+    return data;
+  }
+}
+
+class SellerDetails {
+  String? phonenumber;
+  String? email;
+  String? name;
+  String? state;
+
+  SellerDetails({this.phonenumber, this.email, this.name, this.state});
+
+  SellerDetails.fromJson(Map<String, dynamic> json) {
+    phonenumber = json['phonenumber'];
+    email = json['email'];
+    name = json['name'];
+    state = json['state'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['phonenumber'] = phonenumber;
+    data['email'] = email;
+    data['name'] = name;
+    data['state'] = state;
     return data;
   }
 }

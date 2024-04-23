@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
@@ -22,6 +24,10 @@ class HomeViewModel extends BaseViewModel {
   final budgetingService = serviceLocator<BudgetingService>();
   final paymentService =  serviceLocator<AppPaymentService>();
   final salesService = serviceLocator<SalesService>();
+
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
 
   bool hasAddedCar = false;
 
@@ -66,6 +72,7 @@ class HomeViewModel extends BaseViewModel {
   CurrentView? currentViewState = CurrentView.cars;
 
   Future init({Function? onErrorLogout, Function? onCallBack}) async {
+    initDeepLinks();
 
     setBusyForObject('home-loading', true);
 
@@ -88,9 +95,14 @@ class HomeViewModel extends BaseViewModel {
 
         hasAddedCar = true;
         totalCarsAdded = budgetingModel!.budget!.length;
+
+        salesService.currentCar = currentCar;
+        salesService.currentCarMake = currentCar!.carMake!;
+
         getCurrentTotalValue(index: currentBudgetViewIndex);
 
       }
+
     }
 
     setBusyForObject('home-loading', false);
@@ -105,6 +117,33 @@ class HomeViewModel extends BaseViewModel {
     }
 
     notifyListeners();
+  }
+
+  Future<void> initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    // Check initial link if app was in cold state (terminated)
+    final appLink = await _appLinks.getInitialAppLink();
+    if (appLink != null) {
+      print('getInitialAppLink: $appLink');
+      openAppLink(appLink);
+    }
+
+    // Handle link when app is in warm state (front or background)
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      print('onAppLink: $uri');
+      openAppLink(uri);
+    });
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  void openAppLink(Uri uri) {
+    _navigatorKey.currentState?.pushNamed(uri.fragment);
   }
 
   void getCurrentTotalValue({int? index}) {
@@ -138,6 +177,8 @@ class HomeViewModel extends BaseViewModel {
     getCurrentTotalValue(index: currentBudgetViewIndex);
 
     currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
+    salesService.currentCar = currentCar;
+    salesService.currentCarMake = currentCar!.carMake!;
     notifyListeners();
   }
 
@@ -231,7 +272,12 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future putAddedCarOnSale({int? amount, String? carId, Function? onCallBack, Function(String e)? onErrorCallBack}) async {
+  Future putAddedCarOnSale({
+    int? amount,
+    String? carId,
+    Function? onCallBack,
+    Function(String e)? onErrorCallBack}) async {
+
     setBusy(true);
     var saleData = {
       'user_id' : persistentService.getUserID,
@@ -242,14 +288,21 @@ class HomeViewModel extends BaseViewModel {
       'car_id': carId
     };
 
-    await salesService.makeSales(salesData: saleData).then((value) {
+    if(currentCar!.images!.isNotEmpty) {
+
+      await salesService.makeSales(salesData: saleData).then((value) {
+        setBusy(false);
+        onCallBack!();
+      }).onError((error, stackTrace) {
+        setBusy(false);
+        print(stackTrace.toString());
+        onErrorCallBack!(error.toString());
+      });
+    } else {
       setBusy(false);
-      onCallBack!();
-    }).onError((error, stackTrace) {
-      setBusy(false);
-      print(stackTrace.toString());
-      onErrorCallBack!(error.toString());
-    });
+      onErrorCallBack!('No image on current car for sale');
+
+    }
 
   }
 

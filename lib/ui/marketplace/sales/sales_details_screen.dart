@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/sales_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
@@ -36,19 +38,62 @@ class CarSaleDetailScreen extends StatelessWidget {
             ),
             actions: [
               if(model.isSalesMaker()) ... [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecorators.containerDecoration(
-                      hasOutline: true,
-                      outlineWidth: 2,
-                      radius: 26,
-                      outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                GestureDetector(
+                  onTap: (){
+                    modalBottomSheetMenu(
+                        context: context,
+                        child: const ComingSoon(),
+                        color: XColors.background()
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecorators.containerDecoration(
+                        hasOutline: true,
+                        outlineWidth: 2,
+                        radius: 26,
+                        outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                    ),
+                    child: NormalText(
+                      text: 'Allow Bidding',
+                      textColor: XColors.textColor().withOpacity(0.3),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
                   ),
-                  child: NormalText(
-                    text: 'update sales',
-                    textColor: XColors.textColor(),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
+                ),
+                const XMargin(15),
+                GestureDetector(
+                  onTap: (){
+                    modalBottomSheetMenu(
+                      color: Colors.white,
+                      context: context,
+                      child: UpdateCarImage(
+                        fromSale: true,
+                        setImages: model.currentSalesModel!.images,
+                        onCompleteImageUpload: (v) async {
+                          if(v) {
+                            popView(context);
+
+                          }
+                        },
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecorators.containerDecoration(
+                        hasOutline: true,
+                        outlineWidth: 2,
+                        radius: 26,
+                        outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                    ),
+                    child: NormalText(
+                      text: 'update car images',
+                      textColor: XColors.textColor(),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -60,16 +105,58 @@ class CarSaleDetailScreen extends StatelessWidget {
             child: model.isSalesMaker() ? Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                if(model.currentSalesModel!.salesDetails!.isSold == false) ... [
+                  XButton(
+                    onPressed: () {
+
+                      modalBottomSheetMenu(
+                          context: context,
+                          child: Container(
+                            child: Column(children: [
+                              const YMargin(50),
+                              NormalText(
+                                text: 'You are about to confirm this sale is sold out, click confirm below',
+                                textColor: XColors.textColor(),
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                              const YMargin(50),
+                              XButton(
+                                onPressed: () {
+                                  popView(context);
+                                  model.updateCurrentSale(
+                                      updateType: 'isSold'
+                                  );
+                                },
+                                text: 'Confirm',
+                                isLoading: model.busy('sold-out'),
+                                buttonColor: XColors.primaryColor(),
+                                width: 120,
+                              ),
+                              const YMargin(30),
+
+                            ],),
+                          ),
+                          color: XColors.background()
+                      );
+
+                    },
+                    text: 'Sold out?',
+                    isLoading: model.busy('sales-updating'),
+                    buttonColor: XColors.primaryColor(),
+                    width: 120,
+                  ),
+                  const XMargin(12),
+                ],
                 XButton(
-                  onPressed: () {},
-                  text: 'Sold out?',
-                  isLoading: model.busy('sold-out'),
-                  buttonColor: XColors.primaryColor(),
-                  width: 120,
-                ),
-                const XMargin(12),
-                XButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    modalBottomSheetMenu(
+                        context: context,
+                        child: const ComingSoon(),
+                        color: XColors.background()
+                    );
+                  },
                   text: 'Promote',
                   isLoading: model.busy('sold-out'),
                   buttonColor: XColors.primaryColor().withOpacity(0.3),
@@ -95,7 +182,66 @@ class CarSaleDetailScreen extends StatelessWidget {
                 ),
                 const XMargin(12),
                 XButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    modalBottomSheetMenu(
+                        context: context,
+                        child: Container(
+                          padding: const EdgeInsets.all(19),
+                          child: Column(children: [
+                            const YMargin(10),
+                            NormalText(
+                              text: 'Reach the contact for this sale',
+                              textColor: XColors.textColor(),
+                              textAlign: TextAlign.center,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                            const YMargin(30),
+                            Row(
+                              children: [
+                                NormalText(
+                                  text: 'Phonenumber: ',
+                                  textColor: XColors.textColor().withOpacity(0.4),
+                                  textAlign: TextAlign.center,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                const XMargin(10),
+                                NormalText(
+                                  text: model.currentSalesModel!.sellerDetails!.phonenumber,
+                                  textColor: XColors.textColor(),
+                                  textAlign: TextAlign.center,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ],
+                            ),
+                            const YMargin(20),
+                            Row(
+                              children: [
+                                NormalText(
+                                  text: 'Name: ',
+                                  textColor: XColors.textColor().withOpacity(0.4),
+                                  textAlign: TextAlign.center,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                const XMargin(10),
+                                NormalText(
+                                  text: model.currentSalesModel!.sellerDetails!.name,
+                                  textColor: XColors.textColor(),
+                                  textAlign: TextAlign.center,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ],
+                            ),
+                            const YMargin(50),
+                          ],),
+                        ),
+                        color: XColors.background()
+                    );
+                  },
                   text: 'Contact sales',
                   isLoading: model.busy('sold-out'),
                   buttonColor: XColors.primaryColor(),
@@ -335,7 +481,7 @@ class CarSaleDetailScreen extends StatelessWidget {
                               fontSize: 11,
                             ),
                             NormalText(
-                              text: model.currentSalesModel!.carDetails!.conditions ?? 'Foreign used',
+                              text: model.currentSalesModel!.carDetails!.condition ?? 'Foreign used',
                               textColor: XColors.black(),
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
