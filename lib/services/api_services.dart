@@ -23,9 +23,10 @@ class APIService {
   static const String paystackAPI = "https://api.paystack.co/transaction";
   static const String paystackRefund = "https://api.paystack.co/refund";
 
-  static const String google_latlng_address = "https://maps.googleapis.com/maps/api/geocode/json?";
-  static const String google_directions = "https://maps.googleapis.com/maps/api/directions/json?";
-  static const String google_directions_matrix = "https://maps.googleapis.com/maps/api/distancematrix/json?";
+  static const String googleLatLngAddress = "https://maps.googleapis.com/maps/api/geocode/json?";
+  static const String googleDirections = "https://maps.googleapis.com/maps/api/directions/json?";
+  static const String googleDirectionsMatrix = "https://maps.googleapis.com/maps/api/distancematrix/json?";
+  static const String googlePlacesNearBy = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
 
   static const String payVerify = "$paystackAPI/verify";
   static const String payAuthCharge = "$paystackAPI/charge_authorization";

@@ -7,8 +7,8 @@ class APIHelper {
   Map<String, String> requestHeadersWithToken({String? token}) => {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'x-access-token': token ?? persistService.getUserToken!,
-      };
+        'x-access-token': persistService.getUserToken != null ? persistService.getUserToken! : token ?? '',
+  };
 
   Map<String, String> requestHeaders = {
     'Content-type': 'application/json',

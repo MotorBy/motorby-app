@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/sales_details_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/sales_viewmodel.dart';
@@ -16,6 +18,7 @@ import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/shimmer_loader.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -118,8 +121,25 @@ class CarSalesScreen extends StatelessWidget {
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    model.setCurrentSale(model.salesListModel!.payload![index]);
-                                    navigate(context, CarSaleDetailScreen(salesViewModel: model,));
+
+                                    if(hasUserSetup!) {
+                                      model.setCurrentSale(model.salesListModel!.payload![index]);
+                                      navigate(context, CarSaleDetailScreen(salesViewModel: model,));
+                                    } else {
+
+                                      showSnackBar(
+                                          context: context,
+                                          message: 'Create an account or login to continue',
+                                          label: 'Sign up/Login',
+                                          onPressed: (){
+                                            popToFirst(context);
+                                            navigateReplace(context, SignInScreen());
+                                          },
+                                          error: true
+                                      );
+
+                                    }
+
                                   },
                                   child: Shimmer(
                                     child: ShimmerLoading(

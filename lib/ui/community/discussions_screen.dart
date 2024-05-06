@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/models/community_model.dart';
 import 'package:mobile_auto_drive/models/discussion_model.dart';
+import 'package:mobile_auto_drive/services/auth_service.dart';
+import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
@@ -42,6 +44,7 @@ class DiscussionsScreen extends StatelessWidget {
                         isDismissible: false,
                         child: MakeContentView(
                           communityViewModel: model,
+                          ctx: context,
                         ),
                     );
                   },
@@ -295,53 +298,57 @@ class CommentsView extends StatelessWidget {
                 ),
               ),
               const YMargin(40),
-              Row(
-                children: [
-                  Expanded(
-                    child: MkInputField2(
-                      label: "drop comment",
-                      isEnabled: true,
-                      controller: commentTextController,
-                      onChanged: (s){
-                        model.onContentUpdate(s: s, isComment: true);
-                      },
-                    ),
-                  ),
-                  const XMargin(10),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child:  model.busy('comment') == true ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: Loader(
-                        strokeWidth: 5,
-                      ),
-                    ) : GestureDetector(
-                        onTap: () async {
-                          if(model.commentText!.isNotEmpty || model.busy('comment') != true) {
-                            await model.addComments(
-                                discussionId: discussion!.id,
-                                onCallBack: (){
-                                  commentTextController.text = '';
-                                },
-                                onErrorCallBack: (e){
-                                  showSnackBar(
-                                      context: context,
-                                      error: true,
-                                      message: e
-                                  );
-                                }
-                            );
-                          }
+
+              if(hasUserSetup!) ... [
+                Row(
+                  children: [
+                    Expanded(
+                      child: MkInputField2(
+                        label: "drop comment",
+                        isEnabled: true,
+                        controller: commentTextController,
+                        onChanged: (s){
+                          model.onContentUpdate(s: s, isComment: true);
                         },
-                        child: RotationTransition(
-                            turns: const AlwaysStoppedAnimation(-35/ 360),
-                            child: Icon(Icons.send_rounded, color: XColors.primaryColor(),)
-                        )
+                      ),
                     ),
-                  )
-                ],
-              ),
+                    const XMargin(10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child:  model.busy('comment') == true ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: Loader(
+                          strokeWidth: 5,
+                        ),
+                      ) : GestureDetector(
+                          onTap: () async {
+                            if(model.commentText!.isNotEmpty || model.busy('comment') != true) {
+                              await model.addComments(
+                                  discussionId: discussion!.id,
+                                  onCallBack: (){
+                                    commentTextController.text = '';
+                                  },
+                                  onErrorCallBack: (e){
+                                    showSnackBar(
+                                        context: context,
+                                        error: true,
+                                        message: e
+                                    );
+                                  }
+                              );
+                            }
+                          },
+                          child: RotationTransition(
+                              turns: const AlwaysStoppedAnimation(-35/ 360),
+                              child: Icon(Icons.send_rounded, color: XColors.primaryColor(),)
+                          )
+                      ),
+                    )
+                  ],
+                ),
+              ],
+
               const YMargin(40),
             ],
           ),
@@ -352,9 +359,10 @@ class CommentsView extends StatelessWidget {
 }
 
 class MakeContentView extends StatelessWidget {
-  const MakeContentView({super.key, this.communityViewModel});
+  const MakeContentView({super.key, this.communityViewModel, this.ctx});
 
   final CommunityViewModel? communityViewModel;
+  final BuildContext? ctx;
 
   @override
   Widget build(BuildContext context) {
@@ -374,8 +382,8 @@ class MakeContentView extends StatelessWidget {
                 NormalText(
                   text:
                   'You can freely drop your discussion here \nand let others comment on it.',
-                  textColor: XColors.primaryColor(),
-                  fontWeight: FontWeight.w500,
+                  textColor: XColors.black(),
+                  fontWeight: FontWeight.w700,
                   fontSize: 13,
                 ),
                 const YMargin(30),
@@ -394,9 +402,26 @@ class MakeContentView extends StatelessWidget {
                   children: [
                     XButton(
                       onPressed: () {
-                        model.addDiscussions(onCallBack: (){
-                          popView(context);
-                        });
+                        if(hasUserSetup!) {
+
+                          model.addDiscussions(onCallBack: (){
+                            popView(context);
+                          });
+
+                        } else {
+                          popView(ctx!);
+                          showSnackBar(
+                              context: ctx!,
+                              message: 'Create an account or login to continue',
+                              label: 'Sign up/Login',
+                              onPressed: (){
+                                popToFirst(ctx!);
+                                navigateReplace(ctx!, SignInScreen());
+                              },
+                              error: true
+                          );
+
+                        }
                       },
                       text: 'Drop',
                       isLoading: model.busy('discussion'),

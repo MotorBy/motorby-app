@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
@@ -20,6 +22,7 @@ enum CurrentView {
 
 class HomeViewModel extends BaseViewModel {
   final userService = serviceLocator<UserService>();
+  final authService = serviceLocator<AuthService>();
   final persistentService = serviceLocator<PersistenceService>();
   final budgetingService = serviceLocator<BudgetingService>();
   final paymentService =  serviceLocator<AppPaymentService>();
@@ -37,7 +40,9 @@ class HomeViewModel extends BaseViewModel {
 
   final TextEditingController amountInputController = TextEditingController();
   final TextEditingController dateInputController = TextEditingController();
+  final TextEditingController milesInputController = TextEditingController();
   final TextEditingController priceInputController = TextEditingController();
+  final TextEditingController problemInputController = TextEditingController();
   final TextEditingController addressInputController = TextEditingController();
 
   final List<String>? totalList = [
@@ -68,6 +73,8 @@ class HomeViewModel extends BaseViewModel {
   List<Servicing>? servicing = [];
   List<Repairing>? repairing = [];
   List<Breakdowns>? breakdowns = [];
+
+  Position? currentPosition;
 
   CurrentView? currentViewState = CurrentView.cars;
 
@@ -108,28 +115,42 @@ class HomeViewModel extends BaseViewModel {
     setBusyForObject('home-loading', false);
 
     if(hasError) {
+
       if(modelError.toString().contains('jwt expired') || modelError.toString().contains('Failed/Invalid Token')) {
         if(onErrorLogout != null) {
+          authService.hasUser = false;
           await logOut();
           onErrorLogout();
         }
       }
+
+    } else {
+
+      Geolocator.getLastKnownPosition().then((Position? position) async {
+
+        currentPosition = position;
+
+        print(currentPosition?.accuracy.toString());
+        print(position!.latitude.toString());
+        print(position.longitude.toString());
+
+      });
+
     }
 
+    print('has user in app: $hasUserSetup');
     notifyListeners();
   }
 
   Future<void> initDeepLinks() async {
     _appLinks = AppLinks();
 
-    // Check initial link if app was in cold state (terminated)
     final appLink = await _appLinks.getInitialAppLink();
     if (appLink != null) {
       print('getInitialAppLink: $appLink');
       openAppLink(appLink);
     }
 
-    // Handle link when app is in warm state (front or background)
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
       print('onAppLink: $uri');
       openAppLink(uri);

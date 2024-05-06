@@ -344,7 +344,12 @@ class ProfileScreen extends StatelessWidget {
                                 GestureDetector(
                                   onTap: (){
                                     if(model.planModel != null) {
-                                      navigate(context, PlanSubscriptionScreen(profileViewModel: model,));
+                                      navigate(context,
+                                          PlanSubscriptionScreen(profileViewModel: model,),
+                                        onCallback: (){
+                                            model.init();
+                                        }
+                                      );
                                     }
                                   },
                                   child: Container(
@@ -769,6 +774,18 @@ class MoreProfileActionPicks extends StatelessWidget {
                   const YMargin(45),
                   GestureDetector(
                     onTap: (){
+
+                    },
+                    child: NormalText(
+                      text:'Reach support',
+                      textColor: XColors.textColor(),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const YMargin(45),
+                  GestureDetector(
+                    onTap: (){
                       model.logOut().then((value) {
                         popView(context);
                         navigateReplace(context, SignInScreen());
@@ -782,9 +799,9 @@ class MoreProfileActionPicks extends StatelessWidget {
                     ),
                   ),
                   const YMargin(45),
-                  NormalText(
+                  const NormalText(
                     text: 'Delete account',
-                    textColor: XColors.textColor(),
+                    textColor: Colors.red,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),

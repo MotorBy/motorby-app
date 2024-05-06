@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/services/auth_service.dart';
+import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/community/discussions_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/widgets/loader.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -158,7 +161,9 @@ class CommunityScreen extends StatelessWidget {
                                             ],
                                           ),
                                           const Expanded(child: XMargin(15)),
+
                                           if(!model.communities![index].userList!.contains(model.userId)) ... [
+
                                             if(model.currentIndex == index && model.busy('join') == true) ... [
                                               Container(
                                                 width: 20,
@@ -172,10 +177,29 @@ class CommunityScreen extends StatelessWidget {
                                                 children: [
                                                   GestureDetector(
                                                     onTap: () {
-                                                      model.joinCommunity(
-                                                        community: model.communities![index],
-                                                        index: index
-                                                      );
+
+                                                      if(hasUserSetup!) {
+
+                                                        model.joinCommunity(
+                                                            community: model.communities![index],
+                                                            index: index
+                                                        );
+
+                                                      } else {
+
+                                                        showSnackBar(
+                                                            context: context,
+                                                            message: 'Create an account or login to continue',
+                                                            label: 'Sign up/Login',
+                                                            onPressed: (){
+                                                              popToFirst(context);
+                                                              navigateReplace(context, SignInScreen());
+                                                            },
+                                                            error: true
+                                                        );
+
+
+                                                      }
                                                     },
                                                     child: Container(
                                                       padding: const EdgeInsets

@@ -19,6 +19,7 @@ import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/permission_handling.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
@@ -26,6 +27,7 @@ import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -33,6 +35,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    PermissionUtil().isLocationServiceAndPermissionsActive().then((value) {
+      if (value == false) {
+        PermissionUtil.requestPermission(Permission.location);
+      }
+    });
+
     return ViewModelBuilder<HomeViewModel>.reactive(
         viewModelBuilder: () => HomeViewModel(),
         disposeViewModel: false,
@@ -89,10 +98,10 @@ class HomeScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
-                height: SizeConfig.screenHeightDp! - 60,
+                height: SizeConfig.screenHeightDp! - 20,
                 child: Column(
                   children: [
-
+                    const YMargin(20),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -608,7 +617,21 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      //model.pickImages();
+
+                                      modalBottomSheetMenu(
+                                        color: Colors.white,
+                                        context: context,
+                                        child: UpdateCarImage(
+                                          setImages: viewModel.currentCar!.images,
+                                          onCompleteImageUpload: (v) async {
+                                            if(v) {
+                                              popView(context);
+                                              await viewModel.init();
+                                            }
+                                          },
+                                        ),
+                                      );
+
                                     },
                                     child: Container(
                                       decoration: BoxDecorators.containerDecoration(
@@ -884,7 +907,7 @@ class BudgetCars extends ViewModelWidget<HomeViewModel> {
                                 //   radius: 26,
                                 //   width: SizeConfig().sw(400) as double?,
                                 // ),
-                                const YMargin(35),
+                                const YMargin(65),
                               ],
                             ),
                           ),

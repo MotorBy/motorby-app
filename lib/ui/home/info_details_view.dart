@@ -134,16 +134,27 @@ class InfoDetailsView extends StatelessWidget {
                     const YMargin(35),
                     XButton(
                       onPressed: !model.isBusy ? () {
-                        model.updateToBudget(
-                            type: infoType,
-                            onCallBack: () {
-                              popView(context);
-                              showSnackBar(
-                                  context: context,
-                                  message: 'Successfully updated into your budget'
-                              );
-                            }
-                        );
+
+                        if(model.priceInputController.text.isNotEmpty &&
+                            model.amountInputController.text.isNotEmpty &&
+                            model.dateInputController.text.isNotEmpty) {
+
+                          model.updateToBudget(
+                              type: infoType,
+                              onCallBack: () {
+                                popView(context);
+                                showSnackBar(
+                                    context: context,
+                                    message: 'Successfully updated into your budget'
+                                );
+                              }
+                          );
+
+                        } else {
+
+
+                        }
+
                       } : (){},
                       text: "Add",
                       height: 56,
@@ -225,6 +236,7 @@ class InfoDetailsView extends StatelessWidget {
                         const YMargin(15),
                         MkInputField2(
                           label: "problem",
+                          controller: model.problemInputController,
                           isEnabled: true,
                           keyboard: TextInputType.number,
                           onChanged: (s){
@@ -234,6 +246,7 @@ class InfoDetailsView extends StatelessWidget {
                         const YMargin(15),
                         MkInputField2(
                           label: "Amount",
+                          controller: model.amountInputController,
                           onChanged: (s){
                             model.updateBudgetData(value: s, type: 'amount');
                           },
@@ -280,16 +293,26 @@ class InfoDetailsView extends StatelessWidget {
                     const YMargin(35),
                     XButton(
                       onPressed: !model.isBusy ? () {
-                        model.updateToBudget(
-                            type: infoType,
-                            onCallBack: (){
-                              popView(context);
-                              showSnackBar(
-                                context: context,
-                                message: 'Successfully updated into your budget'
-                              );
-                            }
-                        );
+
+                        if(model.problemInputController.text.isNotEmpty &&
+                            model.amountInputController.text.isNotEmpty &&
+                            model.dateInputController.text.isNotEmpty) {
+
+                          model.updateToBudget(
+                              type: infoType,
+                              onCallBack: (){
+                                popView(context);
+                                showSnackBar(
+                                    context: context,
+                                    message: 'Successfully updated into your budget'
+                                );
+                              }
+                          );
+
+                        } else {
+
+                        }
+
                       } : (){},
                       text: "Add",
                       height: 56,
@@ -363,6 +386,7 @@ class InfoDetailsView extends StatelessWidget {
                         MkInputField2(
                           label: "Update miles",
                           keyboard: TextInputType.number,
+                          controller: model.milesInputController,
                           isEnabled: true,
                           onChanged: (s){
                             model.updateBudgetData(value: s, type: 'miles');
@@ -376,11 +400,19 @@ class InfoDetailsView extends StatelessWidget {
                         model.updateToBudget(
                           type: infoType,
                           onCallBack: (){
-                            popView(context);
-                            showSnackBar(
-                              context: context,
-                              message: 'Successfully updated into your budget'
-                            );
+
+                            if(model.milesInputController.text.isNotEmpty) {
+
+                              popView(context);
+                              showSnackBar(
+                                  context: context,
+                                  message: 'Successfully updated into your budget'
+                              );
+
+                            } else {
+
+                            }
+
                           }
                         );
                       } : (){},
@@ -481,6 +513,7 @@ class InfoDetailsView extends StatelessWidget {
                         const YMargin(15),
                         MkInputField2(
                           label: "Cause",
+                          controller: model.problemInputController,
                           isEnabled: true,
                           onChanged: (s){
                             model.updateBudgetData(value: s, type: 'cause');
@@ -488,7 +521,7 @@ class InfoDetailsView extends StatelessWidget {
                         ),
                         const YMargin(15),
                         MkInputField2(
-                          controller: model.amountInputController,
+                          controller: model.addressInputController,
                           label: "Place fixed",
                           isEnabled: true,
                           onChanged: (s) {
@@ -527,16 +560,25 @@ class InfoDetailsView extends StatelessWidget {
                     const YMargin(35),
                     XButton(
                       onPressed: !model.isBusy ? () {
-                        model.updateToBudget(
-                            type: infoType,
-                            onCallBack: (){
-                              popView(context);
-                              showSnackBar(
-                                  context: context,
-                                  message: 'Successfully updated into your budget'
-                              );
-                            }
-                        );
+
+                        if(model.problemInputController.text.isNotEmpty &&
+                            model.dateInputController.text.isNotEmpty) {
+
+                          model.updateToBudget(
+                              type: infoType,
+                              onCallBack: (){
+                                popView(context);
+                                showSnackBar(
+                                    context: context,
+                                    message: 'Successfully updated into your budget'
+                                );
+                              }
+                          );
+
+                        } else {
+
+                        }
+
                       } : (){},
                       text: "Add",
                       height: 56,

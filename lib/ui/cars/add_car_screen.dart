@@ -163,6 +163,9 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       controller: _carYearController,
                       label: "Year",
                       isEnabled: false,
+                      validator: (s) {
+                        return AnyInputValidator.emptyValidate(s, inputName: 'car year');
+                      },
                       suffixIcon: GestureDetector(
                         onTap: (){
                           listHelperPicker(

@@ -1,10 +1,13 @@
 import 'dart:developer';
 
+import 'package:mobile_auto_drive/models/nearby_search_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
+import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/utils/keys.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
@@ -15,11 +18,13 @@ bool get isBusiness => serviceLocator<UserService>().userModel != null
 
 class UserService {
   final persistService = serviceLocator<PersistenceService>();
+  final authService = serviceLocator<AuthService>();
   final budgetService = serviceLocator<BudgetingService>();
 
   UserModel? userModel;
-
   bool? isBusiness;
+
+  NearbySearchModel? nearbySearchModel;
 
   Future getUsers() async {
 
@@ -35,6 +40,7 @@ class UserService {
       UserModel? user = UserModel.fromJson(json);
       userModel = user;
       isBusiness = userModel!.payload!.user!.userType != 'USER';
+      authService.hasUser = true;
       return userModel;
     } else {
       var error = json["message"];
@@ -111,6 +117,50 @@ class UserService {
       throw Exception(error);
     }
 
+  }
+
+  // Future<LatLngAddressModel> getAddressFromLatLng({
+  //   String? latLng,
+  //       String? APIkey
+  // }) async {
+  //   var result = await http.get(Uri.parse("${APIService.googleLatLngAddress}latlng=$latLng&key=$APIkey&language=en"));
+  //
+  //   final json = JSON.jsonDecode(result.body);
+  //
+  //   if (json["status"] == "OK") {
+  //
+  //     LatLngAddressModel latLngAddressModelResponse = LatLngAddressModel.fromJson(json);
+  //     latLngAddressModel = latLngAddressModelResponse;
+  //     return latLngAddressModelResponse;
+  //
+  //   } else {
+  //     var error = json["status"];
+  //     throw Exception(error);
+  //   }
+  // }
+
+  Future<NearbySearchModel> getNearbyPlaces({
+    String? latLng,
+    String? APIkey = GSKey,
+    String? radius,
+    String? type
+  }) async {
+
+    var result = await http.get(Uri.parse("${APIService.googlePlacesNearBy}location=$latLng&type=$type&key=$APIkey&radius=$radius"));
+    final json = JSON.jsonDecode(result.body);
+
+    if (json["status"] == "OK") {
+
+      NearbySearchModel nearbyResponse = NearbySearchModel.fromJson(json);
+      nearbySearchModel = nearbyResponse;
+      return nearbySearchModel!;
+
+    } else {
+
+      var error = json["status"];
+      throw Exception(error);
+
+    }
   }
 
 }

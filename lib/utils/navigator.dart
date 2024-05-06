@@ -19,6 +19,7 @@ void navigate(BuildContext context, Widget route, {bool isDialog = false, Functi
       ),
     ).then((value) {
       if(onCallback != null) {
+        popView(context);
         onCallback();
       }
     });

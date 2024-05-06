@@ -90,6 +90,7 @@ class PlanSubscriptionScreen extends StatelessWidget {
                             context,
                             transaction: initTrans,
                           ).then((value) async {
+
                             await model.verifyPayment(
                                 onCallBack: (){
                                   showSnackBar(

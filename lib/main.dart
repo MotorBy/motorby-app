@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           Size size = MediaQuery.of(context).size;
-          EvnConfig.init(envType: 'Dev',);
+          EvnConfig.init(envType: 'Prod',);
           SizeConfig.init(context, width: size.width, height: size.height, allowFontScaling: true);
           return SplashScreen(isAuthed: isAuthed,);
         }

@@ -8,11 +8,13 @@ import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 
+bool? get hasUserSetup => serviceLocator<AuthService>().hasUser;
 
 class AuthService {
   final persistService = serviceLocator<PersistenceService>();
 
   String? fcmToken;
+  bool? hasUser = false;
 
   Future createUser({Map<String, dynamic>? data}) async {
     final jsonData = JSON.json.encode(data);
@@ -52,6 +54,8 @@ class AuthService {
 
       persistService.setUserID(response.userId!);
       persistService.setToken(response.token!);
+
+      hasUser = true;
 
       return response;
     } else {
