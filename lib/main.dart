@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_screen.dart';
+import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/env_config.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           Size size = MediaQuery.of(context).size;
-          EvnConfig.init(envType: 'Prod',);
+          EvnConfig.init(envType: APIKey.appStage,);
           SizeConfig.init(context, width: size.width, height: size.height, allowFontScaling: true);
           return SplashScreen(isAuthed: isAuthed,);
         }

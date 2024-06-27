@@ -7,7 +7,7 @@ import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
-import 'package:mobile_auto_drive/utils/keys.dart';
+import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
@@ -141,12 +141,11 @@ class UserService {
 
   Future<NearbySearchModel> getNearbyPlaces({
     String? latLng,
-    String? APIkey = GSKey,
     String? radius,
     String? type
   }) async {
 
-    var result = await http.get(Uri.parse("${APIService.googlePlacesNearBy}location=$latLng&type=$type&key=$APIkey&radius=$radius"));
+    var result = await http.get(Uri.parse("${APIService.googlePlacesNearBy}location=$latLng&type=$type&key=${APIKey.GSKey}&radius=$radius"));
     final json = JSON.jsonDecode(result.body);
 
     if (json["status"] == "OK") {

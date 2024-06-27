@@ -5,7 +5,7 @@ import 'package:mobile_auto_drive/models/plan_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
-import 'package:mobile_auto_drive/utils/keys.dart';
+import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../services/user_service.dart';
@@ -169,7 +169,7 @@ class ProfileViewModel extends BaseViewModel {
 
       final request = PaystackTransactionRequest(
         reference: 'MBY-${DateTime.now().microsecondsSinceEpoch}',
-        secretKey: SLiveKey,
+        secretKey: APIKey.payStackSKey,
         email: userModel!.payload!.user!.email!,
         amount: currentAmount! * 100,
         currency: PaystackCurrency.ngn,
@@ -208,7 +208,7 @@ class ProfileViewModel extends BaseViewModel {
     if(freeSub == false) {
 
       await PaymentService.verifyTransaction(
-        paystackSecretKey: SLiveKey,
+        paystackSecretKey: APIKey.payStackSKey,
         currentPayRef!,
       ).then((value) async {
 

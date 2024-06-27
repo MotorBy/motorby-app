@@ -1,7 +1,8 @@
+import 'package:mobile_auto_drive/utils/api_keys.dart';
+
 import '../utils/env_config.dart';
 
 class APIService {
-  static bool isDev = EvnConfig().envConfigType == 'Dev';
 
   static const String USER = "user";
   static const String BUSINESS = "business";
@@ -18,7 +19,7 @@ class APIService {
 
   static const String vinUrl = 'https://vin-decoder19.p.rapidapi.com';
 
-  static String root = !isDev ? prod : dev;
+  static String root = !APIKey.isDev! ? prod : dev;
 
   static const String paystackAPI = "https://api.paystack.co/transaction";
   static const String paystackRefund = "https://api.paystack.co/refund";

@@ -26,6 +26,7 @@ class ShopsScreen extends StatelessWidget {
         disposeViewModel: false,
         builder: (context, model, child) {
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             leading: GestureDetector(
               onTap: (){

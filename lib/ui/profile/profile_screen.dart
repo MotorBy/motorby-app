@@ -495,14 +495,39 @@ class ProfileScreen extends StatelessWidget {
                               ],
                             ),
                             const YMargin(10),
-                            Container(
-                              padding: const EdgeInsets.all(3),
-                              child: NormalText(
-                                text: model.userModel!.payload!.referralProfile!.totalEarnings.toString() ?? '0',
-                                textColor: XColors.textColor(),
-                                fontWeight: FontWeight.w700,
-                                fontSize: 19,
-                              ),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(3),
+                                  child: NormalText(
+                                    text: model.userModel!.payload!.referralProfile!.totalEarnings.toString() ?? '0',
+                                    textColor: XColors.textColor(),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 19,
+                                  ),
+                                ),
+                                const XMargin(40),
+                                GestureDetector(
+                                  onTap: () {
+
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecorators.containerDecoration(
+                                        hasOutline: true,
+                                        outlineWidth: 2,
+                                        radius: 26,
+                                        outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                    ),
+                                    child: NormalText(
+                                      text: 'Redeem',
+                                      textColor: XColors.textColor(),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

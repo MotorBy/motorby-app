@@ -24,6 +24,7 @@ class HistoryScreen extends StatelessWidget {
         disposeViewModel: false,
         builder: (context, model, child) {
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             leading: GestureDetector(
                 onTap: () {
@@ -54,7 +55,7 @@ class HistoryScreen extends StatelessWidget {
                       const YMargin(15),
                       NormalText(
                         text: model.currentBudgetTypeIndex != 4 ?
-                            'N ${numberFormat(number: model.totalCostingAndValue![model.currentBudgetTypeIndex!].toDouble())}'
+                            '₦${numberFormat(number: model.totalCostingAndValue![model.currentBudgetTypeIndex!].toDouble())}'
                             : model.totalCostingAndValue![model.currentBudgetTypeIndex!].toString(),
                         textColor: XColors.textColor(),
                         fontSize: 25,
@@ -70,13 +71,10 @@ class HistoryScreen extends StatelessWidget {
                 if(model.currentBudgetTypeIndex == 0) ... [
 
                   ...List.generate(model.fueling!.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: HistoryListView(
-                        body: 'Bought fuel for',
-                        price: 'N ${numberFormat(number: model.fueling![index].price!.toDouble())}',
-                        date: model.fueling![index].date,
-                      ),
+                    return HistoryListView(
+                      body: 'Bought fuel for',
+                      price: '₦${numberFormat(number: model.fueling![index].price!.toDouble())}',
+                      date: model.fueling![index].date,
                     );
                     }),
 
@@ -88,7 +86,7 @@ class HistoryScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: HistoryListView(
                         body: model.servicing![index].condition,
-                        price: 'N ${numberFormat(number: model.servicing![index].price!.toDouble())}',
+                        price: '₦${numberFormat(number: model.servicing![index].price!.toDouble())}',
                         date: model.servicing![index].date ?? '',
                       ),
                     );
@@ -102,7 +100,7 @@ class HistoryScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: HistoryListView(
                         body: model.repairing![index].condition,
-                        price: 'N ${numberFormat(number: model.repairing![index].price!.toDouble())}',
+                        price: '₦${numberFormat(number: model.repairing![index].price!.toDouble())}',
                         date: model.repairing![index].date ?? '',
                       ),
                     );
@@ -112,13 +110,10 @@ class HistoryScreen extends StatelessWidget {
                 else if (model.currentBudgetTypeIndex == 4) ... [
 
                   ...List.generate(model.breakdowns!.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: HistoryListView(
-                        body: 'Had breakdown',
-                        price: 'at ${model.breakdowns![index].location}',
-                        date: model.breakdowns![index].date,
-                      ),
+                    return HistoryListView(
+                      body: 'Had breakdown',
+                      price: 'at ${model.breakdowns![index].location}',
+                      date: model.breakdowns![index].date,
                     );
                   }),
                 ],
@@ -141,31 +136,39 @@ class HistoryListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              NormalText(
-                text: date,
-                textColor: XColors.textColor().withOpacity(0.6),
-                fontSize: 10,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  NormalText(
+                    text: date,
+                    textColor: XColors.textColor().withOpacity(0.6),
+                    fontSize: 10,
+                  ),
+                  const YMargin(10),
+                  NormalText(
+                    text: body,
+                    textColor: XColors.textColor(),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ],
               ),
-              const YMargin(10),
               NormalText(
-                text: body,
+                text: price,
                 textColor: XColors.textColor(),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
             ],
           ),
-          NormalText(
-            text: price,
-            textColor: XColors.textColor(),
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+            child: Divider(thickness: 0.4, color: XColors.primaryColor2().withOpacity(0.3),),
           ),
         ],
       ),

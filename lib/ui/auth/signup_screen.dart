@@ -218,9 +218,9 @@ class SignupScreen extends StatelessWidget {
                           child: MkInputField2(
                             label: "Country",
                             isEnabled: false,
-                            validator: (s) {
-                              return AnyInputValidator.emptyValidate(s, inputName: 'Country');
-                            },
+                            // validator: (s) {
+                            //   return AnyInputValidator.emptyValidate(s, inputName: 'Country');
+                            // },
                             controller: countryController,
                             suffixIcon: GestureDetector(
                               onTap: (){

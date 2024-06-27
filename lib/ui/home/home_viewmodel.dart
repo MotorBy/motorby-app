@@ -53,6 +53,14 @@ class HomeViewModel extends BaseViewModel {
     'Breakdown'
   ];
 
+  final List<String>? manageIcons = [
+    'fuel.png',
+    'servicing.png',
+    'repairing.png',
+    'mph.png',
+    'breakdowns.png'
+  ];
+
   List<int>? totalCostingAndValue = [
     0,
     0,

@@ -24,6 +24,7 @@ void modalBottomSheetMenu({
           child: Container(
             width: MediaQuery.of(context).size.width,
             height: height,
+            color: Colors.white,
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
