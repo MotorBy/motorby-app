@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobile_auto_drive/firebase_options.dart';
 import 'package:mobile_auto_drive/models/plan_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
@@ -29,6 +31,8 @@ class ProfileViewModel extends BaseViewModel {
     "Ultra"
   ];
 
+  String? supportEmail = 'exceptos.dev@gmail.com';
+
   String? currentPlan = 'Free';
   String? userPlan = 'free';
 
@@ -36,6 +40,17 @@ class ProfileViewModel extends BaseViewModel {
 
   int? currentPlanIndex = 0;
   int? currentAmount = 0;
+
+  static List<String> scopes = <String>[
+    'email',
+    'profile'
+  ];
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    // Optional clientId
+    clientId: DefaultFirebaseOptions.android.androidClientId,
+    scopes: scopes,
+  );
 
   Map<String, dynamic> updateData = {};
 
@@ -103,6 +118,8 @@ class ProfileViewModel extends BaseViewModel {
     } else {
       userPlan = userModel!.payload!.user!.planDetails!.businessPlan;
     }
+
+    notifyListeners();
 
   }
 
@@ -300,6 +317,7 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   Future logOut() async {
+    await _googleSignIn.signOut();
     await persistentService.deleteAll();
   }
 

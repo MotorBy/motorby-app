@@ -14,7 +14,7 @@ import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../components/coming_soon_view.dart';
+import '../../../components/coming_soon_view.dart';
 
 class CarSaleDetailScreen extends StatelessWidget {
   const CarSaleDetailScreen({super.key, this.salesViewModel});

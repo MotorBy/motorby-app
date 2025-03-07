@@ -1,5 +1,6 @@
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class APIHelper {
   final persistService = serviceLocator<PersistenceService>();
@@ -8,11 +9,13 @@ class APIHelper {
         'Content-type': 'application/json',
         'Accept': 'application/json',
         'x-access-token': persistService.getUserToken != null ? persistService.getUserToken! : token ?? '',
+        'current-app-version': persistService.currentVersion!
   };
 
-  Map<String, String> requestHeaders = {
+  Map<String, String> requestHeaders() => {
     'Content-type': 'application/json',
     'Accept': 'application/json',
+    'current-app-version': persistService.currentVersion!
   };
 
   Map<String, String> requestRapidAPIHeaders = {

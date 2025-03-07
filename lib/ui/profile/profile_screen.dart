@@ -15,8 +15,10 @@ import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
+import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -186,7 +188,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               NormalText(
-                                text: '${model.user!.statsDetails!.addCars ?? 0}',
+                                text: '${model.user!.statsDetails?.addCars ?? 0}',
                                 textColor: XColors.textColor(),
                                 fontSize: 12,
                               ),
@@ -205,7 +207,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               NormalText(
-                                text:'${model.user!.statsDetails!.sales ?? 0}',
+                                text:'${model.user!.statsDetails?.sales ?? 0}',
                                 textColor: XColors.textColor(),
                                 fontSize: 12,
                               ),
@@ -216,7 +218,7 @@ class ProfileScreen extends StatelessWidget {
                       Column(
                         children: [
                           NormalText(
-                            text:'Discussions',
+                            text:'Talks',
                             textColor: XColors.textColor(),
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
@@ -224,7 +226,7 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               NormalText(
-                                text:'${model.user!.statsDetails!.discussions ?? 0}',
+                                text:'${model.user!.statsDetails?.discussions ?? 0}',
                                 textColor: XColors.textColor(),
                                 fontSize: 12,
                               ),
@@ -243,7 +245,26 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               NormalText(
-                                text:'${model.user!.statsDetails!.sold ?? 0}',
+                                text:'${model.user!.statsDetails?.sold ?? 0}',
+                                textColor: XColors.textColor(),
+                                fontSize: 12,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          NormalText(
+                            text:'Saves',
+                            textColor: XColors.textColor(),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                          Row(
+                            children: [
+                              NormalText(
+                                text:'${model.user!.statsDetails?.sold ?? 0}',
                                 textColor: XColors.textColor(),
                                 fontSize: 12,
                               ),
@@ -263,7 +284,7 @@ class ProfileScreen extends StatelessWidget {
                             Row(
                               children: [
                                 NormalText(
-                                  text:'${model.user!.statsDetails!.shops ?? 0}',
+                                  text:'${model.user!.statsDetails?.shops ?? 0}',
                                   textColor: XColors.textColor(),
                                   fontSize: 12,
                                 ),
@@ -353,10 +374,10 @@ class ProfileScreen extends StatelessWidget {
                                     }
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.all(3),
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                                     decoration: BoxDecorators.containerDecoration(
                                         hasOutline: true,
-                                        outlineWidth: 2,
+                                        outlineWidth: 1,
                                         radius: 26,
                                         outlineColor: Colors.purpleAccent.withOpacity(0.2)
                                     ),
@@ -417,10 +438,10 @@ class ProfileScreen extends StatelessWidget {
                                     );
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.all(3),
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                                     decoration: BoxDecorators.containerDecoration(
                                         hasOutline: true,
-                                        outlineWidth: 2,
+                                        outlineWidth: 1,
                                         radius: 26,
                                         outlineColor: Colors.purpleAccent.withOpacity(0.2)
                                     ),
@@ -467,18 +488,13 @@ class ProfileScreen extends StatelessWidget {
                               ],
                             ),
                             const YMargin(10),
-                            GestureDetector(
-                              onTap: (){
-
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(3),
-                                child: NormalText(
-                                  text: model.userModel!.payload!.referralProfile!.referralCode ?? '',
-                                  textColor: XColors.textColor(),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
+                            Container(
+                              padding: const EdgeInsets.all(3),
+                              child: NormalText(
+                                text: model.userModel!.payload!.referralProfile!.referralCode ?? '',
+                                textColor: XColors.textColor(),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
                               ),
                             ),
                             const YMargin(7),
@@ -503,25 +519,31 @@ class ProfileScreen extends StatelessWidget {
                                     text: model.userModel!.payload!.referralProfile!.totalEarnings.toString() ?? '0',
                                     textColor: XColors.textColor(),
                                     fontWeight: FontWeight.w700,
-                                    fontSize: 19,
+                                    fontSize: 23,
                                   ),
                                 ),
-                                const XMargin(40),
+                                const XMargin(60),
                                 GestureDetector(
                                   onTap: () {
 
+                                    showSnackBar(
+                                        context: context,
+                                        message: 'Low earned points are nonredeemable at the moment',
+                                        error: true
+                                    );
+
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.all(3),
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                                     decoration: BoxDecorators.containerDecoration(
                                         hasOutline: true,
-                                        outlineWidth: 2,
+                                        outlineWidth: 1,
                                         radius: 26,
                                         outlineColor: Colors.purpleAccent.withOpacity(0.2)
                                     ),
                                     child: NormalText(
                                       text: 'Redeem',
-                                      textColor: XColors.textColor(),
+                                      textColor: XColors.textColor().withOpacity(0.2),
                                       fontWeight: FontWeight.w500,
                                       fontSize: 12,
                                     ),
@@ -600,7 +622,7 @@ class BusinessSetupView extends StatelessWidget {
                     fontSize: 13,
                   ),
                   const YMargin(35),
-                  MkInputField2(
+                  MainInputField(
                     label: "Business name",
                     initialValue: model.user!.businessDetails == null ? '' : model.user!.businessDetails!.businessName!,
                     isEnabled: true,
@@ -613,7 +635,7 @@ class BusinessSetupView extends StatelessWidget {
                     },
                   ),
                   const YMargin(15),
-                  MkInputField2(
+                  MainInputField(
                     label: "Business Reg. No",
                     keyboard: TextInputType.number,
                     isEnabled: true,
@@ -626,7 +648,7 @@ class BusinessSetupView extends StatelessWidget {
                     },
                   ),
                   const YMargin(15),
-                  MkInputField2(
+                  MainInputField(
                     label: "Business contact",
                     isEnabled: true,
                     onChanged: (s) {
@@ -638,7 +660,7 @@ class BusinessSetupView extends StatelessWidget {
                     },
                   ),
                   const YMargin(20),
-                  MkInputField2(
+                  MainInputField(
                     label: "Business type",
                     isEnabled: false,
                     controller: btypeController,
@@ -798,7 +820,14 @@ class MoreProfileActionPicks extends StatelessWidget {
                   // ),
                   const YMargin(45),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
+
+                      canLaunch(model.supportEmail!).then((value) async {
+                        await launch(
+                          'mailto:${model.supportEmail!}',
+                          universalLinksOnly: true,
+                        );
+                      });
 
                     },
                     child: NormalText(
@@ -812,7 +841,7 @@ class MoreProfileActionPicks extends StatelessWidget {
                   GestureDetector(
                     onTap: (){
                       model.logOut().then((value) {
-                        popView(context);
+                        popToFirst(context);
                         navigateReplace(context, SignInScreen());
                       });
                     },

@@ -91,8 +91,8 @@ class MkInputField extends StatelessWidget {
   }
 }
 
-class MkInputField2 extends StatelessWidget {
-  MkInputField2(
+class MainInputField extends StatelessWidget {
+  MainInputField(
       {super.key, this.controller,
         required this.label,
         this.currentNode,
@@ -184,7 +184,7 @@ class MkInputField2 extends StatelessWidget {
             hintStyle: const TextStyle(color: Colors.grey),
             hintText: hint,
             enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(11.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(16.0)),
               borderSide: BorderSide(
                 color: XColors.primaryColor().withOpacity(0.1),
                 width: 1
@@ -202,14 +202,14 @@ class MkInputField2 extends StatelessWidget {
                 borderSide: BorderSide(color: Colors.red)
             ),
             focusedErrorBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(11.0)),
+                borderRadius: BorderRadius.all(Radius.circular(16.0)),
                 borderSide: BorderSide(
                     color: Colors.red,
                     width: 2
                 )
             ),
             focusedBorder: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(Radius.circular(11.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0)),
                 borderSide: BorderSide(
                     color: XColors.primaryColor(),
                     width: 2

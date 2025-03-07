@@ -6,7 +6,6 @@ import 'package:mobile_auto_drive/ui/splash/splash_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
-import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 

@@ -16,20 +16,22 @@ class AuthService {
   String? fcmToken;
   bool? hasUser = false;
 
-  Future createUser({Map<String, dynamic>? data}) async {
+  Future createUser({Map<String, dynamic>? data, bool? isAuthFromProvider = false}) async {
     final jsonData = JSON.json.encode(data);
 
     var response = await http.post(Uri.parse(APIService.authUser),
-        headers: APIHelper().requestHeaders, body: jsonData);
+        headers: APIHelper().requestHeaders(), body: jsonData);
     final json = JSON.jsonDecode(response.body);
 
     print(json.toString());
+    print(APIHelper().requestHeaders());
 
     if (json["statusCode"] == 200 || json["statusCode"] == 201) {
 
       await loginUser(
           email: data!['email'],
-          password: data['password']
+          password: data['password'],
+          isAuthFromProvider: isAuthFromProvider
       );
 
     } else {
@@ -38,13 +40,13 @@ class AuthService {
     }
   }
 
-  Future<LoginResponse> loginUser({String? email, String? password}) async {
+  Future<LoginResponse> loginUser({String? email, String? password, bool? isAuthFromProvider = false}) async {
     //firebaseTokenInit();
 
-    final jsonData = JSON.json.encode({"email": email, "password": password});
+    final jsonData = JSON.json.encode({"email": email, "password": password, "signinFrom": isAuthFromProvider == true ? 'provider' : '' });
 
     var response = await http.post(Uri.parse(APIService.loginUser),
-        headers: APIHelper().requestHeaders, body: jsonData);
+        headers: APIHelper().requestHeaders(), body: jsonData);
     final json = JSON.jsonDecode(response.body);
 
     print(json.toString());

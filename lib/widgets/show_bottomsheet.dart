@@ -14,8 +14,8 @@ void modalBottomSheetMenu({
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(radius ?? 10),
-              topRight: Radius.circular(radius ?? 10)
+              topLeft: Radius.circular(radius ?? 26),
+              topRight: Radius.circular(radius ?? 26)
           )
       ),
       backgroundColor: color ?? Theme.of(context).backgroundColor,
@@ -24,7 +24,6 @@ void modalBottomSheetMenu({
           child: Container(
             width: MediaQuery.of(context).size.width,
             height: height,
-            color: Colors.white,
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),

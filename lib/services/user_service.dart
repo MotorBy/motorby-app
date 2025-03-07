@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:mobile_auto_drive/models/fuel_price_model.dart';
 import 'package:mobile_auto_drive/models/nearby_search_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
+import 'package:mobile_auto_drive/models/weather_data.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
@@ -23,6 +25,8 @@ class UserService {
 
   UserModel? userModel;
   bool? isBusiness;
+  WeatherData? weatherData;
+  FuelData? fuelData;
 
   NearbySearchModel? nearbySearchModel;
 
@@ -30,6 +34,8 @@ class UserService {
 
     var response = await http.get(Uri.parse(APIService.getUser(id: persistService.getUserID)),
         headers: APIHelper().requestHeadersWithToken());
+
+    print(APIHelper().requestHeadersWithToken());
 
     final json = JSON.jsonDecode(response.body);
 
@@ -98,8 +104,6 @@ class UserService {
 
     final jsonData = JSON.json.encode(data);
 
-    print(jsonData.toString());
-
     var response = await http.put(
         Uri.parse(APIService.updateCars(carId: carId!)),
         body: jsonData,
@@ -115,6 +119,87 @@ class UserService {
     } else {
       var error = json["message"];
       throw Exception(error);
+    }
+
+  }
+
+  Future getWeather({String? lat, String? lng}) async {
+
+    var response = await http.get(
+        Uri.parse(APIService.getWeather(lat: lat, lng: lng, country: 'NG')),
+        headers: APIHelper().requestHeadersWithToken()
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+
+      WeatherData wData = WeatherData.fromJson(json);
+      weatherData = wData;
+
+    } else {
+
+      var error = json["message"];
+      print(error);
+      throw Exception(error);
+
+    }
+
+  }
+
+  Future updateFuelPrice({Map<String, dynamic>? updateData, String? city, String? state, String? country }) async {
+
+    final jsonData = JSON.json.encode(updateData);
+
+    print(jsonData.toString());
+
+    var response = await http.post(
+        Uri.parse(APIService.addFuelUpdate),
+        body: jsonData,
+        headers: APIHelper().requestHeadersWithToken()
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+
+      await getCurrentFuelPrice(state: state, country: country, city: city);
+      await getUsers();
+
+    } else {
+
+      var error = json["message"];
+      print(error);
+      throw Exception(error);
+
+    }
+
+  }
+
+  Future getCurrentFuelPrice({String? city, String? state, String? country}) async {
+
+    var response = await http.get(
+        Uri.parse(APIService.getFuelUpdate(city: city, state: state, country: country)),
+        headers: APIHelper().requestHeadersWithToken()
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+
+      FuelData fData = FuelData.fromJson(json);
+      fuelData = fData;
+
+    } else {
+
+      var error = json["message"];
+      print(error);
+      throw Exception(error);
+
     }
 
   }
@@ -139,27 +224,27 @@ class UserService {
   //   }
   // }
 
-  Future<NearbySearchModel> getNearbyPlaces({
-    String? latLng,
-    String? radius,
-    String? type
-  }) async {
-
-    var result = await http.get(Uri.parse("${APIService.googlePlacesNearBy}location=$latLng&type=$type&key=${APIKey.GSKey}&radius=$radius"));
-    final json = JSON.jsonDecode(result.body);
-
-    if (json["status"] == "OK") {
-
-      NearbySearchModel nearbyResponse = NearbySearchModel.fromJson(json);
-      nearbySearchModel = nearbyResponse;
-      return nearbySearchModel!;
-
-    } else {
-
-      var error = json["status"];
-      throw Exception(error);
-
-    }
-  }
+  // Future<NearbySearchModel> getNearbyPlaces({
+  //   String? latLng,
+  //   String? radius,
+  //   String? type
+  // }) async {
+  //
+  //   var result = await http.get(Uri.parse("${APIService.googlePlacesNearBy}location=$latLng&type=$type&key=${APIKey.GSKey}&radius=$radius"));
+  //   final json = JSON.jsonDecode(result.body);
+  //
+  //   if (json["status"] == "OK") {
+  //
+  //     NearbySearchModel nearbyResponse = NearbySearchModel.fromJson(json);
+  //     nearbySearchModel = nearbyResponse;
+  //     return nearbySearchModel!;
+  //
+  //   } else {
+  //
+  //     var error = json["status"];
+  //     throw Exception(error);
+  //
+  //   }
+  // }
 
 }

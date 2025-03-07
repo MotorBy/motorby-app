@@ -1,7 +1,5 @@
 import 'package:mobile_auto_drive/utils/api_keys.dart';
 
-import '../utils/env_config.dart';
-
 class APIService {
 
   static const String USER = "user";
@@ -13,6 +11,7 @@ class APIService {
   static const String COMMUNITY = 'community';
   static const String PLANS = 'plans';
   static const String PAYMENT = 'payment';
+  static const String FUEL = 'fuel';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
   static const String prod = 'https://api.motorby.co/api/v1/';
@@ -38,6 +37,8 @@ class APIService {
   static String getUser({String? id}) => "$root$USER/$id";
   static String makePayment = "$root$PAYMENT/create-payment";
 
+  static String getWeather({String? lng, String? lat, String? country}) => "$root$USER/weather/?lng=$lng&lat=$lat&country=$country";
+
   static String getCommunities = "$root$COMMUNITY/get-communities";
   static String getDiscussions = "$root$COMMUNITY/get-discussions";
   static String addDiscussions = "$root$COMMUNITY/discuss/";
@@ -53,6 +54,9 @@ class APIService {
   static String createShop = "$root$SHOP/createShop";
   static String getShops = "$root$SHOP/shops";
   static String getPlans = "$root$PLANS/";
+
+  static String addFuelUpdate = "$root/$FUEL/add-price";
+  static String getFuelUpdate({String? state, String? country, String? city}) => "$root/$FUEL/location?state=$state&country=$country&city=$city";
 
   static String getBudget({String? userId}) => "$root$BUDGET/?user_id=$userId";
   static String updateBudget({String? budgetId}) => "$root$BUDGET/$budgetId";

@@ -10,13 +10,12 @@ import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
-import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/shimmer_loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class ShopsScreen extends StatelessWidget {
-  ShopsScreen({super.key});
+  const ShopsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -181,12 +180,9 @@ class ShopsScreen extends StatelessWidget {
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: ShopListItem(
-            name: model!.shops![currentIndex!].name,
-          ),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: ShopListItem(
+          name: model!.shops![currentIndex!].name,
         ),
       );
     }

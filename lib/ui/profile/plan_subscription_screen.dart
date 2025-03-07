@@ -160,7 +160,7 @@ class PlanSubscriptionScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const YMargin(80),
+                const YMargin(40),
                 CarouselSlider(
                     options: CarouselOptions(
                       reverse: false,
@@ -168,7 +168,7 @@ class PlanSubscriptionScreen extends StatelessWidget {
                       clipBehavior: Clip.hardEdge,
                       enableInfiniteScroll: false,
                       viewportFraction: 0.7,
-                      height: MediaQuery.of(context).size.height - 400,
+                      height: MediaQuery.of(context).size.height - 300,
                       autoPlayInterval: const Duration(seconds: 5),
                       autoPlayCurve: Curves.fastOutSlowIn,
                       scrollDirection: Axis.horizontal,

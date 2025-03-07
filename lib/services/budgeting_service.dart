@@ -38,6 +38,8 @@ class BudgetingService {
 
     final jsonData = JSON.json.encode(updateBudget);
 
+    print(jsonData.toString());
+
     var response = await http.put(
         Uri.parse(APIService.updateBudget(budgetId: budgetId)),
         body: jsonData,
@@ -50,6 +52,7 @@ class BudgetingService {
       await getBudgets();
     } else {
       var error = json["message"];
+      print(error);
       throw Exception(error);
     }
 

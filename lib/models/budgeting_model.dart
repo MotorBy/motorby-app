@@ -34,6 +34,7 @@ class Budget {
   String? userId;
   String? carName;
   int? mileage;
+  int? budget;
   int? currentSpending;
   List<Fueling>? fueling;
   List<Servicing>? servicing;
@@ -66,6 +67,7 @@ class Budget {
     userId = json['user_id'];
     carName = json['car_name'];
     mileage = json['mileage'];
+    budget = json['budget_amount'];
     currentSpending = json['current_spending'];
     if (json['fueling'] != null) {
       fueling = <Fueling>[];
@@ -106,6 +108,7 @@ class Budget {
     data['user_id'] = userId;
     data['car_name'] = carName;
     data['mileage'] = mileage;
+    data['budget_amount'] = budget;
     data['current_spending'] = currentSpending;
     if (fueling != null) {
       data['fueling'] = fueling!.map((v) => v.toJson()).toList();

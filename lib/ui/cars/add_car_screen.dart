@@ -55,7 +55,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       children: [
                         GestureDetector(
                           onTap: (){
-                            Navigator.pop(context);
+                            Navigator.pop(context, false);
                           },
                             child: const Icon(Icons.close_rounded, size: 31,),
                         ),
@@ -123,7 +123,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         ),
                       ),
                       const YMargin(15),
-                    MkInputField2(
+                    MainInputField(
                       controller: _carMakeController,
                       isEnabled: false,
                       validator: (s) {
@@ -147,7 +147,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       ),
                     ),
                     const YMargin(15),
-                    MkInputField2(
+                    MainInputField(
                       controller: _carModelController,
                       label: "Model",
                       validator: (s) {
@@ -159,7 +159,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       },
                     ),
                     const YMargin(15),
-                    MkInputField2(
+                    MainInputField(
                       controller: _carYearController,
                       label: "Year",
                       isEnabled: false,
@@ -210,7 +210,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       ),
                     ),
                     const YMargin(15),
-                    MkInputField2(
+                    MainInputField(
                       controller: _caTypeController,
                       label: "Grade type",
                       isEnabled: false,
@@ -235,7 +235,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                     ),
                     if(!model.isBusinessOrForSale) ... [
                       const YMargin(15),
-                      MkInputField2(
+                      MainInputField(
                         controller: _carAmtBoughtController,
                         label: "Amount bought",
                         keyboard: TextInputType.number,
@@ -431,7 +431,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       ),
                     ),
                     const YMargin(15),
-                    MkInputField2(
+                    MainInputField(
                       controller: _mileageController,
                       label: "Mileage",
                       isEnabled: true,
@@ -445,7 +445,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                     ),
                     if(model.isBusinessOrForSale) ... [
                       const YMargin(15),
-                      MkInputField2(
+                      MainInputField(
                         controller: _vinController,
                         label: "VIN number",
                         isEnabled: true,
@@ -454,7 +454,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         },
                       ),
                       const YMargin(15),
-                      MkInputField2(
+                      MainInputField(
                         //controller: ,
                         label: "Selling price",
                         isEnabled: true,
@@ -470,7 +470,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: MkInputField2(
+                            child: MainInputField(
                               //controller: _mileageController,
                               label: "Color",
                               isEnabled: true,
@@ -482,7 +482,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                           ),
                           const XMargin(10),
                           Expanded(
-                            child: MkInputField2(
+                            child: MainInputField(
                               //controller: _mileageController,
                               label: "Unit(s)",
                               isEnabled: true,
@@ -501,11 +501,11 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
 
                         if(_formKey.currentState!.validate()) {
                           model.uploadCar(
-                              onCallBack: (){
-                                popView(context);
+                              onCallBack: () {
+                                Navigator.pop(context, true);
                               },
-                              onErrorCallBack: (){
-
+                              onErrorCallBack: () {
+                                Navigator.pop(context, false);
                               }
                           );
                         }

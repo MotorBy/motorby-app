@@ -27,7 +27,7 @@ class XButton extends StatelessWidget {
   XButton({
     Key? key,
     required this.onPressed,
-    required this.text,
+    this.text,
     this.height,
     this.width,
     this.radius,
@@ -62,11 +62,21 @@ class XButton extends StatelessWidget {
         ),
         child: !isLoading
             ? !isComing!
-                ? NormalText(
-                    text: text ?? 'Continue',
-                    textColor: textColor ?? XColors.white(),
-                    fontWeight: FontWeight.bold,
-                    fontSize: textSize ?? 15,
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (buttonWidget != null) ...[
+                        buttonWidget!
+                      ] else ...[
+                        NormalText(
+                          text: text ?? 'Continue',
+                          textColor: textColor ?? XColors.white(),
+                          fontWeight: FontWeight.bold,
+                          fontSize: textSize ?? 15,
+                        ),
+                      ],
+                    ],
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -95,19 +105,26 @@ class XButton extends StatelessWidget {
           minimumSize: Size(width ?? 300, height ?? 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius ?? 28),
-            side: BorderSide(
-                color: XColors.primaryColor(),
-                width: 1
-            ),
+            side: BorderSide(color: XColors.primaryColor(), width: 1),
           ),
         ),
         child: !isLoading
             ? !isComing!
-                ? NormalText(
-                    text: text ?? 'Continue',
-                    textColor: textColor ?? XColors.white(),
-                    fontWeight: FontWeight.bold,
-                    fontSize: textSize ?? 15,
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (buttonWidget != null) ...[
+                        buttonWidget!
+                      ] else ...[
+                        NormalText(
+                          text: text ?? 'Continue',
+                          textColor: textColor ?? XColors.white(),
+                          fontWeight: FontWeight.bold,
+                          fontSize: textSize ?? 15,
+                        ),
+                      ],
+                    ],
                   )
                 : Center(
                     child: Row(
@@ -135,19 +152,16 @@ class XButton extends StatelessWidget {
         onPressed: () => onPressed!(),
       );
     }
-
   }
 }
 
-Widget button () {
+Widget button() {
   return OutlinedButton(
     style: OutlinedButton.styleFrom(
       minimumSize: Size(300, 56),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(28),
-        side: BorderSide(
-            color: Colors.white.withOpacity(0.4),
-            width: 1),
+        side: BorderSide(color: Colors.white.withOpacity(0.4), width: 1),
       ),
     ),
     child: NormalText(

@@ -18,10 +18,16 @@ void navigate(BuildContext context, Widget route, {bool isDialog = false, Functi
         builder: (BuildContext context) => route,
       ),
     ).then((value) {
-      if(onCallback != null) {
-        popView(context);
-        onCallback();
+
+      if(value == true) {
+
+        if(onCallback != null) {
+          //popView(context);
+          onCallback();
+        }
+
       }
+
     });
 
 void popToFirst(BuildContext context) =>

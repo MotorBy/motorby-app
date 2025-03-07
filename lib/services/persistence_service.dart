@@ -6,6 +6,8 @@ class PersistenceService {
   static const String PIN = 'pin';
   static const String ONBOARDING = 'onboarding';
 
+  String? currentVersion;
+
   static SharedPreferences? secureStorage;
 
   static Future<SharedPreferences> getInstance() async {

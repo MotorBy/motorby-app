@@ -87,7 +87,7 @@ class CreateShopScreen extends StatelessWidget {
                   ],
                 ),
                 const YMargin(20),
-                MkInputField2(
+                MainInputField(
                   label: "Shop name",
                   isEnabled: true,
                   onChanged: (s){
@@ -95,7 +95,7 @@ class CreateShopScreen extends StatelessWidget {
                   },
                 ),
                 const YMargin(20),
-                MkInputField2(
+                MainInputField(
                   label: "Description",
                   isEnabled: true,
                   maxLines: 5,
@@ -104,7 +104,7 @@ class CreateShopScreen extends StatelessWidget {
                   },
                 ),
                 const YMargin(20),
-                MkInputField2(
+                MainInputField(
                   label: "Contact (phone number)",
                   isEnabled: true,
                   onChanged: (s){
@@ -112,7 +112,7 @@ class CreateShopScreen extends StatelessWidget {
                   },
                 ),
                 const YMargin(20),
-                MkInputField2(
+                MainInputField(
                   label: "Address",
                   isEnabled: true,
                   onChanged: (s){
@@ -120,7 +120,7 @@ class CreateShopScreen extends StatelessWidget {
                   },
                 ),
                 const YMargin(20),
-                MkInputField2(
+                MainInputField(
                   label: "Email address",
                   isEnabled: true,
                   onChanged: (s){

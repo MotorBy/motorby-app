@@ -113,7 +113,7 @@ class VinCheckScreen extends StatelessWidget {
 
                       const YMargin(25),
 
-                      MkInputField2(
+                      MainInputField(
                         label: "Vin number",
                         isEnabled: true,
                         onChanged: (s){

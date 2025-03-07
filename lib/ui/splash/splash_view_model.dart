@@ -1,7 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/utils/locator_setup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stacked/stacked.dart';
 
+
 class SplashViewModel extends BaseViewModel {
+  final persistService = serviceLocator<PersistenceService>();
 
 
   void initialise({bool? authNewState,

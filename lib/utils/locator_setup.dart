@@ -9,10 +9,13 @@ import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/shop_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/services/vin_check_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 final GetIt serviceLocator = GetIt.I;
 
 Future locatorSetup() async {
+
+  Future<PackageInfo> packageInfo() async => await PackageInfo.fromPlatform();
 
   WidgetsFlutterBinding.ensureInitialized();
   serviceLocator.registerLazySingleton(() => PersistenceService());

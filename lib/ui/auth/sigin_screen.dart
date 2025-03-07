@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
-import 'package:mobile_auto_drive/ui/auth/signup_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/auth/signup_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
@@ -90,6 +92,37 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ],
             ),
+          floatingActionButton: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              XButton(
+                onPressed: () {
+
+                  if(_formKey.currentState!.validate()) {
+
+                    model.login(
+                        email: emailTextController.text,
+                        password: passwordTextController.text,
+                        onCallBack: (){
+                          navigateReplace(context, const HomeScreen());
+                        },
+                        onErrorBack: (e){
+                          showSnackBar(
+                              context: context,
+                              message: e,
+                              error: true
+                          );
+                        }
+                    );
+                  }
+                },
+                text: 'Login',
+                isLoading: model.isBusy,
+                buttonColor: XColors.primaryColor(),
+                width: 120,
+              ),
+            ],
+          ),
           body: Form(
             key: _formKey,
             child: Container(
@@ -99,7 +132,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Column(
                   children: [
                     Container(
-                      height: MediaQuery.of(context).size.height - 650,
+                      height: MediaQuery.of(context).size.height - 750,
                         child: const YMargin(10)
                     ),
                     Column(children: [
@@ -114,15 +147,69 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ),
                     ],),
-                    const YMargin(80),
-                    MkInputField2(
+                    const YMargin(50),
+                    XButton(
+                        onPressed: () {
+
+                          model.handleSignInWithGoogle(
+                            onCallBack: () {
+                              navigateReplace(context, const HomeScreen());
+                            },
+                            onErrorBack: (e){
+                                showSnackBar(
+                                    context: context,
+                                    message: e,
+                                    error: true
+                                );
+                              },
+                          );
+
+                        },
+                        isOutline: true,
+                      buttonWidget: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            NormalText(
+                              text: 'Login with',
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                            ),
+                            const XMargin(15),
+                            Container(
+                              height: 25,
+                              width: 25,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  32,
+                                ),
+                              ),
+                              child: Image.asset('assets/images/icons/google.png'),
+                            ),
+                            const XMargin(3),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const YMargin(30),
+                    NormalText(
+                      text: 'or',
+                      textColor: XColors.textColor(),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                    ),
+                    const YMargin(30),
+                    MainInputField(
                       label: "Email address",
                       isEnabled: true,
                       validator: EmailValidator.validate,
                       controller: emailTextController,
                     ),
                     const YMargin(20),
-                    MkInputField2(
+                    MainInputField(
                       label: "Password",
                       validator: PasswordValidator.validate,
                       isEnabled: true,
@@ -151,37 +238,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ],),
                     const YMargin(30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        XButton(
-                          onPressed: () {
-
-                           if(_formKey.currentState!.validate()) {
-
-                             model.login(
-                                 email: emailTextController.text,
-                                 password: passwordTextController.text,
-                                 onCallBack: (){
-                                   navigateReplace(context, HomeScreen());
-                                 },
-                               onErrorBack: (e){
-                                 showSnackBar(
-                                     context: context,
-                                     message: e,
-                                     error: true
-                                 );
-                               }
-                             );
-                           }
-                          },
-                          text: 'Login',
-                          isLoading: model.isBusy,
-                          buttonColor: XColors.primaryColor(),
-                          width: 120,
-                        ),
-                      ],
-                    )
                   ],
                 ),
               ),

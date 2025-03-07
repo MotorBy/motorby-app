@@ -73,6 +73,7 @@ class DiscussionsScreen extends StatelessWidget {
               backgroundColor: XColors.white(),
               surfaceTintColor: XColors.white(),
               automaticallyImplyLeading: false,
+              titleSpacing: 4,
               leading: GestureDetector(
                 onTap: () {
                   popView(context);
@@ -90,12 +91,11 @@ class DiscussionsScreen extends StatelessWidget {
                 text: title ?? 'Discussions',
                 textColor: XColors.textColor(),
                 fontWeight: FontWeight.w700,
-                fontSize: 18,
+                fontSize: 13,
               ),
             ),
             body: Container(
                 height: MediaQuery.of(context).size.height - 130,
-                width: MediaQuery.of(context).size.width,
                 child: !model.isBusy
                     ? model.discussions.isNotEmpty
                         ? SingleChildScrollView(
@@ -105,98 +105,95 @@ class DiscussionsScreen extends StatelessWidget {
                                 ...List.generate(
                                   model.discussions.length,
                                   (index) => Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                                     child: Column(
                                       children: [
                                         Container(
                                           width: MediaQuery.of(context).size.width,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                NormalText(
-                                                  text: model.discussions[index].user != null ? '${model.discussions[index].user!.fullname}' : 'user',
-                                                  textColor: XColors.textColor().withOpacity(0.6),
-                                                  maxLines: 2,
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 13,
-                                                ),
-                                                const YMargin(10),
-                                                NormalText(
-                                                  text: model
-                                                      .discussions[index].content,
-                                                  textColor: XColors.textColor(),
-                                                  maxLines: 14,
-                                                  fontSize: 13,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.symmetric(vertical: 15,),
-                                                  child: Row(
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: (){
-                                                          model.setCurrentDiscussion(currentIndex: index);
-                                                          modalBottomSheetMenu(
-                                                              context: context,
-                                                              child: CommentsView(
-                                                                model: model,
-                                                                discussion: model.discussions[index],
-                                                              ),
-                                                              color: XColors.background()
-                                                          );
-                                                        },
-                                                        child: Row(
-                                                          children: [
-                                                            NormalText(
-                                                              text: '${model.discussions[index].comments!.length}',
-                                                              textColor:
-                                                                  XColors.textColor(),
-                                                              fontSize: 13,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              NormalText(
+                                                text: model.discussions[index].user != null ? '${model.discussions[index].user!.fullname}' : 'user',
+                                                textColor: XColors.textColor().withOpacity(0.6),
+                                                maxLines: 2,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 13,
+                                              ),
+                                              const YMargin(10),
+                                              NormalText(
+                                                text: model
+                                                    .discussions[index].content,
+                                                textColor: XColors.textColor(),
+                                                maxLines: 14,
+                                                fontSize: 13,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 15,),
+                                                child: Row(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: (){
+                                                        model.setCurrentDiscussion(currentIndex: index);
+                                                        modalBottomSheetMenu(
+                                                            context: context,
+                                                            child: CommentsView(
+                                                              model: model,
+                                                              discussion: model.discussions[index],
                                                             ),
-                                                            const XMargin(5),
-                                                            Icon(
-                                                              Icons.chat_outlined,
-                                                              size: 13,
-                                                              color: XColors.primaryColor(),
-                                                            ),
-                                                          ],
-                                                        ),
+                                                            color: XColors.background()
+                                                        );
+                                                      },
+                                                      child: Row(
+                                                        children: [
+                                                          NormalText(
+                                                            text: '${model.discussions[index].comments!.length}',
+                                                            textColor:
+                                                                XColors.textColor(),
+                                                            fontSize: 13,
+                                                          ),
+                                                          const XMargin(5),
+                                                          Icon(
+                                                            Icons.chat_outlined,
+                                                            size: 13,
+                                                            color: XColors.primaryColor(),
+                                                          ),
+                                                        ],
                                                       ),
-                                                      const XMargin(25),
-                                                      // Row(
-                                                      //   children: [
-                                                      //     GestureDetector(
-                                                      //       onTap: () {
-                                                      //         //navigate(context, const MarketPlace());
-                                                      //       },
-                                                      //       child: NormalText(
-                                                      //         text: '1k',
-                                                      //         textColor:
-                                                      //             XColors.textColor(),
-                                                      //         fontSize: 11,
-                                                      //       ),
-                                                      //     ),
-                                                      //     const XMargin(5),
-                                                      //     Icon(
-                                                      //       Icons.thumb_up_off_alt,
-                                                      //       size: 12,
-                                                      //       color:
-                                                      //           XColors.primaryColor(),
-                                                      //     ),
-                                                      //   ],
-                                                      // ),
-                                                    ],
-                                                  ),
+                                                    ),
+                                                    const XMargin(25),
+                                                    // Row(
+                                                    //   children: [
+                                                    //     GestureDetector(
+                                                    //       onTap: () {
+                                                    //         //navigate(context, const MarketPlace());
+                                                    //       },
+                                                    //       child: NormalText(
+                                                    //         text: '1k',
+                                                    //         textColor:
+                                                    //             XColors.textColor(),
+                                                    //         fontSize: 11,
+                                                    //       ),
+                                                    //     ),
+                                                    //     const XMargin(5),
+                                                    //     Icon(
+                                                    //       Icons.thumb_up_off_alt,
+                                                    //       size: 12,
+                                                    //       color:
+                                                    //           XColors.primaryColor(),
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         Divider(
                                           thickness: 0.7,
-                                          color: XColors.primaryColor().withOpacity(0.2),
+                                          color: XColors.primaryColor().withOpacity(0.1),
                                         ),
                                       ],
                                     ),
@@ -218,7 +215,10 @@ class DiscussionsScreen extends StatelessWidget {
                               ),
                             ],
                           )
-                    : const Loader(),
+                    : Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: const Loader(width: 5,)
+                ),
             ),
           );
         },
@@ -303,7 +303,7 @@ class CommentsView extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: MkInputField2(
+                      child: MainInputField(
                         label: "drop comment",
                         isEnabled: true,
                         controller: commentTextController,
@@ -373,11 +373,30 @@ class MakeContentView extends StatelessWidget {
         return Container(
           color: XColors.white(),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const YMargin(5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: (){
+                        popView(context);
+                      },
+                      child: NormalText(
+                        text: 'Close',
+                        textColor: XColors.textColor().withOpacity(0.3),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const XMargin(5),
+                    const Icon(Icons.close_rounded, size: 31,),
+                  ],
+                ),
                 const YMargin(20),
                 NormalText(
                   text:
@@ -387,7 +406,7 @@ class MakeContentView extends StatelessWidget {
                   fontSize: 13,
                 ),
                 const YMargin(30),
-                MkInputField2(
+                MainInputField(
                   label: "",
                   hint: "Type here",
                   isEnabled: true,
