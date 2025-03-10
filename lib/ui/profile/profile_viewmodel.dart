@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_sign_in/google_sign_in.dart';

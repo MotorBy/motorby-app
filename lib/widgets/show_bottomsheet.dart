@@ -18,7 +18,7 @@ void modalBottomSheetMenu({
               topRight: Radius.circular(radius ?? 26)
           )
       ),
-      backgroundColor: color ?? Theme.of(context).backgroundColor,
+      backgroundColor: color ?? Theme.of(context).scaffoldBackgroundColor,
       builder: (builder) {
         return SingleChildScrollView(
           child: Container(
