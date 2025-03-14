@@ -63,3 +63,15 @@ flutter:
           weight: 100
         - asset: assets/fonts/montserrat_regular.ttf
           weight: 500
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.otf
+        - asset: assets/fonts/Inter-Bold.otf
+          weight: 700
+        - asset: assets/fonts/Inter-Black.otf
+          weight: 900
+        - asset: assets/fonts/Inter-Thin.otf
+          weight: 100
+        - asset: assets/fonts/Inter-Medium.otf
+          weight: 500
+          

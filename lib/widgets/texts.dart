@@ -55,6 +55,7 @@ class NormalText extends StatelessWidget {
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
           fontSize: fontSize != null ? SizeConfig().sp(fontSize) as double? : 15,
           color: textColor ?? Colors.black,
+          fontFamily: 'Inter',
           fontWeight: fontWeight ?? FontWeight.w400),
     );
   }
