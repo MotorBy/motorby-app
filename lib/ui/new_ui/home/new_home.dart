@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -456,6 +457,18 @@ class InfoBox extends StatelessWidget {
           child: Column(
             children: [
               ContainerWidget(
+                onTap: (){
+                   showDialog(
+                          context: context,
+                          barrierColor: Colors.black.withOpacity(0.2),
+                          builder: (context) {
+                            return const ChecklistScreenDialogue(
+                              
+                             
+                            );
+                          });
+
+                },
                 elevation: 0.2,
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 12),

@@ -9,6 +9,7 @@ class XColors {
   static Color black() => const Color(0xFF000000);
   static Color primaryColor() => Colors.purpleAccent;
   static Color primaryColor2() => const Color(0xFF6E118D);
+  static Color buttonColor()=> const Color(0xff7A1CAC);
   static Color highlightColor() => const Color(0xFFF7D1CD);
   static Color surfaceColor() => getDarkMode != true ? const Color(0xFFC42D32) : const Color(0xFFFFFFFF);
   static Color decoratorContainerColor() => getDarkMode != true ? const Color(0xFFFFFFFF) : const Color(0xFF2D0203) ;

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'add_car_viewmodel.dart';
 
@@ -10,21 +14,21 @@ class AddCarScreen extends StatelessWidget {
     return ViewModelBuilder<AddCarViewModel>.reactive(
       viewModelBuilder: () => AddCarViewModel(),
       builder: (context, model, child) => Scaffold(
-        backgroundColor: const Color(0xFFF8F2FF),
+        backgroundColor: const Color(0xFFFFFFFF),
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Color(0xFFFEF7FF),
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
           ),
-          title: const Text(
+          centerTitle: false,
+          title: const NormalText(text: 
             'Add a car',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
+         
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            
           ),
         ),
         body: SingleChildScrollView(
@@ -33,22 +37,22 @@ class AddCarScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                const NormalText(text:
                   'Your car image (optional)',
-                  style: TextStyle(
-                    fontSize: 16,
+                
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
-                  ),
+               
                 ),
                 const SizedBox(height: 8),
                 _buildImageUploader(model),
                 const SizedBox(height: 8),
-                const Text(
+                const NormalText(text:
                   'Upload up to 5 images capturing different angles of your car.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                 
+                    fontSize: 11,
+                   fontWeight: FontWeight.w400,
+                  
                 ),
                 const SizedBox(height: 24),
                 _buildDropdownField(
@@ -70,7 +74,7 @@ class AddCarScreen extends StatelessWidget {
                   hint: 'Surname/Last name',
                   onTap: model.selectYear,
                   value: model.selectedYear,
-                  trailing: const Icon(Icons.calendar_today, size: 20),
+                  trailing: const GetSvgImage(image: 'assets/images/Icon-calender.svg',height: 14,width: 14,boxFit: BoxFit.scaleDown,),
                 ),
                 const SizedBox(height: 16),
                 _buildDropdownField(
@@ -105,17 +109,17 @@ class AddCarScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: model.addNewCar,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF7B61FF),
+                      backgroundColor: XColors.buttonColor(),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
+                    child:  NormalText(text: 
                       'Add new car',
-                      style: TextStyle(
+                    textColor: XColors.white(),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                      ),
+                      
                     ),
                   ),
                 ),
@@ -131,48 +135,67 @@ class AddCarScreen extends StatelessWidget {
   Widget _buildImageUploader(AddCarViewModel model) {
     return Container(
       width: double.infinity,
-      height: 200,
+      height: 250,
+      padding:const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFFF4EFFB),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.cloud_upload_outlined,
-            size: 40,
-            color: Color(0xFF7B61FF),
-          ),
-          const SizedBox(height: 8),
-          const Text(
+         const GetSvgImage(image: 'assets/images/file_uploadfile.svg'),
+         const YMargin(16),
+          const NormalText(text:
             'Click to upload',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+         
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+          
           ),
           const SizedBox(height: 4),
-          const Text(
+          const NormalText(text: 
             'PNG, JPG (max. 800×400px)',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+         
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+       
           ),
           const SizedBox(height: 16),
-          const Text(
-            'OR',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal:12.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: Color(0xFFD0D5DD),
+                  ),
+                ),
+                 const Padding(
+                   padding:  EdgeInsets.symmetric(horizontal: 12.0),
+                   child: NormalText(text: 
+                    'OR',
+                                
+                      fontSize: 14,
+                      textColor: Colors.black,
+                    
+                                 ),
+                 ),
+             Expanded(
+                  child: Container(
+                    height: 1,
+                    color: Color(0xFFD0D5DD),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: model.browseFiles,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF7B61FF),
+              backgroundColor: const Color(0xFF7A1CAC),
               padding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 12,
@@ -181,7 +204,7 @@ class AddCarScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Browse Files'),
+            child:  NormalText(text:'Browse Files',textColor: XColors.white(),fontWeight: FontWeight.w600,),
           ),
         ],
       ),
@@ -197,12 +220,10 @@ class AddCarScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        NormalText(text: 
           label,
-          style: const TextStyle(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w500,
-          ),
         ),
         const SizedBox(height: 8),
         InkWell(
@@ -281,7 +302,7 @@ class AddCarScreen extends StatelessWidget {
                 color: Colors.grey,
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16,vertical: 15),
               suffixIcon: trailing,
             ),
           ),

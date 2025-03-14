@@ -66,6 +66,22 @@ class HomeViewModel extends BaseViewModel {
     'breakdowns.png'
   ];
 
+final List<CheckList> checkList =[
+  CheckList(title: 'Fluids (oil and coolant)',isChecked: false),
+    CheckList(title: 'Brakes',isChecked: false),
+  CheckList(title: 'Lights',isChecked: false),
+  CheckList(title: 'Wiper blades',isChecked: false),
+  CheckList(title: 'Horn',isChecked: false),
+  CheckList(title: 'Tyres',isChecked: false),
+  CheckList(title: 'Documents and licenses',isChecked: false),
+
+];
+
+  void toggleItem(int index) {
+      checkList[index].isChecked = !checkList[index].isChecked;
+      notifyListeners();
+  }
+
   List<int>? totalCostingAndValue = [
     0,
     0,
@@ -481,4 +497,11 @@ class HomeViewModel extends BaseViewModel {
   }
 
 
+}
+class CheckList{
+  final String title;
+  bool isChecked;
+
+  CheckList({required this.title,this.isChecked =false});
+  
 }

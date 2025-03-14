@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 
@@ -157,6 +163,8 @@ class ChecklistScreen extends StatelessWidget {
     );
   }
 
+
+
   Widget _buildChecklistItem(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -190,3 +198,74 @@ class ChecklistScreen extends StatelessWidget {
     );
   }
 }
+
+class ChecklistScreenDialogue extends StatelessWidget {
+  const ChecklistScreenDialogue({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<HomeViewModel>.reactive(
+      viewModelBuilder: () => HomeViewModel(),
+      builder: (context, viewModel, child) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            child: Container(
+                height: 580,
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                       const NormalText(
+                          text: 'Checklist',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                        ),
+                        GestureDetector(
+                         onTap: (){
+                          navigate(context,const ChecklistScreen());
+                         }, 
+                          child:const GetSvgImage(image: 'assets/images/settings.svg')),
+                      ],
+                    ),
+                    const YMargin(20),
+                    Expanded(
+                      child: ListView.separated(
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              visualDensity: const  VisualDensity(horizontal: -2,vertical: -2),
+                              onTap: (){
+                                viewModel.toggleItem(index);
+                              },
+                              leading: 
+                              Icon(
+                               viewModel.checkList[index].isChecked?
+                               Icons.check_box
+                               : 
+                                Icons.check_box_outline_blank,
+                                color: XColors.buttonColor(),
+                              ),
+                              title: NormalText(text: viewModel.checkList[index].title,fontSize: 14,fontWeight: FontWeight.w500,),
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const DividerWidget(),
+                          itemCount: viewModel.checkList.length),
+                    ),
+                  ],
+                )),
+          ),
+        ),
+      ),
+    );
+  }}
