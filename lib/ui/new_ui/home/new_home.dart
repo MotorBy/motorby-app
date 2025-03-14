@@ -56,7 +56,7 @@ class VehicleSelectionBottomSheet extends StatelessWidget {
                     visualDensity: const VisualDensity(vertical: -2),
                     leading: const GetSvgImage(
                         image: 'assets/images/auto/toyota_se.svg'),
-                    trailing: Icon(Icons.circle_outlined),
+                    trailing: const Icon(Icons.circle_outlined),
                     title: const NormalText(
                       text: 'Toyota Camry',
                       fontSize: 15,
