@@ -315,7 +315,7 @@ class NewHomeScreen extends StatelessWidget {
                                     );
                                   },
                                   separatorBuilder: (context, index) =>
-                                      DividerWidget(),
+                                   const   DividerWidget(),
                                   itemCount: 4),
                             )
                           ],
@@ -327,34 +327,7 @@ class NewHomeScreen extends StatelessWidget {
               ),
             );
           }),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Report',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 40),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.store),
-            label: 'Marketplace',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            label: 'More',
-          ),
-        ],
-        currentIndex: 0,
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
-      ),
+
     );
   }
 }

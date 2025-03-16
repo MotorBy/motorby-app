@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/ui/onboarding/onboarding_screen.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_screen.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
@@ -78,7 +79,7 @@ class MyApp extends StatelessWidget {
           Size size = MediaQuery.of(context).size;
           EvnConfig.init(envType: APIKey.appStage,);
           SizeConfig.init(context, width: size.width, height: size.height, allowFontScaling: true);
-          return isOnboarded == true ? SplashScreen(isAuthed: isAuthed,) : const NewHomeScreen();
+          return isOnboarded == true ? SplashScreen(isAuthed: isAuthed,) : const DashBoardScreen();
         }
       ),
     );
