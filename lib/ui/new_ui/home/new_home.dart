@@ -335,12 +335,14 @@ class NewHomeScreen extends StatelessWidget {
 class DividerWidget extends StatelessWidget {
   const DividerWidget({
     super.key,
+    this.margin,
   });
+  final EdgeInsetsGeometry? margin;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 12),
+      margin: margin ??const EdgeInsets.symmetric(vertical: 12),
       height: 1,
       width: double.infinity,
       color: const Color(0xFFD0D5DD),
