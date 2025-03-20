@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_viewmodel.dart';
+import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
 
 class MileageReportView extends StatelessWidget {
   final ReportViewModel model;
@@ -15,56 +20,62 @@ class MileageReportView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Weather Section
-            const Text(
-              "Today's weather (Lagos)",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+            const NormalText(
+              text: "Today's weather (Lagos)",
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(16),
-              ),
+            ContainerWidget(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              backgroundColor: XColors.containerColor(),
+              borderRadius: BorderRadius.circular(20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    model.temperature,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  NormalText(
+                    text: model.temperature,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
                   ),
-                  Row(
-                    children: [
-                      const Icon(Icons.wb_sunny_outlined),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.cloud_outlined),
-                    ],
+                  Container(
+                    height: 60,
+                    width: 2,
+                    color: Color(0xFFF0E8F8).withOpacity(0.9),
                   ),
-                  Text(
-                    model.weatherCondition,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  const GetSvgImage(
+                      image: 'assets/images/meteocons_sun-hot.svg'),
+                  Container(
+                    height: 60,
+                    width: 2,
+                    color: Color(0xFFF0E8F8).withOpacity(0.9),
                   ),
-                  Text(
-                    model.humidity,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  const GetSvgImage(image: 'assets/images/bi_cloud-sun.svg'),
+                  Container(
+                    height: 60,
+                    width: 2,
+                    color: Color(0xFFF0E8F8).withOpacity(0.9),
+                  ),
+                  NormalText(
+                    text: model.weatherCondition,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  Container(
+                    height: 60,
+                    width: 2,
+                    color: Color(0xFFF0E8F8).withOpacity(0.9),
+                  ),
+                  NormalText(
+                    text: model.humidity,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-        
+
             // Mileage Stats
             Row(
               children: [
@@ -72,7 +83,7 @@ class MileageReportView extends StatelessWidget {
                   child: _buildStatCard(
                     'Total Mileage',
                     '${model.totalMileage}km',
-                    Icons.speed,
+                  'assets/images/total-milage.png',
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -80,126 +91,157 @@ class MileageReportView extends StatelessWidget {
                   child: _buildStatCard(
                     'Fuel Efficiency',
                     '${model.fuelEfficiency} km/l',
-                    Icons.local_gas_station,
+                    'assets/images/fuel_guage.png',
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-        
+
             // Last Mileage Log
-            const Text(
+            const NormalText(text:
               'Last Mileage Log',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+             
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+           
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
+            ContainerWidget(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Date of trip: ${model.lastTripDate}'),
-                        const SizedBox(height: 8),
-                        Text('Distance traveled: ${model.lastTripDistance}km'),
-                        const SizedBox(height: 8),
-                        Text('Fuel consumed: ${model.lastTripFuelConsumed} liters'),
-                        const SizedBox(height: 8),
-                        Text('Efficiency: ${model.lastTripEfficiency}km/l'),
-                      ],
+                  SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:8.0,top: 10,bottom: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                             const  NormalText(text: 'Date of trip: ',fontSize: 14,),
+                              NormalText(text: model.lastTripDate,fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                             Row(
+                            children: [
+                             const  NormalText(text: 'Distance traveled: ',fontSize: 14,),
+                              NormalText(text: '${model.lastTripDistance}km',fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                               Row(
+                            children: [
+                             const  NormalText(text: 'Fuel consumed: ',fontSize: 14,),
+                              NormalText(text: '${model.lastTripFuelConsumed} liters',fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                            ],
+                          ),
+                         
+                          const SizedBox(height: 4),
+                              Row(
+                            children: [
+                             const  NormalText(text: 'Efficiency: ',fontSize: 14,),
+                              NormalText(text: '${model.lastTripEfficiency}km/l',fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Image.asset(
-                    'assets/images/car.png', // TODO: Add car asset
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.contain,
-                  ),
+             const  Expanded(child: GetPngImage(image: 'assets/images/car_millage.png',))
                 ],
               ),
             ),
             const SizedBox(height: 24),
-        
+
             // Last Refuel and Current Mileage
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Colors.purple,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.local_gas_station,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Last Refuel',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        model.lastRefuelDate,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Mileage',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+                   const GetPngImage(image: 'assets/images/last_refuel.png'),
+                        const SizedBox(height: 12),
+                        const NormalText(
+                          text: 
+                          'Last Refuel',
+                         fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                        
                         ),
-                        Text(
-                          model.currentMileage.toString(),
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
+                                                const SizedBox(height: 12),
+
+                        NormalText(text:
+                          model.lastRefuelDate,
+                         fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                        
                         ),
                       ],
                     ),
                   ),
                 ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child:
+                       ContainerWidget(
+                elevation: 0.2,
+                padding: const EdgeInsets.only(top: 16),
+                borderRadius: BorderRadius.circular(16),
+                backgroundColor: const Color(0xFFF3F3FA),
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const NormalText(
+                      text: 'Mileage',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    const YMargin(12),
+                    const NormalText(
+                      text: '10,030,409',
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    const YMargin(21),
+                    ContainerWidget(
+                      elevation: 0.2,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16)),
+                      backgroundColor: XColors.highlightColor(),
+                      width: double.infinity,
+                      child: const Center(
+                        child: const NormalText(
+                          text: 'Update',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+                ),
               ],
             ),
             const SizedBox(height: 24),
-        
+
             // Add Mileage Log Button
             SizedBox(
               width: double.infinity,
@@ -227,32 +269,28 @@ class MileageReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon) {
+  Widget _buildStatCard(String title, String value, String icon) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.5),
+        color: XColors.containerColor(),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.purple),
+GetPngImage(image: icon),
           const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black54,
-            ),
+          NormalText(
+            text: title,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
           ),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+          NormalText(
+            text: value,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
           ),
         ],
       ),

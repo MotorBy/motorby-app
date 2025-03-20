@@ -16,10 +16,10 @@ class ExpenditureReportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> budgetIcon = [
-      'assets/images/fuel-icon.svg',
-      'assets/images/servicing-icon.svg',
-      'assets/images/repair-icon.svg',
-      'assets/images/expenses-icon.svg'
+      'assets/images/fuel_guage.png',
+      'assets/images/servicng-icon.png',
+      'assets/images/repaair-icon.png',
+      'assets/images/expenses.png'
     ];
     final List<String> budgetTopic = [
       'Fueling',
@@ -51,7 +51,7 @@ class ExpenditureReportView extends StatelessWidget {
                       maxCrossAxisExtent: 200,
                       childAspectRatio: 3 / 2,
                       crossAxisSpacing: 16,
-                      mainAxisSpacing: 6,
+                      mainAxisSpacing: 18,
                       mainAxisExtent: 118),
                   itemBuilder: (context, index) {
                     return ContainerWidget(
@@ -64,7 +64,7 @@ class ExpenditureReportView extends StatelessWidget {
                         children: [
                           Align(
                             alignment: Alignment.centerRight,
-                            child: GetSvgImage(image: budgetIcon[index]),
+                            child: GetPngImage(image: budgetIcon[index]),
                           ),
                           Center(
                             child: NormalText(text: budgetTopic[index],fontSize: 14,fontWeight: FontWeight.w400,),
