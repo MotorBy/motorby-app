@@ -165,7 +165,7 @@ class MileageReportView extends StatelessWidget {
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(25),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -243,26 +243,7 @@ class MileageReportView extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Add Mileage Log Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: model.addMileageLog,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pink[100],
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Add mileage log',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
+        
           ],
         ),
       ),
