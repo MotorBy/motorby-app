@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -210,36 +211,43 @@ class NewHomeScreen extends StatelessWidget {
                       ),
                       const YMargin(14),
                       // Insurance Card
-                      const Stack(
+                       Stack(
                         children: [
                           GetPngImage(image: 'assets/images/motorby_toyo.png'),
                           Positioned(
                             top: 35,
                             left: 14,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Car Insurance',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                            child: GestureDetector(
+                              onTap: (){
+                                navigate(context, const InsuranceScreen());
+                              },
+                              child: const AbsorbPointer(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Request quote',
-                                      style: TextStyle(color: Colors.white),
+                                      'Car Insurance',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                    Icon(Icons.chevron_right,
-                                        color: Colors.white),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Request quote',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        Icon(Icons.chevron_right,
+                                            color: Colors.white),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           )
                         ],

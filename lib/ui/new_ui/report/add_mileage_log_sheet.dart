@@ -26,12 +26,12 @@ class AddMileageLogSheet extends StatelessWidget {
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    const NormalText(text: 
                       'Add Mileage Log',
-                      style: TextStyle(
+                      
                         fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        fontWeight: FontWeight.w700,
+                    
                     ),
                   ],
                 ),

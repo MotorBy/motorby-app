@@ -10,6 +10,7 @@ class XColors {
   static Color primaryColor() => Colors.purpleAccent;
   static Color primaryColor2() => const Color(0xFF6E118D);
   static Color buttonColor()=> const Color(0xff7A1CAC);
+  static Color secondaryColor()=> const Color(0xFFE4D2EE);
   static Color highlightColor() => const Color(0xFFF7D1CD);
   static Color containerColor() => const Color(0xFFF4EFFB);
   static Color surfaceColor() => getDarkMode != true ? const Color(0xFFC42D32) : const Color(0xFFFFFFFF);
