@@ -211,14 +211,15 @@ class NewHomeScreen extends StatelessWidget {
                       ),
                       const YMargin(14),
                       // Insurance Card
-                       Stack(
+                      Stack(
                         children: [
-                          GetPngImage(image: 'assets/images/motorby_toyo.png'),
+                          const GetPngImage(
+                              image: 'assets/images/motorby_toyo.png'),
                           Positioned(
                             top: 35,
                             left: 14,
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 navigate(context, const InsuranceScreen());
                               },
                               child: const AbsorbPointer(
@@ -234,8 +235,10 @@ class NewHomeScreen extends StatelessWidget {
                                       ),
                                     ),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Request quote',
@@ -323,7 +326,7 @@ class NewHomeScreen extends StatelessWidget {
                                     );
                                   },
                                   separatorBuilder: (context, index) =>
-                                   const   DividerWidget(),
+                                      const DividerWidget(),
                                   itemCount: 4),
                             )
                           ],
@@ -335,7 +338,6 @@ class NewHomeScreen extends StatelessWidget {
               ),
             );
           }),
-
     );
   }
 }
@@ -350,7 +352,7 @@ class DividerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: margin ??const EdgeInsets.symmetric(vertical: 12),
+      margin: margin ?? const EdgeInsets.symmetric(vertical: 12),
       height: 1,
       width: double.infinity,
       color: const Color(0xFFD0D5DD),
@@ -440,17 +442,13 @@ class InfoBox extends StatelessWidget {
           child: Column(
             children: [
               ContainerWidget(
-                onTap: (){
-                   showDialog(
-                          context: context,
-                          barrierColor: Colors.black.withOpacity(0.2),
-                          builder: (context) {
-                            return const ChecklistScreenDialogue(
-                              
-                             
-                            );
-                          });
-
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      barrierColor: Colors.black.withOpacity(0.2),
+                      builder: (context) {
+                        return const ChecklistScreenDialogue();
+                      });
                 },
                 elevation: 0.2,
                 padding:

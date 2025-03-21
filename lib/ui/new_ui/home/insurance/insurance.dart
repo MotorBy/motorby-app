@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/insureance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/buy_insurance_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -206,11 +207,21 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                       ),
                     ],
                   ),
-                  NormalText(
-                    text: 'View Details ',
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
-                    textColor: XColors.primaryColor2(),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          barrierColor: Colors.black.withOpacity(0.2),
+                          builder: (context) {
+                            return const ViewDetailsDialogue();
+                          });
+                    },
+                    child: NormalText(
+                      text: 'View Details ',
+                      fontSize: 10,
+                      fontWeight: FontWeight.w400,
+                      textColor: XColors.primaryColor2(),
+                    ),
                   ),
                 ],
               ),
@@ -234,6 +245,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return ContainerWidget(
+                      onTap: (){},
                       width: 310,
                       margin: const EdgeInsets.symmetric(horizontal: 16.0),
                       borderRadius: BorderRadius.circular(16),
@@ -274,6 +286,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                                 ],
                               ),
                               ContainerWidget(
+                                onTap: (){
+                                  navigate(context, const BuyInsuranceScreen());
+                                },
                                 backgroundColor: XColors.white(),
                                 borderRadius: BorderRadius.circular(8),
                                 padding: const EdgeInsets.symmetric(
@@ -323,6 +338,82 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
             ),
             const YMargin(50),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ViewDetailsDialogue extends StatelessWidget {
+  const ViewDetailsDialogue({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<InsuranceViewModel>.reactive(
+      viewModelBuilder: () => InsuranceViewModel(),
+      builder: (context, viewModel, child) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            child: Container(
+                height: 420,
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const NormalText(
+                          text: 'View Details',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    const YMargin(20),
+                    SizedBox(
+                      height: 320,
+                      child: ListView.separated(
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              visualDensity: const VisualDensity(
+                                  horizontal: -4, vertical: -2),
+                              onTap: () {},
+                              leading: NormalText(
+                                text: viewModel.viewDetails[index],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              title: NormalText(
+                                text: viewModel.viewDetailsValue[index],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const DividerWidget(
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                              ),
+                          itemCount: viewModel.viewDetails.length),
+                    ),
+                  ],
+                )),
+          ),
         ),
       ),
     );

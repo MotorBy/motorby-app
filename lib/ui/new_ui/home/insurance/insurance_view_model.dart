@@ -11,6 +11,7 @@ int selectedModelIndex =-1;
 int selectedEngineIndex=-1;
 
 
+
 void updateSelectedVehicle(String vehicle,int index){
   selectedVehicle =vehicle;
   selectedVehicleIndex=index;
@@ -85,5 +86,19 @@ final registrationNumber =TextEditingController();
 "Hybrid - 3.5L PowerBoost V6 + Electric Motor",
 "Gasoline - 1.5L Turbo 4-Cylinder",
 
+  ];
+  final List<String> viewDetails=[
+    'Provider Name:',
+"Policy Number:",
+"Coverage Period:",
+"Renewal Date:",
+"Coverage Type:"
+  ];
+    final List<String> viewDetailsValue=[
+    'Comprehensive Party Insurance',
+"123456789",
+"Valid from Dec 1-31, 2024",
+"Renew by Dec 29, 2024",
+"Comprehensive /Third party"
   ];
 }
