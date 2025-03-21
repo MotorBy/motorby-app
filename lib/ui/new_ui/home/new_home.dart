@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';

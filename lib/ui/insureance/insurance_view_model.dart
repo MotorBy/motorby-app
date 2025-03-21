@@ -1,6 +1,6 @@
 import 'package:stacked/stacked.dart';
 
-class InsuranceViewModel extends BaseViewModel {
+class InsuranceViewModel1 extends BaseViewModel {
 
 
 
