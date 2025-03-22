@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/insureance/insurance_view_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/buy_insurance_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/claim_screeen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -61,34 +60,42 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
               leading: const Icon(Icons.directions_car),
               dense: true,
               visualDensity: const VisualDensity(horizontal: -4),
-              title: Row(
-                children: [
-                  Image.asset('assets/images/toyota-logo.png', height: 24),
-                  const SizedBox(width: 2),
-                  const NormalText(
-                    text: 'Toyota',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                  const XMargin(10),
-                  Icon(
-                    Icons.expand_less_rounded,
-                    color: XColors.black(),
-                    size: 30,
-                  )
-                ],
-              ),
-              onTap: () {
-                showModalBottomSheet(
+              title: GestureDetector(
+                onTap: (){
+                  showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(20)),
                   ),
-                  builder: (context) => const InsuranceQuoteBottomSheet(),
+                  builder: (context) => const VehicleSelectionBottomSheet(),
                 );
-              },
+                },
+                child: AbsorbPointer(
+                  child: Row(
+                    children: [
+                      Image.asset('assets/images/toyota-logo.png', height: 24),
+                      const SizedBox(width: 2),
+                      const NormalText(
+                        text: 'Toyota',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                      const XMargin(10),
+                      Icon(
+                        Icons.expand_less_rounded,
+                        color: XColors.black(),
+                        size: 30,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+             
               trailing: ContainerWidget(
+                onTap: (){
+                  navigate(context, const ClaimScreen());
+                },
                 borderColor: XColors.primaryColor2(),
                 hasBorder: true,
                 borderThickness: 1,

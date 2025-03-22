@@ -9,12 +9,17 @@ String selectedEngine='';
 int selectedVehicleIndex =-1;
 int selectedModelIndex =-1;
 int selectedEngineIndex=-1;
+int selectedPaymentMethod=-1;
 
 
 
 void updateSelectedVehicle(String vehicle,int index){
   selectedVehicle =vehicle;
   selectedVehicleIndex=index;
+  notifyListeners();
+}
+void updateSelectedPaymentMethod(int index){
+  selectedPaymentMethod=index;
   notifyListeners();
 }
 void updateSelectedModel(String model,int index){
@@ -30,6 +35,13 @@ void updateSelectedEngine(String engine,int index){
 final  manufacture =TextEditingController();
 final vehicleType =TextEditingController();
 final registrationNumber =TextEditingController();
+
+List<PaymentMethod> paymentMethod=[
+  PaymentMethod(img: 'assets/images/visa-icon.svg', details: 'UBA ***** **** **68'),
+  PaymentMethod(img: 'assets/images/master-card-icon.svg', details: 'Wema ***** **** **40'),
+  PaymentMethod(img: 'assets/images/epay-icon.svg', details: 'Apple Pay'),
+  PaymentMethod(img: 'assets/images/internet-icon.svg', details: 'Internet Banking'),
+];
 
 
   List<String> vehicle = [
@@ -101,4 +113,10 @@ final registrationNumber =TextEditingController();
 "Renew by Dec 29, 2024",
 "Comprehensive /Third party"
   ];
+}
+
+class PaymentMethod{
+  final String img;
+  final String details;
+  PaymentMethod({required this.img, required this.details});
 }
