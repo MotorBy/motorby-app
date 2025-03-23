@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
+import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'profile_viewmodel.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class NewProfileScreen extends StatelessWidget {
+  const NewProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,27 +18,39 @@ class ProfileScreen extends StatelessWidget {
       builder: (context, model, child) => Scaffold(
         backgroundColor: const Color(0xFFF8F2FF),
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: XColors.background(),
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.close, color: Colors.black),
             onPressed: () => Navigator.pop(context),
           ),
-          title: const Text(
-            'Profile',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
+          title: const NormalText(
+            text: 'Profile',
+            textColor: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.w500,
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.more_vert, color: Colors.black),
-              onPressed: () {
-                // TODO: Implement menu options
-              },
-            ),
+            PopupMenuButton<int>(
+                color: Colors.white,
+                surfaceTintColor: Colors.white,
+                icon: const Icon(Icons.more_vert),
+                itemBuilder: (context) => [
+                      const PopupMenuItem<int>(
+                          value: 0,
+                          child: NormalText(
+                            text: 'Edit Profile',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          
+                          ),
+                          
+                    ],onSelected: (val){
+                      navigate(context, const EditProfileScreen());
+                    },),
+           
           ],
         ),
         body: SingleChildScrollView(
@@ -59,12 +77,12 @@ class ProfileScreen extends StatelessWidget {
         Stack(
           children: [
             CircleAvatar(
-              radius: 50,
+              radius: 30,
               backgroundImage: AssetImage(model.profileImage),
             ),
             Positioned(
               right: 0,
-              bottom: 0,
+              bottom: 5,
               child: Container(
                 width: 16,
                 height: 16,
@@ -81,18 +99,17 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Text(
-          model.name,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        NormalText(
+          text: model.name,
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
         ),
         const SizedBox(height: 4),
         Text(
           model.email,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
             color: Colors.purple,
           ),
         ),
@@ -104,19 +121,16 @@ class ProfileScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              side: const BorderSide(color: Color(0xFF7B61FF)),
+              side: BorderSide(color: XColors.borderColor()),
               padding: const EdgeInsets.symmetric(
                 horizontal: 32,
                 vertical: 12,
               ),
             ),
-            child: const Text(
-              'Upgrade',
-              style: TextStyle(
-                color: Color(0xFF7B61FF),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+            child: const NormalText(
+              text: 'Upgrade',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
           ),
       ],
@@ -126,29 +140,17 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildCarsCard(ProfileViewModel model) {
     return GestureDetector(
       onTap: model.navigateToMyCars,
-      child: Container(
-        width: double.infinity,
-        height: 160,
-        decoration: BoxDecoration(
-          color: const Color(0xFF7B61FF),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Image.asset(
-                'assets/images/car_illustration.png',
-                height: 120,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
+      child: const Stack(
+        children: [
+          GetPngImage(image: 'assets/images/motorby_toyo.png'),
+          Positioned(
+            top: 35,
+            left: 14,
+            child: AbsorbPointer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Cars',
                     style: TextStyle(
                       color: Colors.white,
@@ -156,29 +158,22 @@ class ProfileScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Row(
-                    children: const [
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        'View my cars',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+                        'View my Cars',
+                        style: TextStyle(color: Colors.white),
                       ),
-                      SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                      Icon(Icons.chevron_right, color: Colors.white),
                     ],
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
@@ -187,59 +182,58 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       children: [
         _buildMenuItem(
-          icon: Icons.credit_card,
+          icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
           onTap: model.navigateToPaymentAndSubscription,
         ),
+        const DividerWidget(),
         _buildMenuItem(
-          icon: Icons.description,
+          icon: 'assets/images/auto/file.svg',
           title: 'My documents',
           onTap: model.navigateToMyDocuments,
         ),
+        const DividerWidget(),
         _buildMenuItem(
-          icon: Icons.people,
+          icon: 'assets/images/auto/user-group.svg',
           title: 'Referral and earning',
           onTap: model.navigateToReferralAndEarning,
         ),
+        const DividerWidget(),
         _buildMenuItem(
-          icon: Icons.settings,
+          icon: 'assets/images/auto/settings.svg',
           title: 'Settings',
           onTap: model.navigateToSettings,
         ),
+        const DividerWidget(),
         _buildMenuItem(
-          icon: Icons.business,
+          icon: 'assets/images/auto/settings.svg',
           title: 'Set up business profile',
           onTap: model.navigateToBusinessProfile,
         ),
+        const DividerWidget(),
         _buildMenuItem(
-          icon: Icons.info,
+          icon: 'assets/images/auto/about_icon.svg',
           title: 'About app',
           onTap: model.navigateToAboutApp,
         ),
+        const DividerWidget(),
       ],
     );
   }
 
   Widget _buildMenuItem({
-    required IconData icon,
+    required String icon,
     required String title,
     required VoidCallback onTap,
   }) {
     return ListTile(
       onTap: onTap,
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: Colors.black54),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        size: 16,
-        color: Colors.black54,
+      leading: GetSvgImage(image: icon, color: Colors.black54),
+      title: NormalText(
+        text: title,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
       ),
     );
   }

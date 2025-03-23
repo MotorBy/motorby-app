@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -110,9 +111,13 @@ class NewHomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: XColors.background(),
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 16.0),
-          child: GetSvgImage(image: 'assets/images/user_.svg'),
+        leading:  Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: GestureDetector(
+            onTap: (){
+            navigate(context, const NewProfileScreen());
+            },
+            child: const GetSvgImage(image: 'assets/images/user_.svg')),
         ),
         title: const NormalText(
           text: 'Hey Matthew',
