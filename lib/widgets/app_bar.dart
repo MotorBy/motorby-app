@@ -22,6 +22,7 @@ bool? noAction;
 
     return AppBar(
         backgroundColor: XColors.highlightColor().withOpacity(0.1),
+        surfaceTintColor: Colors.transparent,
         leading: GestureDetector(
             onTap: () {
 Navigator.of(context).pop();            },

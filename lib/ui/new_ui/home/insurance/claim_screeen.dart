@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/email_clain_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/new_claim_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/view_claim_details.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -53,7 +54,7 @@ class _ClaimScreenState extends State<ClaimScreen> {
                 ),
                 ContainerWidget(
                   onTap: () {
-                    navigate(context, const ClaimScreen());
+                    navigate(context, const NewClaimScreen());
                   },
                   borderColor: XColors.primaryColor2(),
                   hasBorder: true,
@@ -143,7 +144,7 @@ class InsuranceClaimsBox extends StatelessWidget {
                   children: [
                     ContainerWidget(
                       onTap: (){
-                        navigate(context,  EmailClaimView(status: status,));
+                        navigate(context,  ViewClaimDetails(status: status,));
                       },
                       padding: const EdgeInsets.symmetric(
                           vertical: 4, horizontal: 4),

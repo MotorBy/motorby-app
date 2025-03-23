@@ -2,47 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 
 class InsuranceViewModel extends BaseViewModel {
-
-String selectedVehicle='';
-String selectedModel='';
-String selectedEngine='';
-int selectedVehicleIndex =-1;
-int selectedModelIndex =-1;
-int selectedEngineIndex=-1;
-int selectedPaymentMethod=-1;
-
-
-
-void updateSelectedVehicle(String vehicle,int index){
-  selectedVehicle =vehicle;
-  selectedVehicleIndex=index;
+  String selectedVehicle = '';
+  String selectedModel = '';
+  String selectedEngine = '';
+  int selectedVehicleIndex = -1;
+  int selectedModelIndex = -1;
+  int selectedEngineIndex = -1;
+  int selectedPaymentMethod = -1;
+   String incidentType ='choose';
+    int selectedIncidentTypeIndex = -1;
+void updateIncidentChoice(String choice,int selectedIndex){
+    incidentType =choice;
+    selectedIncidentTypeIndex = selectedIndex;
   notifyListeners();
 }
-void updateSelectedPaymentMethod(int index){
-  selectedPaymentMethod=index;
-  notifyListeners();
-}
-void updateSelectedModel(String model,int index){
-  selectedModel =model;
-  selectedModelIndex= index;
-  notifyListeners();
-}
-void updateSelectedEngine(String engine,int index){
-  selectedEngine =engine;
-  selectedEngineIndex =index;
-  notifyListeners();
-}
-final  manufacture =TextEditingController();
-final vehicleType =TextEditingController();
-final registrationNumber =TextEditingController();
+  void updateSelectedVehicle(String vehicle, int index) {
+    selectedVehicle = vehicle;
+    selectedVehicleIndex = index;
+    notifyListeners();
+  }
 
-List<PaymentMethod> paymentMethod=[
-  PaymentMethod(img: 'assets/images/visa-icon.svg', details: 'UBA ***** **** **68'),
-  PaymentMethod(img: 'assets/images/master-card-icon.svg', details: 'Wema ***** **** **40'),
-  PaymentMethod(img: 'assets/images/epay-icon.svg', details: 'Apple Pay'),
-  PaymentMethod(img: 'assets/images/internet-icon.svg', details: 'Internet Banking'),
-];
+  void updateSelectedPaymentMethod(int index) {
+    selectedPaymentMethod = index;
+    notifyListeners();
+  }
 
+  void updateSelectedModel(String model, int index) {
+    selectedModel = model;
+    selectedModelIndex = index;
+    notifyListeners();
+  }
+
+  void updateSelectedEngine(String engine, int index) {
+    selectedEngine = engine;
+    selectedEngineIndex = index;
+    notifyListeners();
+  }
+
+  final manufacture = TextEditingController();
+  final vehicleType = TextEditingController();
+  final registrationNumber = TextEditingController();
+  //New Claim screen
+  final dateOfIncident = TextEditingController();
+  final timeOfIncident = TextEditingController();
+  final locationOfIncident = TextEditingController();
+  final descriptionOfIncident = TextEditingController();
+
+  List<PaymentMethod> paymentMethod = [
+    PaymentMethod(
+        img: 'assets/images/visa-icon.svg', details: 'UBA ***** **** **68'),
+    PaymentMethod(
+        img: 'assets/images/master-card-icon.svg',
+        details: 'Wema ***** **** **40'),
+    PaymentMethod(img: 'assets/images/epay-icon.svg', details: 'Apple Pay'),
+    PaymentMethod(
+        img: 'assets/images/internet-icon.svg', details: 'Internet Banking'),
+  ];
+
+  final List<String> incidentList = [
+    "Accident Damage",
+    "Theft or Vandalism",
+    "Natural Disaster",
+    "Third-Party Liability",
+    "Others"
+  ];
 
   List<String> vehicle = [
     "BMW 3 series",
@@ -81,41 +104,40 @@ List<PaymentMethod> paymentMethod=[
     "Mach 1"
   ];
   List<String> engineType = [
-"Gasoline - 2.0L Turbo 4-Cylinder",
-"Gasoline - 1.8L 4-Cylinder",
-"Hybride - 1.8L 4-Cylinder",
-"Electric - Dual Motor All-Wheel Drive",
-"Electric - RAV4 Prime (Plug-in-Hybrid)",
-"Gasoline - 2.5L 4-Cylinder",
-"Hybrid - 2.0L 4-Cylinder + Electric Motor",
-"Electric - Rear-Wheel Drive",
-"Electric - 40 kWh and 62 kWh Battery Options",
-"Electric -  58 kWh and 72.6 kWh Battery Options",
-"Gasoline - 6.2L V8",
-"Gasoline - 3.0L Twin-Turbo Flat-6",
-"Gasoline - 2.3L Turbo 4-Cylinder, 5.0L V8",
-"Harley-Davidson Street Glide",
-"Hybrid - 3.5L PowerBoost V6 + Electric Motor",
-"Gasoline - 1.5L Turbo 4-Cylinder",
-
+    "Gasoline - 2.0L Turbo 4-Cylinder",
+    "Gasoline - 1.8L 4-Cylinder",
+    "Hybride - 1.8L 4-Cylinder",
+    "Electric - Dual Motor All-Wheel Drive",
+    "Electric - RAV4 Prime (Plug-in-Hybrid)",
+    "Gasoline - 2.5L 4-Cylinder",
+    "Hybrid - 2.0L 4-Cylinder + Electric Motor",
+    "Electric - Rear-Wheel Drive",
+    "Electric - 40 kWh and 62 kWh Battery Options",
+    "Electric -  58 kWh and 72.6 kWh Battery Options",
+    "Gasoline - 6.2L V8",
+    "Gasoline - 3.0L Twin-Turbo Flat-6",
+    "Gasoline - 2.3L Turbo 4-Cylinder, 5.0L V8",
+    "Harley-Davidson Street Glide",
+    "Hybrid - 3.5L PowerBoost V6 + Electric Motor",
+    "Gasoline - 1.5L Turbo 4-Cylinder",
   ];
-  final List<String> viewDetails=[
+  final List<String> viewDetails = [
     'Provider Name:',
-"Policy Number:",
-"Coverage Period:",
-"Renewal Date:",
-"Coverage Type:"
+    "Policy Number:",
+    "Coverage Period:",
+    "Renewal Date:",
+    "Coverage Type:"
   ];
-    final List<String> viewDetailsValue=[
+  final List<String> viewDetailsValue = [
     'Comprehensive Party Insurance',
-"123456789",
-"Valid from Dec 1-31, 2024",
-"Renew by Dec 29, 2024",
-"Comprehensive /Third party"
+    "123456789",
+    "Valid from Dec 1-31, 2024",
+    "Renew by Dec 29, 2024",
+    "Comprehensive /Third party"
   ];
 }
 
-class PaymentMethod{
+class PaymentMethod {
   final String img;
   final String details;
   PaymentMethod({required this.img, required this.details});

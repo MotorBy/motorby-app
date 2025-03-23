@@ -471,7 +471,7 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
                   height: 490,
                   child: ListView(
                     children: [
-                      _buildField(context, model, 'Vehicle make', 'BMW',
+                      buildField(context, model, 'Vehicle make', 'BMW',
                           TextEditingController(text: model.selectedVehicle),
                           () {
                         showModalBottomSheet(
@@ -490,7 +490,7 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
                               image: 'assets/images/icon_down.svg',
                               boxFit: BoxFit.scaleDown)),
                       const YMargin(15),
-                      _buildField(context, model, 'Model', 'BMW',
+                      buildField(context, model, 'Model', 'BMW',
                           TextEditingController(text: model.selectedModel), () {
                         showModalBottomSheet(
                           context: context,
@@ -507,7 +507,7 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
                               image: 'assets/images/icon_down.svg',
                               boxFit: BoxFit.scaleDown)),
                       const YMargin(15),
-                      _buildField(context, model, 'Engine Type ', '5.0L',
+                      buildField(context, model, 'Engine Type ', '5.0L',
                           TextEditingController(text: model.selectedEngine),
                           () {
                         showModalBottomSheet(
@@ -525,7 +525,7 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
                               image: 'assets/images/icon_down.svg',
                               boxFit: BoxFit.scaleDown)),
                       const YMargin(15),
-                      _buildField(
+                      buildField(
                           context,
                           model,
                           'Year of Manufacture ',
@@ -535,7 +535,7 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
                           false,
                           const SizedBox.shrink()),
                       const YMargin(15),
-                      _buildField(
+                      buildField(
                           context,
                           model,
                           'Vehicle Type',
@@ -545,7 +545,7 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
                           false,
                           const SizedBox.shrink()),
                       const YMargin(15),
-                      _buildField(
+                      buildField(
                           context,
                           model,
                           'Registration Number',
@@ -810,7 +810,8 @@ class EngineTableBottomSheet extends StatelessWidget {
                             model.updateSelectedEngine(
                                 model.engineType[index], index);
                           },
-                          leading: ContainerWidget(
+                          leading:
+                           ContainerWidget(
                             height: 30,
                             width: 30,
                             padding: const EdgeInsets.all(6),
@@ -849,7 +850,9 @@ class EngineTableBottomSheet extends StatelessWidget {
   }
 }
 
-Widget _buildField(
+
+
+Widget buildField(
     BuildContext context,
     InsuranceViewModel model,
     String title,
@@ -857,7 +860,11 @@ Widget _buildField(
     TextEditingController controller,
     Function() function,
     bool isReadOnly,
-    Widget? suffixIcon) {
+    Widget? suffixIcon,
+    
+    [int? maxLine,Color? background]
+    
+    ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -887,8 +894,9 @@ Widget _buildField(
             ),
           ),
           filled: true,
-          fillColor: XColors.white(),
+          fillColor:background ?? XColors.white(),
         ),
+        maxLines:maxLine ,
         readOnly: isReadOnly,
         controller: controller,
         onTap: function,
