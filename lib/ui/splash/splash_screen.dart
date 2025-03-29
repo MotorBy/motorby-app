@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -24,7 +25,8 @@ class SplashScreen extends StatelessWidget {
               navigateReplace(context, SignInScreen());
             },
             onLoggedCallBack: (){
-              navigateReplace(context, const HomeScreen());
+              //navigateReplace(context, const HomeScreen());
+              navigateReplace(context, const DashBoardScreen());
             }
         ),
         builder: (context, model, child) {

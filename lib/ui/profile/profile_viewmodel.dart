@@ -17,6 +17,12 @@ class ProfileViewModel extends BaseViewModel {
   final persistentService = serviceLocator<PersistenceService>();
   final paymentService =  serviceLocator<AppPaymentService>();
 
+  final String name = 'Matthew Ola';
+  final String email = 'thematthewola@gmail.com';
+  final String profileImage = 'assets/images/profile.jpg';
+  final bool isOnline = true;
+  final bool isPremium = false;
+
   UserModel? userModel;
   User? user;
 

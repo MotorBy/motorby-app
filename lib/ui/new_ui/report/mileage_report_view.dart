@@ -41,20 +41,20 @@ class MileageReportView extends StatelessWidget {
                   Container(
                     height: 60,
                     width: 2,
-                    color: Color(0xFFF0E8F8).withOpacity(0.9),
+                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
                   ),
                   const GetSvgImage(
                       image: 'assets/images/meteocons_sun-hot.svg'),
                   Container(
                     height: 60,
                     width: 2,
-                    color: Color(0xFFF0E8F8).withOpacity(0.9),
+                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
                   ),
                   const GetSvgImage(image: 'assets/images/bi_cloud-sun.svg'),
                   Container(
                     height: 60,
                     width: 2,
-                    color: Color(0xFFF0E8F8).withOpacity(0.9),
+                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
                   ),
                   NormalText(
                     text: model.weatherCondition,
@@ -64,7 +64,7 @@ class MileageReportView extends StatelessWidget {
                   Container(
                     height: 60,
                     width: 2,
-                    color: Color(0xFFF0E8F8).withOpacity(0.9),
+                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
                   ),
                   NormalText(
                     text: model.humidity,
@@ -118,43 +118,79 @@ class MileageReportView extends StatelessWidget {
                 children: [
                   SizedBox(
                     child: Padding(
-                      padding: const EdgeInsets.only(left:8.0,top: 10,bottom: 10),
+                      padding:
+                          const EdgeInsets.only(left: 8.0, top: 10, bottom: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                             const  NormalText(text: 'Date of trip: ',fontSize: 14,),
-                              NormalText(text: model.lastTripDate,fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                              const NormalText(
+                                text: 'Date of trip: ',
+                                fontSize: 14,
+                              ),
+                              NormalText(
+                                text: model.lastTripDate,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                textColor: XColors.black().withOpacity(0.7),
+                              )
                             ],
                           ),
-                          const SizedBox(height: 4),
-                             Row(
+                          const SizedBox(height: 2),
+                          Row(
                             children: [
-                             const  NormalText(text: 'Distance traveled: ',fontSize: 14,),
-                              NormalText(text: '${model.lastTripDistance}km',fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                              const NormalText(
+                                text: 'Distance traveled: ',
+                                fontSize: 14,
+                              ),
+                              NormalText(
+                                text: '${model.lastTripDistance}km',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                textColor: XColors.black().withOpacity(0.7),
+                              )
                             ],
                           ),
-                          const SizedBox(height: 4),
-                               Row(
+                          const SizedBox(height: 2),
+                          Row(
                             children: [
-                             const  NormalText(text: 'Fuel consumed: ',fontSize: 14,),
-                              NormalText(text: '${model.lastTripFuelConsumed} liters',fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                              const NormalText(
+                                text: 'Fuel consumed: ',
+                                fontSize: 14,
+                              ),
+                              NormalText(
+                                text: '${model.lastTripFuelConsumed} liters',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                textColor: XColors.black().withOpacity(0.7),
+                              )
                             ],
                           ),
-                         
-                          const SizedBox(height: 4),
-                              Row(
+                          const SizedBox(height: 2),
+                          Row(
                             children: [
-                             const  NormalText(text: 'Efficiency: ',fontSize: 14,),
-                              NormalText(text: '${model.lastTripEfficiency}km/l',fontSize: 14,fontWeight: FontWeight.w400,textColor: XColors.black().withOpacity(0.7),)
+                              const NormalText(
+                                text: 'Efficiency: ',
+                                fontSize: 14,
+                              ),
+                              NormalText(
+                                text: '${model.lastTripEfficiency}km/l',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                textColor: XColors.black().withOpacity(0.7),
+                              )
                             ],
                           ),
                         ],
                       ),
                     ),
                   ),
-             const  Expanded(child: GetPngImage(image: 'assets/images/car_millage.png',))
+                  const SizedBox(width: 10),
+                  const Expanded(
+                      child: GetPngImage(
+                    image: 'assets/images/car_millage.png',
+                  ))
                 ],
               ),
             ),
@@ -195,48 +231,35 @@ class MileageReportView extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child:
-                       ContainerWidget(
-                elevation: 0.2,
-                padding: const EdgeInsets.only(top: 16),
-                borderRadius: BorderRadius.circular(16),
-                backgroundColor: const Color(0xFFF3F3FA),
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const NormalText(
-                      text: 'Mileage',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                  child: Container(
+                    padding: const EdgeInsets.all(25),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    const YMargin(12),
-                    const NormalText(
-                      text: '10,030,409',
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    const YMargin(21),
-                    ContainerWidget(
-                      elevation: 0.2,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(16),
-                          bottomRight: Radius.circular(16)),
-                      backgroundColor: XColors.highlightColor(),
-                      width: double.infinity,
-                      child: const Center(
-                        child: const NormalText(
-                          text: 'Update',
+                    child: const Column(
+                      children: [
+                        GetPngImage(image: 'assets/images/last_refuel.png'),
+                        SizedBox(height: 12),
+                        NormalText(
+                          text:
+                          'Recent Amount',
+                          textAlign: TextAlign.center,
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w400,
+
                         ),
-                      ),
+                        SizedBox(height: 12),
+
+                        NormalText(text:
+                        '5,000',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
                 ),
               ],
             ),

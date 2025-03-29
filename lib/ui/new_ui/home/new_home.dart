@@ -31,7 +31,7 @@ class VehicleSelectionBottomSheet extends StatelessWidget {
               child: Container(
             height: 4,
             width: 40,
-            color: Color(0xFFD0D5DD),
+            color: const Color(0xFFD0D5DD),
           )),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,6 +50,13 @@ class VehicleSelectionBottomSheet extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+          const NormalText(
+            text: 'Selecting a car will be set across all the activity withing the Motorby application.',
+            fontSize: 13,
+            textColor: Colors.black,
+            fontWeight: FontWeight.w500,
+          ),
+          const SizedBox(height: 26),
           SizedBox(
             height: 140,
             child: ListView.separated(
@@ -394,7 +401,7 @@ class InfoBox extends StatelessWidget {
                     NormalText(
                       text: 'Weather',
                       fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w700,
                     ),
                     YMargin(12),
                     NormalText(
@@ -459,8 +466,7 @@ class InfoBox extends StatelessWidget {
                       });
                 },
                 elevation: 0.2,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                 borderRadius: BorderRadius.circular(16),
                 backgroundColor: const Color(0xFFF3F3FA),
                 width: double.infinity,
@@ -474,20 +480,20 @@ class InfoBox extends StatelessWidget {
                         NormalText(
                           text: 'Checklist',
                           fontSize: 12,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w700,
                         ),
                         YMargin(12),
                         NormalText(
-                          text: '8 / 10',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          text: '8/10',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       ],
                     ),
                     CircularProgressIndicator(
                       value: 0.8,
                       color: Colors.deepPurple,
-                      strokeWidth: 4,
+                      strokeWidth: 8,
                       backgroundColor: Colors.black12,
                     ),
                   ],
@@ -507,7 +513,7 @@ class InfoBox extends StatelessWidget {
                     const NormalText(
                       text: 'Mileage',
                       fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w700,
                     ),
                     const YMargin(12),
                     const NormalText(
@@ -549,7 +555,7 @@ class InfoBox extends StatelessWidget {
                     const NormalText(
                       text: 'Expenditures',
                       fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w700,
                     ),
                     const YMargin(12),
                     const NormalText(

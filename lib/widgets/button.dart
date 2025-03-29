@@ -105,7 +105,7 @@ class XButton extends StatelessWidget {
           minimumSize: Size(width ?? 300, height ?? 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius ?? 28),
-            side: BorderSide(color: XColors.primaryColor(), width: 1),
+            side: BorderSide(color: XColors.primaryColor(), width: 1.5),
           ),
         ),
         child: !isLoading

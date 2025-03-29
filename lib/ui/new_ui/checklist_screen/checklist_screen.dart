@@ -68,8 +68,8 @@ class ChecklistScreen extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Row(
-                              children: const [
+                            child: const Row(
+                              children: [
                                 Text(
                                   'Daily',
                                   style: TextStyle(
@@ -150,7 +150,8 @@ class ChecklistScreen extends StatelessWidget {
                       'Update checklist',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -163,8 +164,6 @@ class ChecklistScreen extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildChecklistItem(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -175,7 +174,7 @@ class ChecklistScreen extends StatelessWidget {
             title,
             style: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
           Switch(
@@ -223,18 +222,31 @@ class ChecklistScreenDialogue extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                       const NormalText(
-                          text: 'Checklist',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
+                        const Expanded(
+                          child: NormalText(
+                            text: 'Checklist',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 21,
+                          ),
                         ),
+                        const XMargin(10),
                         GestureDetector(
-                         onTap: (){
-                          navigate(context,const ChecklistScreen());
-                         }, 
-                          child:const GetSvgImage(image: 'assets/images/settings.svg')),
+                            onTap: () {
+                              navigate(context, const ChecklistScreen());
+                            },
+                            child: const GetSvgImage(
+                                image: 'assets/images/settings.svg')
+                        ),
+                        const XMargin(30),
+                        GestureDetector(
+                            onTap: () {
+                              popView(context);
+                            },
+                            child: const Icon(Icons.close_rounded, size: 30,
+                            )
+                        ),
+                        const XMargin(10),
                       ],
                     ),
                     const YMargin(20),
@@ -243,29 +255,35 @@ class ChecklistScreenDialogue extends StatelessWidget {
                           itemBuilder: (context, index) {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
-                              visualDensity: const  VisualDensity(horizontal: -2,vertical: -2),
-                              onTap: (){
+                              visualDensity: const VisualDensity(
+                                  horizontal: -2, vertical: -2),
+                              onTap: () {
                                 viewModel.toggleItem(index);
                               },
-                              leading: 
-                              Icon(
-                               viewModel.checkList[index].isChecked?
-                               Icons.check_box
-                               : 
-                                Icons.check_box_outline_blank,
+                              leading: Icon(
+                                viewModel.checkList[index].isChecked
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank,
                                 color: XColors.buttonColor(),
                               ),
-                              title: NormalText(text: viewModel.checkList[index].title,fontSize: 14,fontWeight: FontWeight.w500,),
+                              title: NormalText(
+                                text: viewModel.checkList[index].title,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
                             );
                           },
                           separatorBuilder: (context, index) =>
                               const DividerWidget(),
-                          itemCount: viewModel.checkList.length),
+                          itemCount: viewModel.checkList.length
+                      ),
                     ),
                   ],
-                )),
+                )
+            ),
           ),
         ),
       ),
     );
-  }}
+  }
+}

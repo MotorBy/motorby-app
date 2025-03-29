@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
           Size size = MediaQuery.of(context).size;
           EvnConfig.init(envType: APIKey.appStage,);
           SizeConfig.init(context, width: size.width, height: size.height, allowFontScaling: true);
-          return isOnboarded == true ? SplashScreen(isAuthed: isAuthed,) : const DashBoardScreen();
+          return isAuthed != true ? SplashScreen(isAuthed: isAuthed,) : const DashBoardScreen();
         }
       ),
     );

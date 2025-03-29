@@ -25,15 +25,12 @@ class ReportScreen extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
           centerTitle: false,
-          backgroundColor: Color(0xFFFEF7FF),
+          backgroundColor: const Color(0xFFFEF7FF),
         ),
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const DividerWidget(
-                margin: EdgeInsets.zero,
-              ),
               const YMargin(24),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -56,8 +53,7 @@ class ReportScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 4),
       decoration: BoxDecoration(
-        color: Color(0XFFF4EFFB),
-        
+        color: const Color(0XFFF4EFFB),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
