@@ -145,7 +145,7 @@ class NewHomeScreen extends StatelessWidget {
                     children: [
                       // Vehicle Selection Card
                       ListTile(
-                        leading: const Icon(Icons.directions_car),
+                        contentPadding: EdgeInsets.zero,
                         dense: true,
                         visualDensity: const VisualDensity(horizontal: -4),
                         title: Row(
@@ -178,7 +178,7 @@ class NewHomeScreen extends StatelessWidget {
                           );
                         },
                       ),
-
+                      const YMargin(14),
                       // Fuel Price Card
                       ContainerWidget(
                         backgroundColor: XColors.highlightColor(),
@@ -337,6 +337,9 @@ class NewHomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
+
+                      const YMargin(16),
+
                     ],
                   ),
                 ),
