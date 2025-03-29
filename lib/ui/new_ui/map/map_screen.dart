@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -37,7 +38,19 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             ),
-            body: const ContainerWidget(),
+            body: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
+                zoom: 14.0,
+              ),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              zoomControlsEnabled: true,
+              mapType: MapType.normal,
+              onMapCreated: (GoogleMapController controller) {
+                viewModel.setMapController(controller);
+              },
+            ),
           );
         });
   }

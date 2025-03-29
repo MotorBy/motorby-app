@@ -4,6 +4,9 @@ import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.da
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -296,7 +299,7 @@ class NewHomeScreen extends StatelessWidget {
                               margin: const EdgeInsets.symmetric(vertical: 12),
                               height: 1,
                               width: double.infinity,
-                              color: Color(0xFFD0D5DD),
+                              color: const Color(0xFFD0D5DD),
                             ),
                             Expanded(
                               child: ListView.separated(
@@ -415,16 +418,35 @@ class InfoBox extends StatelessWidget {
               const YMargin(16),
               Stack(
                 children: [
+                  ///Map section view
                   ContainerWidget(
                     elevation: 0.2,
-                    onTap: () {},
-                    height: 272,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    onTap: () {
+                      navigate(context, const MapScreen());
+                    },
+                    height: 282,
                     borderRadius: BorderRadius.circular(16),
                     backgroundColor: Colors.black26,
                     width: double.infinity,
-                    child: Container(),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: GoogleMap(
+                        initialCameraPosition: const CameraPosition(
+                          target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
+                          zoom: 12.0,
+                        ),
+                        myLocationEnabled: true,
+                        myLocationButtonEnabled: false,
+                        zoomControlsEnabled: false,
+                        mapType: MapType.normal,
+                        onMapCreated: (GoogleMapController controller) {
+                          MapViewModel().setMapController(controller);
+                        },
+                      ),
+                    ),
                   ),
+                  
+                  ///Button to navigate to map view
                   Positioned(
                       bottom: 30,
                       right: 0,
@@ -446,7 +468,8 @@ class InfoBox extends StatelessWidget {
                             ),
                           ),
                         ],
-                      ))
+                      ),
+                    )
                 ],
               )
             ],
