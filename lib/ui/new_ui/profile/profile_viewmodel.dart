@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_screen.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:stacked/stacked.dart';
 
 class ProfileViewModel extends BaseViewModel {
@@ -13,8 +16,8 @@ class ProfileViewModel extends BaseViewModel {
     // TODO: Implement navigation to cars screen
   }
 
-  void navigateToPaymentAndSubscription() {
-    // TODO: Implement navigation to payment screen
+  void navigateToPaymentAndSubscription(BuildContext context) {
+    navigate(context,const PaymentAndSubscriptionScreen());
   }
 
   void navigateToMyDocuments() {

@@ -62,7 +62,7 @@ class NewProfileScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildCarsCard(model),
                 const SizedBox(height: 24),
-                _buildMenuItems(model),
+                _buildMenuItems(model,context),
               ],
             ),
           ),
@@ -178,13 +178,15 @@ class NewProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItems(ProfileViewModel model) {
+  Widget _buildMenuItems(ProfileViewModel model,BuildContext context) {
     return Column(
       children: [
         _buildMenuItem(
           icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
-          onTap: model.navigateToPaymentAndSubscription,
+          onTap:(){
+            model.navigateToPaymentAndSubscription(context);
+          } ,
         ),
         const DividerWidget(),
         _buildMenuItem(

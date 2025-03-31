@@ -199,7 +199,7 @@ class PaymentMethod extends StatelessWidget {
             const    Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const NormalText(
+                     NormalText(
                       text: 'Choose payment method',
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
