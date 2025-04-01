@@ -21,6 +21,8 @@ class BudgetingService {
 
     final json = JSON.jsonDecode(response.body);
 
+    print(json.toString());
+
     if(response.statusCode == 200 || response.statusCode == 201) {
 
       BudgetingModel? res = BudgetingModel.fromJson(json);

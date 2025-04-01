@@ -107,7 +107,7 @@ class ExpenditureReportView extends StatelessWidget {
               const NormalText(
                 text: 'Budget Statistics',
                 fontSize: 18,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
               ),
               DropdownButton<String>(
                 value: model.selectedTimeFrame,
@@ -139,7 +139,7 @@ class ExpenditureReportView extends StatelessWidget {
             child: ListView.builder(
               itemBuilder: (context, index) {
                 final List<String> summary = [
-                  'Refuel',
+                  'Fuel',
                   'Services',
                   'Repair',
                   'Expenses'
@@ -165,7 +165,7 @@ class ExpenditureReportView extends StatelessWidget {
               NormalText(
                 text: '100,000.00',
                 fontSize: 16,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w700,
                 textColor: XColors.black(),
               ),
             ],
@@ -178,11 +178,11 @@ class ExpenditureReportView extends StatelessWidget {
               children: [
                 Expanded(
                   child: LinearProgressIndicator(
-                    minHeight: 40,
+                    minHeight: 30,
                     color: XColors.primaryColor2(),
                     backgroundColor: XColors.primaryColor2(),
                     borderRadius: BorderRadius.circular(8),
-                    value: 0.6,
+                    value: 1.0,
                   ),
                 ),
                 Padding(
@@ -199,7 +199,7 @@ class ExpenditureReportView extends StatelessWidget {
                       NormalText(
                         text: '36,000.00',
                         fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w700,
                         textColor: XColors.black(),
                       ),
                     ],
@@ -211,17 +211,6 @@ class ExpenditureReportView extends StatelessWidget {
           const YMargin(16),
           _buildCategoryDistribution()
         ],
-      ),
-    );
-  }
-
-  Widget _buildExpenseProgressBar() {
-    return Container(
-      width: double.infinity,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.purple,
-        borderRadius: BorderRadius.circular(8),
       ),
     );
   }
@@ -252,7 +241,7 @@ class ExpenditureReportView extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
-            Text('Refuel'),
+            Text('Fuel'),
             Text('Services'),
             Text('Repair'),
           ],
@@ -261,74 +250,6 @@ class ExpenditureReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildExpenseCardsGrid() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      children: [
-        _buildExpenseCard(
-          'Fueling',
-          '₦100,030,409.50',
-          Icons.local_gas_station,
-        ),
-        _buildExpenseCard(
-          'Servicing',
-          '₦100,030,409.50',
-          Icons.build,
-        ),
-        _buildExpenseCard(
-          'Repair',
-          '₦100,030,409.50',
-          Icons.build_circle,
-        ),
-        _buildExpenseCard(
-          'Expenses',
-          '₦100,030,409.50',
-          Icons.account_balance_wallet,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildExpenseCard(String title, String amount, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(icon),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                amount,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class ReportSummary extends StatelessWidget {
@@ -350,8 +271,8 @@ class ReportSummary extends StatelessWidget {
           NormalText(
             text: title,
             fontSize: 11,
-            fontWeight: FontWeight.w400,
-            textColor: XColors.black().withOpacity(0.6),
+            fontWeight: FontWeight.w600,
+            textColor: XColors.black(),
           ),
         ],
       ),

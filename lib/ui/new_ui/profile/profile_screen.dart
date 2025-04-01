@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
+import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
-import 'profile_viewmodel.dart';
 
 class NewProfileScreen extends StatelessWidget {
   const NewProfileScreen({Key? key}) : super(key: key);
@@ -33,36 +35,52 @@ class NewProfileScreen extends StatelessWidget {
           ),
           actions: [
             PopupMenuButton<int>(
-                color: Colors.white,
-                surfaceTintColor: Colors.white,
-                icon: const Icon(Icons.more_vert),
-                itemBuilder: (context) => [
-                      const PopupMenuItem<int>(
-                          value: 0,
-                          child: NormalText(
-                            text: 'Edit Profile',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          
-                          ),
-                          
-                    ],onSelected: (val){
-                      navigate(context, const EditProfileScreen());
-                    },),
-           
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
+              icon: const Icon(Icons.more_vert),
+              itemBuilder: (context) => [
+                const PopupMenuItem<int>(
+                  value: 0,
+                  child: NormalText(
+                    text: 'Edit Profile',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                PopupMenuItem<int>(
+                  value: 1,
+                  onTap: (){
+
+                    model.logOut().then((value) {
+                      popToFirst(context);
+                      navigateReplace(context, SignInScreen());
+                    });
+
+                  },
+                  child: const NormalText(
+                    text: 'Log out',
+                    fontSize: 12,
+                    textColor: Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+              onSelected: (val) {
+                navigate(context, const EditProfileScreen());
+              },
+            ),
           ],
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(26.0),
             child: Column(
               children: [
                 _buildProfileHeader(model),
                 const SizedBox(height: 24),
                 _buildCarsCard(model),
                 const SizedBox(height: 24),
-                _buildMenuItems(model,context),
+                _buildMenuItems(model, context: context),
               ],
             ),
           ),
@@ -116,10 +134,10 @@ class NewProfileScreen extends StatelessWidget {
         const SizedBox(height: 16),
         if (!model.isPremium)
           OutlinedButton(
-            onPressed: model.upgradeAccount,
+            onPressed: (){},
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(32),
               ),
               side: BorderSide(color: XColors.borderColor()),
               padding: const EdgeInsets.symmetric(
@@ -139,7 +157,7 @@ class NewProfileScreen extends StatelessWidget {
 
   Widget _buildCarsCard(ProfileViewModel model) {
     return GestureDetector(
-      onTap: model.navigateToMyCars,
+      onTap: (){},
       child: const Stack(
         children: [
           GetPngImage(image: 'assets/images/motorby_toyo.png'),
@@ -178,45 +196,45 @@ class NewProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItems(ProfileViewModel model,BuildContext context) {
+  Widget _buildMenuItems(ProfileViewModel model, {BuildContext? context}) {
     return Column(
       children: [
         _buildMenuItem(
           icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
-          onTap:(){
-            model.navigateToPaymentAndSubscription(context);
-          } ,
+          onTap: (){
+            navigate(context!, const PaymentAndSubscriptionScreen());
+          },
         ),
         const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/file.svg',
           title: 'My documents',
-          onTap: model.navigateToMyDocuments,
+          onTap: (){},
         ),
         const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/user-group.svg',
           title: 'Referral and earning',
-          onTap: model.navigateToReferralAndEarning,
+          onTap: (){},
         ),
         const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/settings.svg',
           title: 'Settings',
-          onTap: model.navigateToSettings,
+          onTap: (){},
         ),
         const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/settings.svg',
           title: 'Set up business profile',
-          onTap: model.navigateToBusinessProfile,
+          onTap: (){},
         ),
         const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/about_icon.svg',
           title: 'About app',
-          onTap: model.navigateToAboutApp,
+          onTap: (){},
         ),
         const DividerWidget(),
       ],

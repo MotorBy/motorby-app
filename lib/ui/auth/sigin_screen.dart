@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/auth/signup_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/auth/signup_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -104,7 +105,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         email: emailTextController.text,
                         password: passwordTextController.text,
                         onCallBack: (){
-                          navigateReplace(context, const HomeScreen());
+                          //navigateReplace(context, const HomeScreen());
+                          navigateReplace(context, const DashBoardScreen());
                         },
                         onErrorBack: (e){
                           showSnackBar(
@@ -149,50 +151,51 @@ class _SignInScreenState extends State<SignInScreen> {
                     ],),
                     const YMargin(50),
                     XButton(
-                        onPressed: () {
+                      onPressed: () {
 
-                          model.handleSignInWithGoogle(
-                            onCallBack: () {
-                              navigateReplace(context, const HomeScreen());
+                        model.handleSignInWithGoogle(
+                          onCallBack: () {
+                            //navigateReplace(context, const HomeScreen());
+                            navigateReplace(context, const DashBoardScreen());
+                          },
+                          onErrorBack: (e){
+                              showSnackBar(
+                                  context: context,
+                                  message: e,
+                                  error: true
+                              );
                             },
-                            onErrorBack: (e){
-                                showSnackBar(
-                                    context: context,
-                                    message: e,
-                                    error: true
-                                );
-                              },
-                          );
+                        );
 
-                        },
-                        isOutline: true,
+                      },
+                      isOutline: true,
                       buttonWidget: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            NormalText(
-                              text: 'Login with',
-                              textColor: XColors.textColor(),
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15,
-                            ),
-                            const XMargin(15),
-                            Container(
-                              height: 25,
-                              width: 25,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(
-                                  32,
-                                ),
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          NormalText(
+                            text: 'Login with',
+                            textColor: XColors.textColor(),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
+                          const XMargin(15),
+                          Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                32,
                               ),
-                              child: Image.asset('assets/images/icons/google.png'),
                             ),
-                            const XMargin(3),
-                          ],
-                        ),
+                            child: Image.asset('assets/images/icons/google.png'),
+                          ),
+                          const XMargin(3),
+                        ],
                       ),
+                    ),
                     ),
                     const YMargin(30),
                     NormalText(
