@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -79,7 +80,7 @@ class NewProfileScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildCarsCard(model),
                 const SizedBox(height: 24),
-                _buildMenuItems(model),
+                _buildMenuItems(model, context: context),
               ],
             ),
           ),
@@ -195,13 +196,15 @@ class NewProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItems(ProfileViewModel model) {
+  Widget _buildMenuItems(ProfileViewModel model, {BuildContext? context}) {
     return Column(
       children: [
         _buildMenuItem(
           icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
-          onTap: (){},
+          onTap: (){
+            navigate(context!, const PaymentAndSubscriptionScreen());
+          },
         ),
         const DividerWidget(),
         _buildMenuItem(

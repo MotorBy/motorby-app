@@ -16,10 +16,6 @@ class ProfileViewModel extends BaseViewModel {
     // TODO: Implement navigation to cars screen
   }
 
-  void navigateToPaymentAndSubscription(BuildContext context) {
-    navigate(context,const PaymentAndSubscriptionScreen());
-  }
-
   void navigateToMyDocuments() {
     // TODO: Implement navigation to documents screen
   }
