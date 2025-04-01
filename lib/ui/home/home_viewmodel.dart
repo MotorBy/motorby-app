@@ -6,9 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
+import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/checklist_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
@@ -30,6 +33,7 @@ class HomeViewModel extends BaseViewModel {
   final budgetingService = serviceLocator<BudgetingService>();
   final paymentService =  serviceLocator<AppPaymentService>();
   final salesService = serviceLocator<SalesService>();
+  final checklistService = serviceLocator<ChecklistService>();
 
   final _navigatorKey = GlobalKey<NavigatorState>();
   late AppLinks _appLinks;
@@ -39,6 +43,8 @@ class HomeViewModel extends BaseViewModel {
 
   BudgetingModel? budgetingModel;
   CarId? currentCar;
+  ChecklistDataModel? checkListDataModel;
+  UserModel? userModel;
   List<File> addImagesList = [];
 
   final TextEditingController amountInputController = TextEditingController();
@@ -66,16 +72,16 @@ class HomeViewModel extends BaseViewModel {
     'breakdowns.png'
   ];
 
-final List<CheckList> checkList =[
-  CheckList(title: 'Fluids (oil and coolant)',isChecked: false),
+  final List<CheckList> checkList =[
+    CheckList(title: 'Fluids (oil and coolant)',isChecked: false),
     CheckList(title: 'Brakes',isChecked: false),
-  CheckList(title: 'Lights',isChecked: false),
-  CheckList(title: 'Wiper blades',isChecked: false),
-  CheckList(title: 'Horn',isChecked: false),
-  CheckList(title: 'Tyres',isChecked: false),
-  CheckList(title: 'Documents and licenses',isChecked: false),
+    CheckList(title: 'Lights',isChecked: false),
+    CheckList(title: 'Wiper blades',isChecked: false),
+    CheckList(title: 'Horn',isChecked: false),
+    CheckList(title: 'Tyres',isChecked: false),
+    CheckList(title: 'Documents and licenses',isChecked: false),
 
-];
+  ];
 
   void toggleItem(int index) {
       checkList[index].isChecked = !checkList[index].isChecked;
@@ -153,6 +159,8 @@ final List<CheckList> checkList =[
           state: userService.userModel!.payload!.user!.state,
       );
 
+      userModel = userService.userModel;
+
       budgetingModel = budgetingService.budgetingModel;
       fuelData = userService.fuelData;
 
@@ -169,6 +177,9 @@ final List<CheckList> checkList =[
           salesService.currentCarMake = currentCar!.carMake!;
 
           getCurrentTotalValue(index: currentBudgetViewIndex);
+          onBudgetViewUpdated(currentBudgetViewIndex);
+
+          getChecklistDataModel();
 
         }
 
@@ -221,8 +232,12 @@ final List<CheckList> checkList =[
       totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
     }
 
-    for (var element in budgetingModel!.budget![index].servicing!) {
-      totalCostingAndValue![1] = totalCostingAndValue![1] + element.price!;  ///for servicing budget will have index 1
+    if(budgetingModel!.budget![index].servicing != null) {
+
+      for (var element in budgetingModel!.budget![index].servicing!) {
+        totalCostingAndValue![1] = totalCostingAndValue![1] + element.price!;  ///for servicing budget will have index 1
+      }
+
     }
 
     for (var element in budgetingModel!.budget![index].repairing!) {
@@ -233,9 +248,10 @@ final List<CheckList> checkList =[
 
     totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 0
 
-    //currentTotalSpent = totalCostingAndValue![0] + totalCostingAndValue![1] + totalCostingAndValue![2];
     currentTotalSpent = budgetingModel!.budget![currentBudgetViewIndex!].currentSpending ?? 0;
     currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget ?? 0;
+
+    print(currentTotalSpent);
 
     notifyListeners();
 
@@ -252,6 +268,11 @@ final List<CheckList> checkList =[
     salesService.currentCarMake = currentCar!.carMake!;
     currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
     notifyListeners();
+  }
+
+  Future<void> getChecklistDataModel() async {
+    final response = await checklistService.getCarChecklist(currentCar!.sId!);
+    checkListDataModel = response;
   }
 
   void updateBudgetTypeIndex({int? v}) {

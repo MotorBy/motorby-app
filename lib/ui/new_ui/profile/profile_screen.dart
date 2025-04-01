@@ -72,7 +72,7 @@ class NewProfileScreen extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(26.0),
             child: Column(
               children: [
                 _buildProfileHeader(model),
@@ -136,7 +136,7 @@ class NewProfileScreen extends StatelessWidget {
             onPressed: (){},
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(32),
               ),
               side: BorderSide(color: XColors.borderColor()),
               padding: const EdgeInsets.symmetric(
