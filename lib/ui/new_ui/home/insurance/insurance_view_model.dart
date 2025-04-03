@@ -9,13 +9,16 @@ class InsuranceViewModel extends BaseViewModel {
   int selectedModelIndex = -1;
   int selectedEngineIndex = -1;
   int selectedPaymentMethod = -1;
-   String incidentType ='choose';
-    int selectedIncidentTypeIndex = -1;
-void updateIncidentChoice(String choice,int selectedIndex){
-    incidentType =choice;
+  String incidentType = 'choose';
+  int selectedIncidentTypeIndex = -1;
+
+
+  void updateIncidentChoice(String choice, int selectedIndex) {
+    incidentType = choice;
     selectedIncidentTypeIndex = selectedIndex;
-  notifyListeners();
-}
+    notifyListeners();
+  }
+
   void updateSelectedVehicle(String vehicle, int index) {
     selectedVehicle = vehicle;
     selectedVehicleIndex = index;
