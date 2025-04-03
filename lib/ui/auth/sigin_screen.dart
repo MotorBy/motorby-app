@@ -134,7 +134,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Column(
                   children: [
                     Container(
-                      height: MediaQuery.of(context).size.height - 750,
+                      height:20,
                         child: const YMargin(10)
                     ),
                     Column(children: [
