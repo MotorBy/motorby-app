@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
-import 'package:mobile_auto_drive/models/nearby_search_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/models/weather_data.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
@@ -27,8 +26,6 @@ class UserService {
   bool? isBusiness;
   WeatherData? weatherData;
   FuelData? fuelData;
-
-  NearbySearchModel? nearbySearchModel;
 
   Future getUsers() async {
 
