@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:stacked/stacked.dart';
 
@@ -9,7 +11,7 @@ class AddCarViewModel extends BaseViewModel {
   String? fuelCapacity;
   String? licensePlate;
   String? chassisNumber;
-  List<XFile> carImages = [];
+  List<File> carImages = [];
 
   Future<void> selectManufacturer() async {
     // TODO: Implement manufacturer selection
@@ -51,7 +53,8 @@ class AddCarViewModel extends BaseViewModel {
     try {
       final List<XFile> images = await picker.pickMultiImage();
       if (images.isNotEmpty && images.length <= 5) {
-        carImages = images;
+        //File file = File(pickedFile.path);
+      carImages = images.map((xfile) => File(xfile.path)).toList();
         notifyListeners();
       }
     } catch (e) {
@@ -60,6 +63,10 @@ class AddCarViewModel extends BaseViewModel {
     }
   }
 
+void removeCarByIndex(int index){
+  carImages.removeAt(index);
+  notifyListeners();
+}
   Future<void> addNewCar() async {
     // TODO: Implement add new car logic
     // Validate required fields

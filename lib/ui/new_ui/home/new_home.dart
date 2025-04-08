@@ -551,22 +551,22 @@ class InfoBox extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         backgroundColor: Colors.black26,
                         width: double.infinity,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: GoogleMap(
-                            initialCameraPosition: const CameraPosition(
-                              target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
-                              zoom: 12.0,
-                            ),
-                            myLocationEnabled: true,
-                            myLocationButtonEnabled: false,
-                            zoomControlsEnabled: false,
-                            mapType: MapType.normal,
-                            onMapCreated: (GoogleMapController controller) {
-                              MapViewModel().setMapController(controller);
-                            },
-                          ),
-                        ),
+                        // child: ClipRRect(
+                        //   borderRadius: BorderRadius.circular(16),
+                        //   child: GoogleMap(
+                        //     initialCameraPosition: const CameraPosition(
+                        //       target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
+                        //       zoom: 12.0,
+                        //     ),
+                        //     myLocationEnabled: true,
+                        //     myLocationButtonEnabled: false,
+                        //     zoomControlsEnabled: false,
+                        //     mapType: MapType.normal,
+                        //     onMapCreated: (GoogleMapController controller) {
+                        //       MapViewModel().setMapController(controller);
+                        //     },
+                        //   ),
+                        // ),
                       ),
 
                       ///Button to navigate to map view
