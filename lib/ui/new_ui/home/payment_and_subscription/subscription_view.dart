@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_method.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -25,6 +27,9 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
     final ThemeData theme = Theme.of(context);
     return ViewModelBuilder<PaymentViewModel>.reactive(
         viewModelBuilder: () => PaymentViewModel(),
+        onViewModelReady: (model) => {
+          model.getCurrentUserPlan()
+        },
         builder: (context, model, child) {
           return Scaffold(
             appBar: InsuranceAppBar(text1: 'Subscription'),
@@ -43,7 +48,7 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                   ),
                   const YMargin(24),
                   SizedBox(
-                    height: 630,
+                    height: 730,
                     child: ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -53,10 +58,11 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                           return ContainerWidget(
                             onTap: () {
                               model.updateSelectedPlan(ind);
-                              navigate(context,  PaymentMethodView(amount:['0.0','5,000','12,000'][ind] ,name: ['Basic Features','Pro Features','Ultra Features'][ind],));
-                              model.updateSelectedPlanDetails(['0.0','5,000','12,000'][ind], ['Basic Features','Pro Features','Ultra Features'][ind]);
+                              model.updateSelectedPlanDetails(
+                                  model.plansModel!.payload!.subscriptionOptions!.getAmountByTier(ind),
+                                  model.plansModel!.payload!.subscriptionOptions!.getTierName(ind).replaceAll(' Plan', ''));
                             },
-                            width: 250,
+                            width: 300,
                             backgroundColor: model.selectedPlan != ind
                                 ? const Color(0xFFF3F3FA)
                                 : XColors.primaryColor2(),
@@ -69,8 +75,8 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                               children: [
                                 PlanType(
                                   theme: theme,
-                                  amount: ['0.0','5,000','12,000'][ind],
-                                  title:  ['Free Plan','Pro Plan','Ultra Plan'][ind],
+                                  amount: model.plansModel!.payload!.subscriptionOptions!.getAmountByTier(ind),
+                                  title:  model.plansModel!.payload!.subscriptionOptions!.getTierName(ind),
                                   color: model.selectedPlan == ind
                                       ? XColors.white()
                                       : XColors.black(),
@@ -79,34 +85,24 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                                   margin: EdgeInsets.symmetric(vertical: 30),
                                 ),
                                 NormalText(
-                                  text:
-                                  ['Basic Features','Pro Features','Ultra Features'][ind]
-                                  ,
-                                  textColor:model.selectedPlan == ind
-                                      ? XColors.white()
-                                      : XColors.black() ,
+                                  text: "${model.plansModel!.payload!.subscriptionOptions!.getTierName(ind)} Features",
+                                  textColor:model.selectedPlan == ind ? XColors.white() : XColors.black() ,
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w400,
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 const YMargin(20),
-                                ...List.generate(
-                                model.selectedPlan == 1
-                                      ? model.proFeatures.length
-                                      : model.selectedPlan != 2 ||
-                                              model.selectedPlan != 1
-                                          ? model.basicFeatures.length
-                                          :model.ultraFeatures.length,
+                                ...List.generate(model.plansModel!.payload!.subscriptionOptions!.getFeaturesByTier(ind)!.length,
                                   (index) => ListTile(
                                     title: NormalText(
-                                      text: model.basicFeatures[index],
+                                      text: model.plansModel?.payload?.subscriptionOptions?.getFeaturesByTier(ind)?.elementAt(index).simpleDescription ?? '',
                                       fontSize: 12,
-                                      textColor: model.selectedPlan ==ind?XColors.white():XColors.black() ,
-                                      fontWeight: FontWeight.w400,
+                                      textColor: model.selectedPlan == ind ? XColors.white() : XColors.black(),
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                    leading:  Icon(
+                                    leading: Icon(
                                       Icons.check,
                                       size: 16,
-                                      color: model.selectedPlan ==ind?XColors.white():XColors.black(),
+                                      color: model.selectedPlan == ind ? XColors.white() : XColors.black(),
                                     ),
                                     contentPadding: EdgeInsets.zero,
                                     visualDensity: const VisualDensity(
@@ -115,20 +111,106 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                                 ),
                                 const YMargin(80),
                                 XButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+
+                                    final amount = model.plansModel?.payload?.subscriptionOptions?.getAmountByTier(ind) ?? '0.0';
+                                    final name = model.plansModel?.payload?.subscriptionOptions?.getTierName(ind) ?? 'Basic';
+
+                                    if(model.selectedPlan == ind) {
+
+                                      model.makePayment(
+                                          onInitialisedError: (e) {
+
+                                            FloatingSnackBar.show(
+                                                context,
+                                                e.toString(),
+                                                isError: true
+                                            );
+
+                                          },
+                                          onShowPayModal: (initTrans) async {
+                                            if(initTrans != null) {
+
+                                              await PaymentService.showPaymentModal(
+                                                context,
+                                                transaction: initTrans,
+                                              ).then((value) async {
+
+                                                await model.verifyPayment(
+                                                    onCallBack: (){
+
+                                                      FloatingSnackBar.show(
+                                                          context,
+                                                          'Successfully subscribed',
+                                                          isError: false
+                                                      );
+
+                                                      Navigator.pop(context, true);
+
+                                                    },
+                                                    onErrorCallBack: (){
+                                                      FloatingSnackBar.show(
+                                                          context,
+                                                          'Error with making your subscription',
+                                                          isError: true
+                                                      );
+                                                    }
+                                                );
+                                              });
+
+                                            } else {
+
+                                              await model.verifyPayment(
+                                                  freeSub: true,
+                                                  onCallBack: (){
+
+                                                    FloatingSnackBar.show(
+                                                        context,
+                                                        'Successfully subscribed',
+                                                        isError: false
+                                                    );
+
+                                                    Navigator.pop(context, true);
+
+                                                  },
+                                                  onErrorCallBack: (){
+
+                                                    FloatingSnackBar.show(
+                                                        context,
+                                                        'Error with making your subscription',
+                                                        isError: true
+                                                    );
+
+                                                  }
+                                              );
+                                            }
+                                          }
+                                      );
+
+                                      //navigate(context, PaymentMethodView(amount: amount, name: name));
+
+                                    } else {
+
+                                      FloatingSnackBar.show(
+                                          context,
+                                          "Select a plan to continue",
+                                          isError: true
+                                      );
+
+                                    }
+
+                                  },
                                   fontWeight: FontWeight.w600,
-                                  text: 'Go Ultra',
-                                  buttonColor: 
-                                  model.selectedPlan == ind
+                                  text: 'Subscribe Now',
+                                  isLoading: model.isBusy,
+                                  buttonColor: model.selectedPlan == ind
                                       ? XColors.white()
-                                     :
-                                  XColors.primaryColor2(),
+                                      : XColors.primaryColor2(),
                                   height: 44,
                                   radius: 8,
                                   textColor: model.selectedPlan == ind
                                       ? XColors.primaryColor2()
-                                     :
-                                  XColors.white(),
+                                      : XColors.white(),
                                 )
                               ],
                             ),
@@ -139,6 +221,7 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
               ),
             ),
           );
-        });
+        },
+    );
   }
 }

@@ -17,6 +17,9 @@ class NewProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProfileViewModel>.reactive(
       viewModelBuilder: () => ProfileViewModel(),
+      onViewModelReady: (model) {
+        model.init();
+      },
       builder: (context, model, child) => Scaffold(
         backgroundColor: const Color(0xFFF8F2FF),
         appBar: AppBar(
@@ -47,9 +50,17 @@ class NewProfileScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const PopupMenuItem<int>(
+                  value: 0,
+                  child: NormalText(
+                    text: 'Settings',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 PopupMenuItem<int>(
                   value: 1,
-                  onTap: (){
+                  onTap: () {
 
                     model.logOut().then((value) {
                       popToFirst(context);
@@ -118,13 +129,13 @@ class NewProfileScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         NormalText(
-          text: model.name,
+          text: model.user != null ? model.user!.fullname : "",
           fontSize: 20,
           fontWeight: FontWeight.w500,
         ),
         const SizedBox(height: 4),
         Text(
-          model.email,
+          model.user != null ? model.user!.email! : '',
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w400,
@@ -221,13 +232,7 @@ class NewProfileScreen extends StatelessWidget {
         const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/settings.svg',
-          title: 'Settings',
-          onTap: (){},
-        ),
-        const DividerWidget(),
-        _buildMenuItem(
-          icon: 'assets/images/auto/settings.svg',
-          title: 'Set up business profile',
+          title: 'Upgrade to business',
           onTap: (){},
         ),
         const DividerWidget(),

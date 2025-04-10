@@ -551,22 +551,22 @@ class InfoBox extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         backgroundColor: Colors.black26,
                         width: double.infinity,
-                        // child: ClipRRect(
-                        //   borderRadius: BorderRadius.circular(16),
-                        //   child: GoogleMap(
-                        //     initialCameraPosition: const CameraPosition(
-                        //       target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
-                        //       zoom: 12.0,
-                        //     ),
-                        //     myLocationEnabled: true,
-                        //     myLocationButtonEnabled: false,
-                        //     zoomControlsEnabled: false,
-                        //     mapType: MapType.normal,
-                        //     onMapCreated: (GoogleMapController controller) {
-                        //       MapViewModel().setMapController(controller);
-                        //     },
-                        //   ),
-                        // ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: GoogleMap(
+                            initialCameraPosition: const CameraPosition(
+                              target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
+                              zoom: 12.0,
+                            ),
+                            myLocationEnabled: true,
+                            myLocationButtonEnabled: false,
+                            zoomControlsEnabled: false,
+                            mapType: MapType.normal,
+                            onMapCreated: (GoogleMapController controller) {
+                              MapViewModel().setMapController(controller);
+                            },
+                          ),
+                        ),
                       ),
 
                       ///Button to navigate to map view
@@ -582,7 +582,7 @@ class InfoBox extends StatelessWidget {
                                 onTap: () {
                                   navigate(context, const MapScreen());
                                 },
-                                backgroundColor: const Color(0xFF14121280),
+                                backgroundColor: const Color(0xFFF0E8F8),
                                 borderRadius: BorderRadius.circular(40),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 8
@@ -623,7 +623,7 @@ class InfoBox extends StatelessWidget {
                     elevation: 0.2,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF3F3FA),
+                    backgroundColor: const Color(0xFFF0E8F8),
                     width: double.infinity,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -663,7 +663,7 @@ class InfoBox extends StatelessWidget {
                     elevation: 0.2,
                     padding: const EdgeInsets.only(top: 16),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF3F3FA),
+                    backgroundColor: const Color(0xFFF0E8F8),
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -688,7 +688,7 @@ class InfoBox extends StatelessWidget {
                           backgroundColor: XColors.highlightColor(),
                           width: 70,
                           child: const Center(
-                            child: const NormalText(
+                            child: NormalText(
                               text: 'Update',
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
@@ -706,7 +706,7 @@ class InfoBox extends StatelessWidget {
                     elevation: 0.2,
                     padding: const EdgeInsets.only(top: 16),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF3F3FA),
+                    backgroundColor: const Color(0xFFF0E8F8),
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -731,7 +731,7 @@ class InfoBox extends StatelessWidget {
                           backgroundColor: XColors.highlightColor(),
                           width: 100,
                           child: const Center(
-                            child: const NormalText(
+                            child: NormalText(
                               text: 'View report',
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
