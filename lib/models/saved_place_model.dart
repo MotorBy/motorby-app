@@ -32,6 +32,7 @@ class SavedPlacePayload {
   String? savedLocationDescription;
   String? type;
   NearbyPlacesData? nearbyPlacesData;
+  DirectionDetails? directionDetails;
   String? id;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -45,6 +46,7 @@ class SavedPlacePayload {
     this.location,
     this.savedLocationAs,
     this.savedLocationDescription,
+    this.directionDetails,
     this.type,
     this.nearbyPlacesData,
     this.id,
@@ -61,6 +63,7 @@ class SavedPlacePayload {
     location: json["location"] == null ? null : Location.fromJson(json["location"]),
     savedLocationAs: json["savedLocationAs"],
     savedLocationDescription: json["savedLocationDescription"],
+    directionDetails: json["directionDetails"] == null ? null : DirectionDetails.fromJson(json["directionDetails"]),
     type: json["type"],
     nearbyPlacesData: json["nearbyPlacesData"] == null ? null : NearbyPlacesData.fromJson(json["nearbyPlacesData"]),
     id: json["_id"],
@@ -77,12 +80,57 @@ class SavedPlacePayload {
     "location": location?.toJson(),
     "savedLocationAs": savedLocationAs,
     "savedLocationDescription": savedLocationDescription,
+    "directionDetails": directionDetails?.toJson(),
     "type": type,
     "nearbyPlacesData": nearbyPlacesData?.toJson(),
     "_id": id,
     "createdAt": createdAt?.toIso8601String(),
     "updatedAt": updatedAt?.toIso8601String(),
     "__v": v,
+  };
+}
+
+class DirectionDetails {
+  Destination? origin;
+  Destination? destination;
+
+  DirectionDetails({
+    this.origin,
+    this.destination,
+  });
+
+  factory DirectionDetails.fromJson(Map<String, dynamic> json) => DirectionDetails(
+    origin: json["origin"] == null ? null : Destination.fromJson(json["origin"]),
+    destination: json["destination"] == null ? null : Destination.fromJson(json["destination"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "origin": origin?.toJson(),
+    "destination": destination?.toJson(),
+  };
+}
+
+class Destination {
+  double? lat;
+  double? lng;
+  String? address;
+
+  Destination({
+    this.lat,
+    this.lng,
+    this.address,
+  });
+
+  factory Destination.fromJson(Map<String, dynamic> json) => Destination(
+    lat: json["lat"]?.toDouble(),
+    lng: json["lng"]?.toDouble(),
+    address: json["address"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "lat": lat,
+    "lng": lng,
+    "address": address,
   };
 }
 
