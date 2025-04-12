@@ -47,7 +47,8 @@ class VehicleSelectionBottomSheet extends StatelessWidget {
                     height: 4,
                     width: 40,
                     color: const Color(0xFFD0D5DD),
-                  )),
+                  ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
