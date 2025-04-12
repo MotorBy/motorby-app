@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:mobile_auto_drive/models/LatLngAddressModel.dart';
 import 'package:mobile_auto_drive/models/places_nearby_model.dart';
+import 'package:mobile_auto_drive/models/routes_direction_model.dart';
 import 'package:mobile_auto_drive/models/saved_place_model.dart';
+import 'package:mobile_auto_drive/models/saved_locations_response.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
@@ -18,6 +20,8 @@ class PlacesService {
   double? lastLat;
   double? lastLng;
   LatLngAddressModel? currentLatLngAddressModel;
+  SavedLocationsResponse? savedLocationsResponse;
+  RouteDirectionsModel? routeDirectionsModel;
 
   PlacesNearby? nearbyPlaces;
   PlacesNearby? nearbyPlaces2;
@@ -160,20 +164,48 @@ class PlacesService {
     }
   }
 
-  Future<void> getDirectionPolyPoints({
+  Future getDirectionPolyPoints({
     required String origin,
     required String destination,
-    required String mode,
   }) async {
 
-    var result = await http.get(Uri.parse("${APIService.googleDirections}origin=$origin&destination=$destination&mode=$mode&key=${APIKey.googleAPIKey}&language=en"));
+    var result = await http.get(
+      Uri.parse("${APIService.root}/directions/route-details?destination=$destination&origin=$origin"),
+      headers: apiHelper.requestHeadersWithToken(),
+    );
     final json = jsonDecode(result.body);
 
-    if (json["status"] == "OK") {
+    print(json.toString());
+
+    if (json["statusCode"] == 200 || json["statusCode"] == 201) {
+
+      routeDirectionsModel = RouteDirectionsModel.fromJson(json);
+      return routeDirectionsModel!;
 
     } else {
       var error = json["status"];
       throw Exception(error);
+    }
+  }
+
+  Future<SavedLocationsResponse> getSavedLocations() async {
+    try {
+      final url = Uri.parse('${APIService.root}directions/saved');
+      final response = await http.get(
+        url,
+        headers: apiHelper.requestHeadersWithToken(),
+      );
+
+      final json = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        savedLocationsResponse = SavedLocationsResponse.fromJson(json);
+        return savedLocationsResponse!;
+      } else {
+        throw Exception(json["message"]);
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch saved locations: $e');
     }
   }
 
