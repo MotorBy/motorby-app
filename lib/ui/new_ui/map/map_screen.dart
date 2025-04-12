@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/nearby_places_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/past_destinations_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/saved_addresses_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/search_places_view.dart';
+import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
@@ -22,24 +29,11 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return ViewModelBuilder<MapViewModel>.reactive(
         viewModelBuilder: () => MapViewModel(),
+        onViewModelReady: (model) {
+          model.init();
+        },
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBar(
-                 backgroundColor: XColors.highlightColor().withOpacity(0.1),
-        surfaceTintColor: Colors.transparent,
-              title: buildField(
-                context,
-                viewModel,
-                'Try gas station, repair shops',
-                viewModel.search,
-                () {},
-                false,
-                const GetSvgImage(
-                  image: 'assets/images/search-icon.svg',
-                  boxFit: BoxFit.scaleDown,
-                ),
-              ),
-            ),
             body: Stack(
               children: [
                 GoogleMap(
@@ -48,8 +42,8 @@ class _MapScreenState extends State<MapScreen> {
                     zoom: 14.0,
                   ),
                   myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                  zoomControlsEnabled: true,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
                   mapType: MapType.normal,
                   onMapCreated: (GoogleMapController controller) {
                     viewModel.setMapController(controller);
@@ -160,6 +154,7 @@ Widget _buildNearbyOption({String? title, String? iconPath, VoidCallback? onTap,
                   text: description,
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
+                  textColor: XColors.black().withOpacity(0.6),
                 ),
               ],
             ),
@@ -170,148 +165,205 @@ Widget _buildNearbyOption({String? title, String? iconPath, VoidCallback? onTap,
   );
 }
 
-void _showLocationSearchBottomSheet(BuildContext context, MapViewModel viewModel) {
+void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
   modalBottomSheetMenu(
     context: context,
     radius: 20,
-    //height: MediaQuery.of(context).size.height * 0.7,
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Handle bar at top
-          Center(
-            child: Container(
-              height: 4,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const YMargin(20),
-          
-          // Search field
-          Container(
-            decoration: BoxDecoration(
-              color: XColors.highlightColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: buildField(
-              context,
-              viewModel,
-              'Search for a destination',
-              viewModel.search,
-              () {},
-              false,
-              const GetSvgImage(
-                image: 'assets/images/search-icon.svg',
-                boxFit: BoxFit.scaleDown,
-              ),
-            ),
-          ),
-          const YMargin(20),
-          
-          // Car information section
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
+    child: ViewModelBuilder<MapViewModel>.reactive(
+        viewModelBuilder: () => model,
+        disposeViewModel: false,
+        onViewModelReady: (model) {
+          model.init();
+        },
+        builder: (context, viewModel, child) {
+          return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle bar at top
+              Center(
+                child: Container(
+                  height: 4,
+                  width: 40,
                   decoration: BoxDecoration(
-                    color: XColors.highlightColor().withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                  child: const Center(
-                    child: GetSvgImage(
-                      image: 'assets/images/auto/toyota_se.svg',
-                      boxFit: BoxFit.scaleDown,
+                ),
+              ),
+              const YMargin(20),
+
+              // Search place field
+              SearchMapPlace(
+                apiKey: APIKey.googleAPIKey,
+                location: viewModel.currentPosition == null
+                    ? const LatLng(7.3219678, 5.147076)
+                    : LatLng(viewModel.currentPosition!.latitude,
+                    viewModel.currentPosition!.longitude),
+                radius: 5000,
+                onSelected: (place) async {
+                  final geolocation = await place.geolocation;
+
+                  final lat = geolocation!.coordinates.latitude;
+                  final lng = geolocation.coordinates.longitude;
+                  viewModel.searchedPlaceAddress = place.description;
+
+                  Map<String, dynamic> pickedAddressFromMap = {
+                    "lat": lat.toString(),
+                    "lng": lng.toString(),
+                    "address": viewModel.searchedPlaceAddress
+                  };
+
+                  Navigator.pop(context, pickedAddressFromMap);
+
+                },
+              ),
+
+              const YMargin(20),
+
+              // Car information section
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: XColors.highlightColor().withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
+                        child: GetSvgImage(
+                          image: 'assets/images/auto/toyota_se.svg',
+                          boxFit: BoxFit.scaleDown,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          NormalText(
+                            text: 'Toyota Camry',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          SizedBox(height: 4),
+                          NormalText(
+                            text: 'ABC-123-XYZ',
+                            fontSize: 14,
+                            textColor: Colors.grey,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const YMargin(20),
+
+              // Nearby locations section
+              const NormalText(
+                text: 'Nearby',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+              const YMargin(12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildNearbyOption(
+                      title: 'Repair Shop',
+                      iconPath: 'assets/images/icons/repairing.png',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NearbyPlacesScreen(
+                              viewModel: viewModel,
+                              placeType: 'car_repair',
+                              title: 'Nearest Repair Shops',
+                            ),
+                          ),
+                        );
+                      },
+                      description: 'View nearby repair shops',
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      NormalText(
-                        text: 'Toyota Camry',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      SizedBox(height: 4),
-                      NormalText(
-                        text: 'ABC-123-XYZ',
-                        fontSize: 14,
-                        textColor: Colors.grey,
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildNearbyOption(
+                      title: 'Gas Station',
+                      iconPath: 'assets/images/icons/gas-station.png',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NearbyPlacesScreen(
+                              viewModel: viewModel,
+                              placeType: 'gas_station',
+                              title: 'Nearest Gas Stations',
+                            ),
+                          ),
+                        );
+                      },
+                      description: 'View nearby gas stations',
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const YMargin(20),
-          
-          // Nearby locations section
-          const NormalText(
-            text: 'Nearby',
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-          const YMargin(12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildNearbyOption(
-                  title: 'Repair Shop',
-                  iconPath: 'assets/images/icons/repairing.png',
-                  onTap: () {},
-                  description: 'View nearby repair shops',
-                ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildNearbyOption(
-                  title: 'Gas Station',
-                  iconPath: 'assets/images/icons/gas-station.png',
-                  onTap: () {},
-                  description: 'View nearby gas stations',
-                ),
+              const YMargin(20),
+
+              // Saved locations section
+              const NormalText(
+                text: 'Saved Places',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
+              const YMargin(12),
+              _buildSavedLocationItem(
+                'Home',
+                viewModel.homeAddress != null && viewModel.homeAddress!.isNotEmpty
+                    ? viewModel.homeAddress!['address'] ?? 'Add home address'
+                    : 'Add home address',
+                Icons.home_outlined,
+                () {
+                  navigate(context, SavedAddressesScreen(viewModel: viewModel));
+                }
+              ),
+              const Divider(),
+              _buildSavedLocationItem(
+                'Work',
+                viewModel.workAddress != null && viewModel.workAddress!.isNotEmpty
+                    ? viewModel.workAddress!['address'] ?? 'Add work address'
+                    : 'Add work address',
+                Icons.work_outline,
+                () {
+                  navigate(context, SavedAddressesScreen(viewModel: viewModel));
+                }
+              ),
+              const Divider(),
+              _buildSavedLocationItem('Past', 'View past destinations', Icons.history, () {
+                navigate(context, const PastDestinationsScreen());
+              }),
             ],
           ),
-          const YMargin(20),
-          
-          // Saved locations section
-          const NormalText(
-            text: 'Saved Places',
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-          const YMargin(12),
-          _buildSavedLocationItem('Home', 'Add home address', Icons.home_outlined, () {}),
-          const Divider(),
-          _buildSavedLocationItem('Work', 'Add work address', Icons.work_outline, () {}),
-          const Divider(),
-          _buildSavedLocationItem('Past', 'View past destinations', Icons.history, () {}),
-        ],
-      ),
+        );
+      }
     ),
   );
 }
@@ -340,13 +392,14 @@ Widget _buildSavedLocationItem(String title, String subtitle, IconData icon, Voi
                 NormalText(
                   text: title,
                   fontSize: 16,
+                  textColor: XColors.black(),
                   fontWeight: FontWeight.w600,
                 ),
                 const SizedBox(height: 4),
                 NormalText(
                   text: subtitle,
                   fontSize: 14,
-                  textColor: Colors.grey,
+                  textColor: XColors.black().withOpacity(0.6),
                 ),
               ],
             ),
