@@ -13,6 +13,7 @@ class MapViewModel extends BaseViewModel {
     getCurrentLocation();
   }
 
+
   Future<void> getCurrentLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();

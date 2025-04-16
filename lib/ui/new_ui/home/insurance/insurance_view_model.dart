@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/get_insuraance_model.dart';
+import 'package:mobile_auto_drive/services/insurance_service.dart';
+import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
 class InsuranceViewModel extends BaseViewModel {
+    final insuranceService = serviceLocator<InsuranceService>();
+
   String selectedVehicle = '';
   String selectedModel = '';
   String selectedEngine = '';
@@ -12,6 +17,8 @@ class InsuranceViewModel extends BaseViewModel {
   String incidentType = 'choose';
   int selectedIncidentTypeIndex = -1;
 
+ GetInsuranceModel? insuranceProduct;
+ List<InsuranceList> insuranceList=[];
 
   void updateIncidentChoice(String choice, int selectedIndex) {
     incidentType = choice;
@@ -51,6 +58,23 @@ class InsuranceViewModel extends BaseViewModel {
   final locationOfIncident = TextEditingController();
   final descriptionOfIncident = TextEditingController();
 
+
+
+
+  Future getInsuranceProducts() async {
+
+    if(insuranceService.insuranceProduct != null) {
+      insuranceProduct = insuranceService.insuranceProduct;
+      insuranceList = insuranceProduct!.payload ?? [];
+    } else {
+      await insuranceService.getInsuranceList();
+      insuranceProduct = insuranceService.insuranceProduct;
+      insuranceList = insuranceProduct!.payload ?? [];
+    }
+
+    notifyListeners();
+
+  }
   List<PaymentMethod> paymentMethod = [
     PaymentMethod(
         img: 'assets/images/visa-icon.svg', details: 'UBA ***** **** **68'),
