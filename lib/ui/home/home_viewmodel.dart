@@ -240,8 +240,12 @@ class HomeViewModel extends BaseViewModel {
 
     }
 
-    for (var element in budgetingModel!.budget![index].repairing!) {
-      totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
+    if(budgetingModel!.budget![index].repairing != null) {
+
+      for (var element in budgetingModel!.budget![index].repairing!) {
+        totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
+      }
+
     }
 
     totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
