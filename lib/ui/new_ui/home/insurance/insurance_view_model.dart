@@ -5,7 +5,7 @@ import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
 class InsuranceViewModel extends BaseViewModel {
-    final insuranceService = serviceLocator<InsuranceService>();
+  final insuranceService = serviceLocator<InsuranceService>();
 
   String selectedVehicle = '';
   String selectedModel = '';
@@ -17,8 +17,8 @@ class InsuranceViewModel extends BaseViewModel {
   String incidentType = 'choose';
   int selectedIncidentTypeIndex = -1;
 
- GetInsuranceModel? insuranceProduct;
- List<InsuranceList> insuranceList=[];
+  GetInsuranceModel? insuranceProduct;
+  List<InsuranceList> insuranceList = [];
 
   void updateIncidentChoice(String choice, int selectedIndex) {
     incidentType = choice;
@@ -58,23 +58,23 @@ class InsuranceViewModel extends BaseViewModel {
   final locationOfIncident = TextEditingController();
   final descriptionOfIncident = TextEditingController();
 
-
-
-
   Future getInsuranceProducts() async {
-
-    if(insuranceService.insuranceProduct != null) {
+    if (insuranceService.insuranceProduct != null) {
       insuranceProduct = insuranceService.insuranceProduct;
-      insuranceList = insuranceProduct!.payload ?? [];
+      insuranceList = insuranceProduct?.payload ?? [];
     } else {
+      setBusy(true);
+
       await insuranceService.getInsuranceList();
+      setBusy(false);
+
       insuranceProduct = insuranceService.insuranceProduct;
-      insuranceList = insuranceProduct!.payload ?? [];
+      insuranceList = insuranceProduct?.payload ?? [];
     }
-
     notifyListeners();
-
+    print('the list of product: ${insuranceList.first.company}');
   }
+
   List<PaymentMethod> paymentMethod = [
     PaymentMethod(
         img: 'assets/images/visa-icon.svg', details: 'UBA ***** **** **68'),

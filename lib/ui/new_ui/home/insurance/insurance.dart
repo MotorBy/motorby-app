@@ -21,332 +21,340 @@ class InsuranceScreen extends StatefulWidget {
 class _InsuranceScreenState extends State<InsuranceScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: const GetSvgImage(
-              image: 'assets/images/arrow_back.svg',
-              boxFit: BoxFit.scaleDown,
-            )),
-        centerTitle: false,
-        backgroundColor: XColors.highlightColor().withOpacity(0.1),
-        title: const NormalText(
-          text: 'Car Insurance',
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      backgroundColor: XColors.background(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const YMargin(16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: NormalText(
-                text: 'Protect your car with comprehensive coverage',
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                textColor: XColors.black(),
-              ),
-            ),
-            const YMargin(36),
-            ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-              leading: const Icon(Icons.directions_car),
-              dense: true,
-              visualDensity: const VisualDensity(horizontal: -4),
-              title: GestureDetector(
-                onTap: (){
-                  showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                  builder: (context) => const VehicleSelectionBottomSheet(),
-                );
+    return ViewModelBuilder<InsuranceViewModel>.reactive(
+        viewModelBuilder: () => InsuranceViewModel(),
+        disposeViewModel: false,
+        onViewModelReady:(model) async => await model.getInsuranceProducts(),
+        builder: (context, model, child) {
+        return Scaffold(
+          appBar: AppBar(
+            leading: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
                 },
-                child: AbsorbPointer(
-                  child: Row(
-                    children: [
-                      Image.asset('assets/images/toyota-logo.png', height: 24),
-                      const SizedBox(width: 2),
-                      const NormalText(
-                        text: 'Toyota',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
+                child: const GetSvgImage(
+                  image: 'assets/images/arrow_back.svg',
+                  boxFit: BoxFit.scaleDown,
+                )),
+            centerTitle: false,
+            backgroundColor: XColors.highlightColor().withOpacity(0.1),
+            title: const NormalText(
+              text: 'Car Insurance',
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          backgroundColor: XColors.background(),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const YMargin(16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: NormalText(
+                    text: 'Protect your car with comprehensive coverage',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    textColor: XColors.black(),
+                  ),
+                ),
+                const YMargin(36),
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  leading: const Icon(Icons.directions_car),
+                  dense: true,
+                  visualDensity: const VisualDensity(horizontal: -4),
+                  title: GestureDetector(
+                    onTap: (){
+                      showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
                       ),
-                      const XMargin(10),
-                      Icon(
-                        Icons.expand_less_rounded,
-                        color: XColors.black(),
-                        size: 30,
-                      )
+                      builder: (context) => const VehicleSelectionBottomSheet(),
+                    );
+                    },
+                    child: AbsorbPointer(
+                      child: Row(
+                        children: [
+                          Image.asset('assets/images/toyota-logo.png', height: 24),
+                          const SizedBox(width: 2),
+                          const NormalText(
+                            text: 'Toyota',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                          const XMargin(10),
+                          Icon(
+                            Icons.expand_less_rounded,
+                            color: XColors.black(),
+                            size: 30,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                 
+                  trailing: ContainerWidget(
+                    onTap: (){
+                      navigate(context, const ClaimScreen());
+                    },
+                    borderColor: XColors.primaryColor2(),
+                    hasBorder: true,
+                    borderThickness: 1,
+                    borderRadius: BorderRadius.circular(8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: const NormalText(
+                      text: 'Claim',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                const YMargin(16),
+                ContainerWidget(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  backgroundColor: XColors.white(),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const NormalText(
+                            text: 'Toyota Camery',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          const YMargin(8),
+                          const NormalText(
+                            text: 'DS9376GJ',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          const YMargin(20),
+                          GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20)),
+                                ),
+                                builder: (context) =>
+                                    const InsuranceQuoteBottomSheet(),
+                              );
+                            },
+                            child: AbsorbPointer(
+                              child: Row(
+                                children: [
+                                  NormalText(
+                                    text: 'Request quote',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    textColor: XColors.primaryColor2(),
+                                  ),
+                                  const XMargin(6),
+                                  Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: XColors.primaryColor2(),
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const GetPngImage(image: 'assets/images/auto/camery_car.png')
                     ],
                   ),
                 ),
-              ),
-             
-              trailing: ContainerWidget(
-                onTap: (){
-                  navigate(context, const ClaimScreen());
-                },
-                borderColor: XColors.primaryColor2(),
-                hasBorder: true,
-                borderThickness: 1,
-                borderRadius: BorderRadius.circular(8),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: const NormalText(
-                  text: 'Claim',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-            const YMargin(16),
-            ContainerWidget(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              backgroundColor: XColors.white(),
-              borderRadius: BorderRadius.circular(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
+                const YMargin(32),
+                ContainerWidget(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  backgroundColor: Color(0xFFF3F3FA),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const NormalText(
-                        text: 'Toyota Camery',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      const YMargin(8),
-                      const NormalText(
-                        text: 'DS9376GJ',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      const YMargin(20),
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            builder: (context) =>
-                                const InsuranceQuoteBottomSheet(),
-                          );
-                        },
-                        child: AbsorbPointer(
-                          child: Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const NormalText(
+                            text: 'Current Purchased ',
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          const YMargin(18),
+                          const NormalText(
+                            text: 'Comprehensive Party Insurance',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          const YMargin(7),
+                          Row(
                             children: [
                               NormalText(
-                                text: 'Request quote',
+                                text: 'By ',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                textColor: XColors.black(),
+                              ),
+                              NormalText(
+                                text: 'Leadway Insurance Ltd.',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                textColor: XColors.primaryColor2(),
-                              ),
-                              const XMargin(6),
-                              Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                color: XColors.primaryColor2(),
-                                size: 20,
+                                textColor: XColors.black(),
                               ),
                             ],
                           ),
+                        ],
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              barrierColor: Colors.black.withOpacity(0.2),
+                              builder: (context) {
+                                return const ViewDetailsDialogue();
+                              });
+                        },
+                        child: NormalText(
+                          text: 'View Details ',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          textColor: XColors.primaryColor2(),
                         ),
                       ),
                     ],
                   ),
-                  const GetPngImage(image: 'assets/images/auto/camery_car.png')
-                ],
-              ),
-            ),
-            const YMargin(32),
-            ContainerWidget(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              backgroundColor: Color(0xFFF3F3FA),
-              borderRadius: BorderRadius.circular(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const NormalText(
-                        text: 'Current Purchased ',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      const YMargin(18),
-                      const NormalText(
-                        text: 'Comprehensive Party Insurance',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      const YMargin(7),
-                      Row(
-                        children: [
-                          NormalText(
-                            text: 'By ',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            textColor: XColors.black(),
-                          ),
-                          NormalText(
-                            text: 'Leadway Insurance Ltd.',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            textColor: XColors.black(),
-                          ),
-                        ],
-                      ),
-                    ],
+                ),
+                const YMargin(32),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: NormalText(
+                    text: 'Available Insurance ',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          barrierColor: Colors.black.withOpacity(0.2),
-                          builder: (context) {
-                            return const ViewDetailsDialogue();
-                          });
-                    },
-                    child: NormalText(
-                      text: 'View Details ',
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      textColor: XColors.primaryColor2(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const YMargin(32),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-              child: NormalText(
-                text: 'Available Insurance ',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const YMargin(20),
-            SizedBox(
-              height: 120,
-              child: ListView.builder(
-                  itemCount: 2,
-                  scrollDirection: Axis.horizontal,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return ContainerWidget(
-                      onTap: (){},
-                      width: 310,
-                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                      borderRadius: BorderRadius.circular(16),
-                      backgroundColor: XColors.secondaryColor(),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const NormalText(
-                            text: 'Comprehensive Party Insurance',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const YMargin(10),
-                          const NormalText(
-                            text: 'Third Party Insurance ',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          const YMargin(10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                const YMargin(20),
+                SizedBox(
+                  height: 120,
+                  child: ListView.builder(
+                      itemCount: model.insuranceList.length,
+                      scrollDirection: Axis.horizontal,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final insurance=model.insuranceList[index];
+                        return ContainerWidget(
+                          onTap: (){},
+                          width: 310,
+                          margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                          borderRadius: BorderRadius.circular(16),
+                          backgroundColor: XColors.secondaryColor(),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
-                                children: [
-                                  Text(
-                                    '₦',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.black),
-                                  ),
-                                  NormalText(
-                                      text: '15,000',
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700),
-                                ],
+                               NormalText(
+                                text:insurance.name,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
-                              ContainerWidget(
-                                onTap: (){
-                                  navigate(context, const BuyInsuranceScreen());
-                                },
-                                backgroundColor: XColors.white(),
-                                borderRadius: BorderRadius.circular(8),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                child: NormalText(
-                                  text: 'Buy Now',
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  textColor: XColors.primaryColor2(),
-                                ),
+                              const YMargin(10),
+                               NormalText(
+                                text: insurance.type,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              const YMargin(10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                   Row(
+                                    children: [
+                                     const Text(
+                                        '₦',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.black),
+                                      ),
+                                      NormalText(
+                                          text: insurance.cost,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w700),
+                                    ],
+                                  ),
+                                  ContainerWidget(
+                                    onTap: (){
+                                      navigate(context, const BuyInsuranceScreen());
+                                    },
+                                    backgroundColor: XColors.white(),
+                                    borderRadius: BorderRadius.circular(8),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 16),
+                                    child: NormalText(
+                                      text: 'Buy Now',
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      textColor: XColors.primaryColor2(),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-            const YMargin(32),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-              child: NormalText(
-                text: 'Your Certification Of Insurance',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-              child: NormalText(
-                  text:
-                      'Here’s what you need to prove that you have a policy with comprehensive party insurance'),
-            ),
-            const YMargin(16),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GetSvgImage(
-                    image: 'assets/images/material-symbols_download.svg'),
-                NormalText(
-                  text: 'Download certificate',
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  textColor: Colors.green,
-                )
+                        );
+                      }),
+                ),
+                const YMargin(32),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: NormalText(
+                    text: 'Your Certification Of Insurance',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: NormalText(
+                      text:
+                          'Here’s what you need to prove that you have a policy with comprehensive party insurance'),
+                ),
+                const YMargin(16),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GetSvgImage(
+                        image: 'assets/images/material-symbols_download.svg'),
+                    NormalText(
+                      text: 'Download certificate',
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      textColor: Colors.green,
+                    )
+                  ],
+                ),
+                const YMargin(50),
               ],
             ),
-            const YMargin(50),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 }

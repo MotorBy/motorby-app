@@ -12,7 +12,7 @@ class InsuranceService {
   Future getInsuranceList() async {
 
     var response = await http.get(Uri.parse(APIService.getInsuranceProducts),
-        headers: APIHelper().requestHeaders());
+        headers: APIHelper().requestHeadersWithToken());
     final json = JSON.jsonDecode(response.body);
 
     print(json.toString());
