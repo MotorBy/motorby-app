@@ -4,6 +4,7 @@ import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/checklist_service.dart';
 import 'package:mobile_auto_drive/services/community_service.dart';
+import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/places_services.dart';
@@ -31,5 +32,7 @@ Future locatorSetup() async {
   serviceLocator.registerLazySingleton(() => VinCheckService());
   serviceLocator.registerLazySingleton(() => ChecklistService());
   serviceLocator.registerLazySingleton(() => PlacesService());
+  serviceLocator.registerLazySingleton(() => InsuranceService());
+
 
 }
