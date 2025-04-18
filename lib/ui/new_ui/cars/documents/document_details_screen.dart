@@ -1,0 +1,97 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
+import 'car_documents_viewmodel.dart';
+
+class DocumentDetailsScreen extends StatelessWidget {
+  final CarDocument document;
+
+  const DocumentDetailsScreen({Key? key, required this.document}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFEF7FF),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: false,
+        title: NormalText(
+          text: document.name,
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (document.filePath != null) ...[              
+              if (document.filePath!.toLowerCase().endsWith('.pdf'))
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.picture_as_pdf, size: 64, color: Colors.red),
+                  ),
+                )
+              else
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: FileImage(File(document.filePath!)),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 24),
+            ],
+            _buildInfoRow('Category', document.category),
+            const SizedBox(height: 16),
+            _buildInfoRow('Document ID', document.id),
+            if (document.expiryDate != null) ...[              
+              const SizedBox(height: 16),
+              _buildInfoRow(
+                'Expiry Date', 
+                '${document.expiryDate!.day}/${document.expiryDate!.month}/${document.expiryDate!.year}',
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        NormalText(
+          text: label,
+          fontSize: 14,
+          textColor: Colors.grey[600],
+        ),
+        const SizedBox(height: 4),
+        NormalText(
+          text: value,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ],
+    );
+  }
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
@@ -89,7 +90,7 @@ class NewProfileScreen extends StatelessWidget {
               children: [
                 _buildProfileHeader(model),
                 const SizedBox(height: 24),
-                _buildCarsCard(model),
+                _buildCarsCard(model, context: context),
                 const SizedBox(height: 24),
                 _buildMenuItems(model, context: context),
               ],
@@ -166,9 +167,11 @@ class NewProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCarsCard(ProfileViewModel model) {
+  Widget _buildCarsCard(ProfileViewModel model, {BuildContext? context}) {
     return GestureDetector(
-      onTap: (){},
+      onTap: (){
+        navigate(context!, const CarsListScreen());
+      },
       child: const Stack(
         children: [
           GetPngImage(image: 'assets/images/motorby_toyo.png'),

@@ -12,6 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -178,7 +179,7 @@ class NewHomeScreen extends StatelessWidget {
                   context: context,
                   child: InfoDetailsView(
                     homeViewModel: model,
-                    infoType: 'location_setup',
+                    infoType: InfoType.locationSetup,
                   ),
                 );
 
@@ -327,7 +328,18 @@ class NewHomeScreen extends StatelessWidget {
                             Icon(Icons.chevron_right),
                           ],
                         ),
-                        onTap: () {},
+                        onTap: () {
+
+                          modalBottomSheetMenu(
+                            color: Colors.white,
+                            context: context,
+                            child: InfoDetailsView(
+                              homeViewModel: viewModel,
+                              infoType: InfoType.fueling,
+                            ),
+                          );
+
+                        },
                       ),
                     ),
                     const YMargin(14),
@@ -513,7 +525,7 @@ class InfoBox extends StatelessWidget {
                         context: context,
                         child: InfoDetailsView(
                           homeViewModel: model,
-                          infoType: 'weather_view',
+                          infoType: InfoType.weatherView,
                         ),
                       );
 
