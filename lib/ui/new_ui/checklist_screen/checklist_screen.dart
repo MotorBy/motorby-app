@@ -295,7 +295,7 @@ class ChecklistScreenDialogue extends StatelessWidget {
                       ),
                       const YMargin(20),
 
-                      if(carId != null) ... [
+                      if(carId != null && viewModel.checkListDataModel != null) ... [
 
                         if(viewModel.isBusy) ... [
                           const Padding(
