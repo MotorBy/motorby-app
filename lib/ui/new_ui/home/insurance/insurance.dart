@@ -55,100 +55,73 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: NormalText(
                     text: 'Protect your car with comprehensive coverage',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                     textColor: XColors.black(),
                   ),
                 ),
                 const YMargin(36),
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  dense: true,
-                  visualDensity: const VisualDensity(horizontal: -4),
-                  title: CarSelectorView(
-                      cars: model.getBudgetData(),
-                      currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
-                      onCarSelected: (car){
-
-                      }
-                  ),
-                 
-                  trailing: ContainerWidget(
-                    onTap: (){
-                      navigate(context, const ClaimScreen());
-                    },
-                    borderColor: XColors.primaryColor2(),
-                    hasBorder: true,
-                    borderThickness: 1,
-                    borderRadius: BorderRadius.circular(8),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: const NormalText(
-                      text: 'Claim',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const YMargin(16),
                 ContainerWidget(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 3),
                   backgroundColor: XColors.white(),
                   borderRadius: BorderRadius.circular(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const NormalText(
-                            text: 'Toyota Camery',
-                            fontSize: 12,
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        dense: true,
+                        visualDensity: const VisualDensity(horizontal: -4),
+                        title: CarSelectorView(
+                            cars: model.getBudgetData(),
+                            currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
+                            onCarSelected: (car){
+
+                            }
+                        ),
+                        trailing: ContainerWidget(
+                          onTap: (){
+                            navigate(context, const ClaimScreen());
+                          },
+                          borderColor: XColors.primaryColor2(),
+                          hasBorder: true,
+                          borderThickness: 2,
+                          borderRadius: BorderRadius.circular(21),
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: const NormalText(
+                            text: 'Claim',
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
-                          const YMargin(8),
-                          const NormalText(
-                            text: 'DS9376GJ',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          const YMargin(20),
-                          GestureDetector(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20)),
-                                ),
-                                builder: (context) =>
-                                    const InsuranceQuoteBottomSheet(),
-                              );
-                            },
-                            child: AbsorbPointer(
-                              child: Row(
-                                children: [
-                                  NormalText(
-                                    text: 'Request quote',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    textColor: XColors.primaryColor2(),
-                                  ),
-                                  const XMargin(6),
-                                  Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    color: XColors.primaryColor2(),
-                                    size: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                      const GetPngImage(image: 'assets/images/auto/camery_car.png')
+                      ContainerWidget(
+                        onTap: (){
+
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20)),
+                            ),
+                            builder: (context) =>
+                            const InsuranceQuoteBottomSheet(),
+                          );
+
+                        },
+                        borderColor: XColors.primaryColor2(),
+                        hasBorder: true,
+                        borderThickness: 2,
+                        borderRadius: BorderRadius.circular(21),
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        child: const NormalText(
+                          text: 'Request quote',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const YMargin(16),
                     ],
                   ),
                 ),
@@ -156,7 +129,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                 ContainerWidget(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  backgroundColor: Color(0xFFF3F3FA),
+                  backgroundColor: const Color(0xFFF3F3FA),
                   borderRadius: BorderRadius.circular(16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,8 +140,8 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                         children: [
                           const NormalText(
                             text: 'Current Purchased ',
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                           const YMargin(18),
                           const NormalText(
@@ -181,7 +154,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                             children: [
                               NormalText(
                                 text: 'By ',
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 textColor: XColors.black(),
                               ),
@@ -206,8 +179,8 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                         },
                         child: NormalText(
                           text: 'View Details ',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                           textColor: XColors.primaryColor2(),
                         ),
                       ),
@@ -215,117 +188,126 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                   ),
                 ),
                 const YMargin(32),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  child: NormalText(
-                    text: 'Available Insurance ',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const YMargin(20),
-                SizedBox(
-                  height: 120,
-                  child: ListView.builder(
-                      itemCount: model.insuranceList.length,
-                      scrollDirection: Axis.horizontal,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        final insurance=model.insuranceList[index];
-                        return ContainerWidget(
-                          onTap: (){},
-                          width: 310,
-                          margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                          borderRadius: BorderRadius.circular(16),
-                          backgroundColor: XColors.secondaryColor(),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                               NormalText(
-                                text:insurance.name,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              const YMargin(10),
-                               NormalText(
-                                text: insurance.type,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              const YMargin(10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                      child: NormalText(
+                        text: 'Available Insurance ',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const YMargin(20),
+                    SizedBox(
+                      height: 140,
+                      child: ListView.builder(
+                          itemCount: model.insuranceList.length,
+                          scrollDirection: Axis.horizontal,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            final insurance=model.insuranceList[index];
+                            return ContainerWidget(
+                              onTap: (){},
+                              width: 310,
+                              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                              borderRadius: BorderRadius.circular(16),
+                              backgroundColor: XColors.secondaryColor(),
+                              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                   Row(
-                                    children: [
-                                     const Text(
-                                        '₦',
-                                        style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.black),
-                                      ),
-                                      NormalText(
-                                          text: insurance.cost,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w700),
-                                    ],
+                                  NormalText(
+                                    text:insurance.name!.toUpperCase(),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  ContainerWidget(
-                                    onTap: (){
-                                      navigate(context, const BuyInsuranceScreen());
-                                    },
-                                    backgroundColor: XColors.white(),
-                                    borderRadius: BorderRadius.circular(8),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child: NormalText(
-                                      text: 'Buy Now',
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                      textColor: XColors.primaryColor2(),
-                                    ),
+                                  const YMargin(10),
+                                  NormalText(
+                                    text: insurance.type,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  const YMargin(15),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            '₦',
+                                            style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.black),
+                                          ),
+                                          NormalText(
+                                              text: insurance.cost,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w700),
+                                        ],
+                                      ),
+                                      ContainerWidget(
+                                        onTap: (){
+                                          navigate(context, const BuyInsuranceScreen());
+                                        },
+                                        backgroundColor: XColors.white(),
+                                        borderRadius: BorderRadius.circular(8),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 16),
+                                        child: NormalText(
+                                          text: 'Buy Now',
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          textColor: XColors.primaryColor2(),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
+                            );
+                          }),
+                    ),
+                    const YMargin(62),
+                    const Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          child: NormalText(
+                            text: 'Your Certification Of Insurance',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
                           ),
-                        );
-                      }),
-                ),
-                const YMargin(32),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  child: NormalText(
-                    text: 'Your Certification Of Insurance',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  child: NormalText(
-                      text:
-                          'Here’s what you need to prove that you have a policy with comprehensive party insurance'),
-                ),
-                const YMargin(16),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GetSvgImage(
-                        image: 'assets/images/material-symbols_download.svg'),
-                    NormalText(
-                      text: 'Download certificate',
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      textColor: Colors.green,
-                    )
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          child: NormalText(
+                              text: 'Here’s what you need to prove that you have a policy with comprehensive party insurance',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        YMargin(26),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GetSvgImage(
+                                image: 'assets/images/material-symbols_download.svg'),
+                            NormalText(
+                              text: 'Download certificate',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              textColor: Colors.green,
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    const YMargin(50),
                   ],
                 ),
-                const YMargin(50),
               ],
             ),
           ),
@@ -434,7 +416,7 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
                     child: Container(
                   height: 4,
                   width: 40,
-                  color: Color(0xFFD0D5DD),
+                  color: const Color(0xFFD0D5DD),
                 )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -592,7 +574,7 @@ class VehicleMakeListBottomSheet extends StatelessWidget {
                     child: Container(
                   height: 4,
                   width: 40,
-                  color: Color(0xFFD0D5DD),
+                  color: const Color(0xFFD0D5DD),
                 )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -629,7 +611,7 @@ class VehicleMakeListBottomSheet extends StatelessWidget {
                               border: Border.all(
                                 width: 1,
                                 color: model.selectedVehicleIndex != index
-                                    ? Color(0xFFD0D5DD)
+                                    ? const Color(0xFFD0D5DD)
                                     : XColors.primaryColor2(),
                               ),
                             ),
@@ -637,7 +619,7 @@ class VehicleMakeListBottomSheet extends StatelessWidget {
                               radius: 2,
                               backgroundColor:
                                   model.selectedVehicleIndex != index
-                                      ? Color(0xFFD0D5DD)
+                                      ? const Color(0xFFD0D5DD)
                                       : XColors.primaryColor2(),
                             ),
                           ),
@@ -681,7 +663,7 @@ class ModelListBottomSheet extends StatelessWidget {
                     child: Container(
                   height: 4,
                   width: 40,
-                  color: Color(0xFFD0D5DD),
+                  color: const Color(0xFFD0D5DD),
                 )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -718,14 +700,14 @@ class ModelListBottomSheet extends StatelessWidget {
                               border: Border.all(
                                 width: 1,
                                 color: model.selectedModelIndex != index
-                                    ? Color(0xFFD0D5DD)
+                                    ? const Color(0xFFD0D5DD)
                                     : XColors.primaryColor2(),
                               ),
                             ),
                             child: CircleAvatar(
                               radius: 2,
                               backgroundColor: model.selectedModelIndex != index
-                                  ? Color(0xFFD0D5DD)
+                                  ? const Color(0xFFD0D5DD)
                                   : XColors.primaryColor2(),
                             ),
                           ),
@@ -767,7 +749,7 @@ class EngineTableBottomSheet extends StatelessWidget {
                     child: Container(
                   height: 4,
                   width: 40,
-                  color: Color(0xFFD0D5DD),
+                  color: const Color(0xFFD0D5DD),
                 )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -805,7 +787,7 @@ class EngineTableBottomSheet extends StatelessWidget {
                               border: Border.all(
                                 width: 1,
                                 color: model.selectedEngineIndex != index
-                                    ? Color(0xFFD0D5DD)
+                                    ? const Color(0xFFD0D5DD)
                                     : XColors.primaryColor2(),
                               ),
                             ),
@@ -813,7 +795,7 @@ class EngineTableBottomSheet extends StatelessWidget {
                               radius: 2,
                               backgroundColor:
                                   model.selectedEngineIndex != index
-                                      ? Color(0xFFD0D5DD)
+                                      ? const Color(0xFFD0D5DD)
                                       : XColors.primaryColor2(),
                             ),
                           ),

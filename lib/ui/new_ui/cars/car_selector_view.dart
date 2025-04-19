@@ -190,7 +190,7 @@ class CarSelectorView extends StatelessWidget {
               ],
               const XMargin(10),
               NormalText(
-                text: currentCar ?? 'Select a Car',
+                text: currentCar ?? 'Add a Car',
                 textColor: XColors.primaryColor(),
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
