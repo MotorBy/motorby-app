@@ -2,6 +2,7 @@
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_auto_drive/firebase_options.dart';
+import 'package:mobile_auto_drive/models/current_plans_model.dart';
 import 'package:mobile_auto_drive/models/plan_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
@@ -17,8 +18,6 @@ class ProfileViewModel extends BaseViewModel {
   final persistentService = serviceLocator<PersistenceService>();
   final paymentService =  serviceLocator<AppPaymentService>();
 
-  final String name = 'Matthew Ola';
-  final String email = 'thematthewola@gmail.com';
   final String profileImage = 'assets/images/profile.jpg';
   final bool isOnline = true;
   final bool isPremium = false;
@@ -27,6 +26,7 @@ class ProfileViewModel extends BaseViewModel {
   User? user;
 
   PlanModel? planModel;
+  PlansModel? plansModel;
 
   String? currentPayRef = '';
 
@@ -70,10 +70,10 @@ class ProfileViewModel extends BaseViewModel {
     }
 
     if(paymentService.planModel != null) {
-      planModel =  paymentService.planModel;
+      plansModel = paymentService.currentPlansModel;
     } else {
-      await paymentService.getPlans();
-      planModel =  paymentService.planModel;
+      await paymentService.getCurrentPlans();
+      plansModel = paymentService.currentPlansModel;
     }
 
     notifyListeners();
@@ -153,12 +153,7 @@ class ProfileViewModel extends BaseViewModel {
     }
 
     print(updateData);
-
     notifyListeners();
-
-  }
-
-  Future getAppPlan() async {
 
   }
 

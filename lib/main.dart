@@ -4,17 +4,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
-import 'package:mobile_auto_drive/ui/onboarding/onboarding_screen.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_screen.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/env_config.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'firebase_options.dart';
 
+import 'firebase_options.dart';
 
 void main() {
   runZonedGuarded(() async {

@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
@@ -12,10 +11,12 @@ import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/shops/shops_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
@@ -51,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                 context: context,
                 child: InfoDetailsView(
                   homeViewModel: model,
-                  infoType: 'location_setup',
+                  infoType: InfoType.locationSetup,
                 ),
               );
 
@@ -92,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                               context: context,
                               child: InfoDetailsView(
                                 homeViewModel: viewModel,
-                                infoType: 'location_setup',
+                                infoType: InfoType.locationSetup,
                               ),
                             );
 
@@ -169,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                               context: context,
                               child: InfoDetailsView(
                                 homeViewModel: viewModel,
-                                infoType: 'weather_view',
+                                infoType: InfoType.weatherView,
                               ),
                             );
                           },
@@ -187,7 +188,7 @@ class HomeScreen extends StatelessWidget {
                               context: context,
                               child: InfoDetailsView(
                                 homeViewModel: viewModel,
-                                infoType: 'fuel_update',
+                                infoType: InfoType.fuelUpdate,
                               ),
                             );
 
@@ -358,7 +359,7 @@ class HomeScreen extends StatelessWidget {
                           child: InfoDetailsView(
                             homeViewModel: viewModel,
                             currentIndex: viewModel.currentBudgetViewIndex,
-                            infoType: type,
+                            infoType: InfoType.budgeting,
                           ),
                         );
                       },
@@ -1162,7 +1163,7 @@ class MoreCarAction extends StatelessWidget {
                     ),
                     const YMargin(45),
                     GestureDetector(
-                      onTap: (){
+                      onTap: () {
 
                         modalBottomSheetMenu(
                           color: Colors.white,
@@ -1181,6 +1182,18 @@ class MoreCarAction extends StatelessWidget {
                       },
                       child: NormalText(
                         text: 'Update car image',
+                        textColor: XColors.textColor(),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const YMargin(45),
+                    GestureDetector(
+                      onTap: (){
+                        navigate(context, const CarDocumentsScreen());
+                      },
+                      child: NormalText(
+                        text: 'Manage car documents',
                         textColor: XColors.textColor(),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

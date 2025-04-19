@@ -161,29 +161,7 @@ class HomeViewModel extends BaseViewModel {
 
       userModel = userService.userModel;
 
-      budgetingModel = budgetingService.budgetingModel;
-      fuelData = userService.fuelData;
-
-      if(budgetingModel != null) {
-
-        if(budgetingModel!.budget!.isNotEmpty) {
-
-          currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
-
-          hasAddedCar = true;
-          totalCarsAdded = budgetingModel!.budget!.length;
-
-          salesService.currentCar = currentCar;
-          salesService.currentCarMake = currentCar!.carMake!;
-
-          getCurrentTotalValue(index: currentBudgetViewIndex);
-          onBudgetViewUpdated(currentBudgetViewIndex);
-
-          getChecklistDataModel();
-
-        }
-
-      }
+      getBudgetData();
 
       if(onPermissionCallBack != null) {
         onPermissionCallBack();
@@ -201,13 +179,42 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  void getBudgetData() {
+
+    budgetingModel = budgetingService.budgetingModel;
+    fuelData = userService.fuelData;
+
+    if(budgetingModel != null) {
+
+      if(budgetingModel!.budget!.isNotEmpty) {
+
+        currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
+        budgetingService.currentCar = currentCar;
+
+        hasAddedCar = true;
+        totalCarsAdded = budgetingModel!.budget!.length;
+
+        salesService.currentCar = currentCar;
+        salesService.currentCarMake = currentCar!.carMake!;
+
+        getCurrentTotalValue(index: currentBudgetViewIndex);
+        onBudgetViewUpdated(currentBudgetViewIndex);
+
+        getChecklistDataModel();
+
+      }
+
+    }
+
+  }
+
   Future<void> initDeepLinks() async {
     _appLinks = AppLinks();
 
-    final appLink = await _appLinks.getInitialAppLink();
+    final appLink = await _appLinks.getInitialLinkString();
     if (appLink != null) {
       print('getInitialAppLink: $appLink');
-      openAppLink(appLink);
+      openAppLink(Uri(path: appLink));
     }
 
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
@@ -240,8 +247,12 @@ class HomeViewModel extends BaseViewModel {
 
     }
 
-    for (var element in budgetingModel!.budget![index].repairing!) {
-      totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
+    if(budgetingModel!.budget![index].repairing != null) {
+
+      for (var element in budgetingModel!.budget![index].repairing!) {
+        totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
+      }
+
     }
 
     totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
@@ -267,6 +278,8 @@ class HomeViewModel extends BaseViewModel {
     salesService.currentCar = currentCar;
     salesService.currentCarMake = currentCar!.carMake!;
     currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
+    budgetingService.currentCar = currentCar;
+
     notifyListeners();
   }
 

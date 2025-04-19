@@ -55,6 +55,7 @@ class APIService {
   static String createShop = "$root$SHOP/createShop";
   static String getShops = "$root$SHOP/shops";
   static String getPlans = "$root$PLANS/";
+  static String getCurrentPlans = "$root$PLANS/current";
   static String getInsuranceProducts='$root/car/insurance/products';
 
   static String addFuelUpdate = "$root/$FUEL/add-price";

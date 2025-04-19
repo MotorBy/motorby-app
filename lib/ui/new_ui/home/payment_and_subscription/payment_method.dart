@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_success_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';

@@ -6,6 +6,7 @@ import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/circular_paint.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
@@ -19,13 +20,13 @@ class InfoDetailsView extends StatelessWidget {
 
   const InfoDetailsView({
     super.key,
-    this.infoType = '',
+    this.infoType = InfoType.empty,
     this.homeViewModel,
     this.currentIndex,
     this.onHistoryNav
   });
 
-  final String? infoType;
+  final InfoType? infoType;
   final int? currentIndex;
   final Function? onHistoryNav;
 
@@ -41,21 +42,21 @@ class InfoDetailsView extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              if(infoType == '' || infoType == 'fueling') ... [
+              if(infoType == InfoType.empty || infoType == InfoType.fueling) ... [
 
                 FuelBudgetView(
                   infoType: infoType,
                   homeViewModel: viewModel,
                 )
 
-              ] else if(infoType == 'servicing' || infoType == 'repairing') ... [
+              ] else if(infoType == InfoType.servicing || infoType == InfoType.repairing) ... [
 
                 ServiceRepairBudgetView(
                   infoType: infoType,
                   homeViewModel: viewModel,
                 ),
 
-              ] else if(infoType == 'mileage') ... [
+              ] else if(infoType == InfoType.mileage) ... [
 
                 MileageInputView(
                   infoType: infoType,
@@ -63,7 +64,7 @@ class InfoDetailsView extends StatelessWidget {
                   currentIndex: currentIndex,
                 ),
 
-              ] else if(infoType == 'breakdown') ... [
+              ] else if(infoType == InfoType.breakdown) ... [
 
                 BreakdownInputView(
                   infoType: infoType,
@@ -71,25 +72,25 @@ class InfoDetailsView extends StatelessWidget {
                   currentIndex: currentIndex,
                 ),
 
-              ] else if(infoType == 'fuel_update') ... [
+              ] else if(infoType == InfoType.fuelUpdate) ... [
 
                 FuelPricingInputView(
                   homeViewModel: viewModel,
                 ),
 
-              ] else if(infoType == 'weather_view') ... [
+              ] else if(infoType == InfoType.weatherView) ... [
 
                 WeatherInfoView(
                   homeViewModel: viewModel,
                 ),
 
-              ] else if(infoType == 'location_setup') ... [
+              ] else if(infoType == InfoType.locationSetup) ... [
 
                 PermissionLocationGuide(
                   homeViewModel: viewModel,
                 ),
 
-              ] else if(infoType == 'budgeting') ... [
+              ] else if(infoType == InfoType.budgeting) ... [
 
                 BudgetingInfoView(
                   homeViewModel: viewModel,
@@ -110,11 +111,11 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
   const FuelBudgetView({
     super.key,
     this.homeViewModel,
-    this.infoType = ''
+    this.infoType = InfoType.fueling
   });
 
   final HomeViewModel? homeViewModel;
-  final String? infoType;
+  final InfoType? infoType;
 
   @override
   Widget build(BuildContext context, HomeViewModel viewModel) {
@@ -152,7 +153,7 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
         Row(
           children: [
             NormalText(
-              text: infoType!.toUpperCase(),
+              text: infoType!.toValue().toUpperCase(),
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
               fontSize: 23,
@@ -219,7 +220,7 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
                 viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
-                  type: infoType,
+                  type: infoType.toString(),
                   onCallBack: () {
                     popView(context);
                     showSnackBar(
@@ -255,11 +256,11 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
   const ServiceRepairBudgetView({
     super.key,
     this.homeViewModel,
-    this.infoType = ''
+    this.infoType = InfoType.servicing
   });
 
   final HomeViewModel? homeViewModel;
-  final String? infoType;
+  final InfoType? infoType;
 
   @override
   Widget build(BuildContext context, HomeViewModel viewModel) {
@@ -301,7 +302,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
         Row(
           children: [
             NormalText(
-              text: infoType!.toUpperCase(),
+              text: infoType!.toValue().toUpperCase(),
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
               fontSize: 23,
@@ -394,7 +395,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
                 viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
-                  type: infoType,
+                  type: infoType!.toValue(),
                   onCallBack: (){
                     popView(context);
                     showSnackBar(
@@ -428,12 +429,12 @@ class MileageInputView extends ViewModelWidget<HomeViewModel> {
   const MileageInputView({
     super.key,
     this.homeViewModel,
-    this.infoType = '',
+    this.infoType = InfoType.mileage,
     this.currentIndex
   });
 
   final HomeViewModel? homeViewModel;
-  final String? infoType;
+  final InfoType? infoType;
   final int? currentIndex;
 
   @override
@@ -456,7 +457,7 @@ class MileageInputView extends ViewModelWidget<HomeViewModel> {
         Row(
           children: [
             NormalText(
-              text: infoType!.toUpperCase(),
+              text: infoType!.toValue().toUpperCase(),
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
               fontSize: 23,
@@ -510,7 +511,7 @@ class MileageInputView extends ViewModelWidget<HomeViewModel> {
         XButton(
           onPressed: !viewModel.isBusy ? () {
             viewModel.updateToBudget(
-                type: infoType,
+                type: infoType!.toValue(),
                 onCallBack: (){
 
                   if(viewModel.milesInputController.text.isNotEmpty) {
@@ -547,12 +548,12 @@ class BreakdownInputView extends ViewModelWidget<HomeViewModel> {
   const BreakdownInputView({
     super.key,
     this.homeViewModel,
-    this.infoType = '',
+    this.infoType = InfoType.breakdown,
     this.currentIndex
   });
 
   final HomeViewModel? homeViewModel;
-  final String? infoType;
+  final InfoType? infoType;
   final int? currentIndex;
 
   @override
@@ -591,7 +592,7 @@ class BreakdownInputView extends ViewModelWidget<HomeViewModel> {
         Row(
           children: [
             NormalText(
-              text: infoType!.toUpperCase(),
+              text: infoType!.toValue().toUpperCase(),
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
               fontSize: 23,
@@ -694,7 +695,7 @@ class BreakdownInputView extends ViewModelWidget<HomeViewModel> {
                 viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
-                  type: infoType,
+                  type: infoType!.toValue(),
                   onCallBack: (){
                     popView(context);
                     showSnackBar(
@@ -1006,12 +1007,12 @@ class BudgetingInfoView extends ViewModelWidget<HomeViewModel> {
   const BudgetingInfoView({
     super.key,
     this.homeViewModel,
-    this.infoType = '',
+    this.infoType = InfoType.budgeting,
     this.currentIndex
   });
 
   final HomeViewModel? homeViewModel;
-  final String? infoType;
+  final InfoType? infoType;
   final int? currentIndex;
 
   @override

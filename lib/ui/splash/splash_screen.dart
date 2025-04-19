@@ -25,7 +25,6 @@ class SplashScreen extends StatelessWidget {
               navigateReplace(context, SignInScreen());
             },
             onLoggedCallBack: (){
-              //navigateReplace(context, const HomeScreen());
               navigateReplace(context, const DashBoardScreen());
             }
         ),

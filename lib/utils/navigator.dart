@@ -28,7 +28,19 @@ void navigate(BuildContext context, Widget route, {bool isDialog = false, Functi
 
       }
 
-    });
+    },);
+
+Future<void> navigateWithCallBack(BuildContext context, Widget route, {bool isDialog = false, Function(dynamic value)? onCallBack}) async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute<dynamic>(
+      fullscreenDialog: isDialog,
+      builder: (BuildContext context) => route,
+    ),
+  ).then((value) {
+    onCallBack!(value);
+  });
+}
 
 void popToFirst(BuildContext context) =>
     Navigator.of(context).popUntil((Route<dynamic> route) => route.isFirst);

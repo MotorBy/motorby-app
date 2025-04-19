@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/get_insuraance_model.dart';
+import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
 class InsuranceViewModel extends BaseViewModel {
   final insuranceService = serviceLocator<InsuranceService>();
+  final budgetingService = serviceLocator<BudgetingService>();
 
   String selectedVehicle = '';
   String selectedModel = '';
@@ -74,6 +77,15 @@ class InsuranceViewModel extends BaseViewModel {
     notifyListeners();
     print('the list of product: ${insuranceList.first.company}');
   }
+
+  List<Budget> getBudgetData() {
+    return budgetingService.budgetingModel?.budget ?? [];
+  }
+
+  CarId? getCurrentCar() {
+    return budgetingService.currentCar;
+  }
+
 
   List<PaymentMethod> paymentMethod = [
     PaymentMethod(

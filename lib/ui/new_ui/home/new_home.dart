@@ -3,6 +3,7 @@ import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
@@ -12,6 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -20,139 +22,6 @@ import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
-
-class VehicleSelectionBottomSheet extends StatelessWidget {
-  const VehicleSelectionBottomSheet({Key? key, this.homeViewModel}) : super(key: key);
-
-  final HomeViewModel? homeViewModel;
-
-  @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<HomeViewModel>.reactive(
-        viewModelBuilder: () => homeViewModel ?? HomeViewModel(),
-        disposeViewModel: false,
-        builder: (context, model, child) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                  child: Container(
-                    height: 4,
-                    width: 40,
-                    color: const Color(0xFFD0D5DD),
-                  )),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'My cars',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              if(homeViewModel!.hasAddedCar) ... [
-
-                const NormalText(
-                  text: 'Selecting a car will be set across all the activity within the Motorby application.',
-                  fontSize: 13,
-                  textColor: Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-                const SizedBox(height: 26),
-
-              ],
-
-              if(homeViewModel!.hasAddedCar) ... [
-
-                SizedBox(
-                  height: 140,
-                  child: ListView.separated(
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          visualDensity: const VisualDensity(vertical: -2),
-                          leading: const GetSvgImage(
-                              image: 'assets/images/auto/toyota_se.svg'
-                          ),
-                          trailing: const Icon(Icons.circle_outlined),
-                          title: NormalText(
-                            text: model.budgetingModel!.budget![index].carName,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          selected: true,
-                          selectedTileColor: Colors.deepPurple.withOpacity(0.1),
-                          onTap: () {
-                            model.onBudgetViewUpdated(index);
-                            Navigator.pop(context);
-                          }
-                        );
-                      },
-                      separatorBuilder: (context, index) => const DividerWidget(),
-                      itemCount: model.totalCarsAdded!
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-              ] else ... [
-
-                const NormalText(
-                  text: 'You currently have to car added to manage, Add a car to start',
-                  fontSize: 13,
-                  textColor: Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-
-                const SizedBox(height: 26),
-
-              ],
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: const NormalText(
-                    text: 'Add car',
-                    textColor: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: XColors.background(),
-                    side: const BorderSide(width: 1, color: Colors.grey),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    navigate(context, const AddCarScreen());
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      }
-    );
-  }
-}
 
 class NewHomeScreen extends StatelessWidget {
   const NewHomeScreen({Key? key}) : super(key: key);
@@ -177,7 +46,7 @@ class NewHomeScreen extends StatelessWidget {
                   context: context,
                   child: InfoDetailsView(
                     homeViewModel: model,
-                    infoType: 'location_setup',
+                    infoType: InfoType.locationSetup,
                   ),
                 );
 
@@ -221,40 +90,14 @@ class NewHomeScreen extends StatelessWidget {
                     if(viewModel.currentCar != null) ... [
 
                       // Vehicle Selection Card
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        visualDensity: const VisualDensity(horizontal: -4),
-                        title: Row(
-                          children: [
-                            Image.asset('assets/images/toyota-logo.png',
-                                height: 24),
-                            const SizedBox(width: 2),
-                            NormalText(
-                              text: viewModel.budgetingModel!.budget![0].carName,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                            const XMargin(10),
-                            Icon(
-                              Icons.expand_less_rounded,
-                              color: XColors.black(),
-                              size: 30,
-                            )
-                          ],
-                        ),
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            builder: (context) =>
-                                VehicleSelectionBottomSheet(homeViewModel: viewModel,),
-                          );
-                        },
-                      ),
+                      CarSelectorView(
+                          cars: viewModel.budgetingModel!.budget!,
+                          currentCar: viewModel.currentCar != null ? '${viewModel.currentCar!.carMake} ${viewModel.currentCar!.carModel} ${viewModel.currentCar!.carYear}' : null,
+                          allowStyling: false,
+                          onCarSelected: (car) {
+
+                          }
+                      )
 
                     ] else ... [
                       ListTile(
@@ -280,15 +123,7 @@ class NewHomeScreen extends StatelessWidget {
                           ],
                         ),
                         onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            builder: (context) =>
-                                VehicleSelectionBottomSheet(homeViewModel: viewModel,),
-                          );
+                          navigate(context, const AddCarScreen());
                         },
                       ),
                     ],
@@ -326,7 +161,18 @@ class NewHomeScreen extends StatelessWidget {
                             Icon(Icons.chevron_right),
                           ],
                         ),
-                        onTap: () {},
+                        onTap: () {
+
+                          modalBottomSheetMenu(
+                            color: Colors.white,
+                            context: context,
+                            child: InfoDetailsView(
+                              homeViewModel: viewModel,
+                              infoType: InfoType.fueling,
+                            ),
+                          );
+
+                        },
                       ),
                     ),
                     const YMargin(14),
@@ -512,7 +358,7 @@ class InfoBox extends StatelessWidget {
                         context: context,
                         child: InfoDetailsView(
                           homeViewModel: model,
-                          infoType: 'weather_view',
+                          infoType: InfoType.weatherView,
                         ),
                       );
 
@@ -551,23 +397,22 @@ class InfoBox extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         backgroundColor: Colors.black26,
                         width: double.infinity,
-                        // child: ClipRRect(
-                        //   borderRadius: BorderRadius.circular(16),
-                        //   child: 
-                        //   GoogleMap(
-                        //     initialCameraPosition: const CameraPosition(
-                        //       target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
-                        //       zoom: 12.0,
-                        //     ),
-                        //     myLocationEnabled: true,
-                        //     myLocationButtonEnabled: false,
-                        //     zoomControlsEnabled: false,
-                        //     mapType: MapType.normal,
-                        //     onMapCreated: (GoogleMapController controller) {
-                        //       MapViewModel().setMapController(controller);
-                        //     },
-                        //   ),
-                        // ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: GoogleMap(
+                            initialCameraPosition: const CameraPosition(
+                              target: LatLng(6.5244, 3.3792), // Default to Lagos coordinates
+                              zoom: 12.0,
+                            ),
+                            myLocationEnabled: true,
+                            myLocationButtonEnabled: false,
+                            zoomControlsEnabled: false,
+                            mapType: MapType.normal,
+                            onMapCreated: (GoogleMapController controller) {
+                              MapViewModel().setMapController(controller);
+                            },
+                          ),
+                        ),
                       ),
 
                       ///Button to navigate to map view
@@ -583,7 +428,7 @@ class InfoBox extends StatelessWidget {
                                 onTap: () {
                                   navigate(context, const MapScreen());
                                 },
-                                backgroundColor: const Color(0xFF14121280),
+                                backgroundColor: const Color(0xFFF0E8F8),
                                 borderRadius: BorderRadius.circular(40),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 8
@@ -624,7 +469,7 @@ class InfoBox extends StatelessWidget {
                     elevation: 0.2,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF3F3FA),
+                    backgroundColor: const Color(0xFFF0E8F8),
                     width: double.infinity,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -664,7 +509,7 @@ class InfoBox extends StatelessWidget {
                     elevation: 0.2,
                     padding: const EdgeInsets.only(top: 16),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF3F3FA),
+                    backgroundColor: const Color(0xFFF0E8F8),
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -689,7 +534,7 @@ class InfoBox extends StatelessWidget {
                           backgroundColor: XColors.highlightColor(),
                           width: 70,
                           child: const Center(
-                            child: const NormalText(
+                            child: NormalText(
                               text: 'Update',
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
@@ -707,7 +552,7 @@ class InfoBox extends StatelessWidget {
                     elevation: 0.2,
                     padding: const EdgeInsets.only(top: 16),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF3F3FA),
+                    backgroundColor: const Color(0xFFF0E8F8),
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -732,7 +577,7 @@ class InfoBox extends StatelessWidget {
                           backgroundColor: XColors.highlightColor(),
                           width: 100,
                           child: const Center(
-                            child: const NormalText(
+                            child: NormalText(
                               text: 'View report',
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
