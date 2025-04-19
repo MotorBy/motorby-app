@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/buy_insurance_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/claim_screeen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
@@ -62,39 +63,14 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                 const YMargin(36),
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  leading: const Icon(Icons.directions_car),
                   dense: true,
                   visualDensity: const VisualDensity(horizontal: -4),
-                  title: GestureDetector(
-                    onTap: (){
-                      showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20)),
-                      ),
-                      builder: (context) => const VehicleSelectionBottomSheet(),
-                    );
-                    },
-                    child: AbsorbPointer(
-                      child: Row(
-                        children: [
-                          Image.asset('assets/images/toyota-logo.png', height: 24),
-                          const SizedBox(width: 2),
-                          const NormalText(
-                            text: 'Toyota',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
-                          const XMargin(10),
-                          Icon(
-                            Icons.expand_less_rounded,
-                            color: XColors.black(),
-                            size: 30,
-                          )
-                        ],
-                      ),
-                    ),
+                  title: CarSelectorView(
+                      cars: model.getBudgetData(),
+                      currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
+                      onCarSelected: (car){
+
+                      }
                   ),
                  
                   trailing: ContainerWidget(

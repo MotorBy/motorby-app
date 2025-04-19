@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
@@ -222,58 +223,14 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
 
               const YMargin(20),
 
-              // Car information section
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: XColors.highlightColor().withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: GetSvgImage(
-                          image: 'assets/images/auto/toyota_se.svg',
-                          boxFit: BoxFit.scaleDown,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          NormalText(
-                            text: 'Toyota Camry',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          SizedBox(height: 4),
-                          NormalText(
-                            text: 'ABC-123-XYZ',
-                            fontSize: 14,
-                            textColor: Colors.grey,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              CarSelectorView(
+                  cars: model.getBudgetData(),
+                  currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
+                  onCarSelected: (car){
+
+                  }
               ),
+
               const YMargin(20),
 
               // Nearby locations section

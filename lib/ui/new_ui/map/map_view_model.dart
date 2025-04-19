@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/places_nearby_model.dart';
 import 'package:mobile_auto_drive/models/routes_direction_model.dart' as route_direction;
 import 'package:mobile_auto_drive/models/saved_locations_response.dart';
+import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/places_services.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -13,6 +15,7 @@ import 'package:stacked/stacked.dart';
 
 class MapViewModel extends BaseViewModel {
   final _placesService = serviceLocator<PlacesService>();
+  final budgetingService = serviceLocator<BudgetingService>();
 
   final search = TextEditingController();
   GoogleMapController? _mapController;
@@ -48,6 +51,14 @@ class MapViewModel extends BaseViewModel {
 
   Future<void> init() async {
     await loadSavedAddresses();
+  }
+
+  List<Budget> getBudgetData() {
+    return budgetingService.budgetingModel?.budget ?? [];
+  }
+
+  CarId? getCurrentCar() {
+    return budgetingService.currentCar;
   }
 
   Future<void> getAddressFromLocation({Function? onCallBack}) async {

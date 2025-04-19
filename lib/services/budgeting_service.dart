@@ -13,6 +13,7 @@ class BudgetingService {
   final persistService = serviceLocator<PersistenceService>();
 
   BudgetingModel? budgetingModel;
+  CarId? currentCar;
 
   Future getBudgets() async {
 

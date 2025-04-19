@@ -189,6 +189,7 @@ class HomeViewModel extends BaseViewModel {
       if(budgetingModel!.budget!.isNotEmpty) {
 
         currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
+        budgetingService.currentCar = currentCar;
 
         hasAddedCar = true;
         totalCarsAdded = budgetingModel!.budget!.length;
@@ -277,6 +278,8 @@ class HomeViewModel extends BaseViewModel {
     salesService.currentCar = currentCar;
     salesService.currentCarMake = currentCar!.carMake!;
     currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
+    budgetingService.currentCar = currentCar;
+
     notifyListeners();
   }
 
