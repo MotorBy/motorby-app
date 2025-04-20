@@ -23,11 +23,20 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 
-class NewHomeScreen extends StatelessWidget {
+class NewHomeScreen extends StatefulWidget {
   const NewHomeScreen({Key? key}) : super(key: key);
 
   @override
+  State<NewHomeScreen> createState() => _NewHomeScreenState();
+}
+
+class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return ViewModelBuilder<HomeViewModel>.reactive(
         viewModelBuilder: () => HomeViewModel(),
         disposeViewModel: false,

@@ -42,9 +42,9 @@ class ExpenditureReportView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildBudgetHeader(context: context),
-          const Spacer(),
+          const YMargin(24),
           SizedBox(
-            height: 300,
+            height: 280,
             child: GridView.builder(
                 itemCount: budgetIcon.length,
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -53,7 +53,8 @@ class ExpenditureReportView extends StatelessWidget {
                     childAspectRatio: 3 / 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 18,
-                    mainAxisExtent: 118),
+                    mainAxisExtent: 118,
+                ),
                 itemBuilder: (context, index) {
                   return ContainerWidget(
                     backgroundColor: XColors.containerColor(),

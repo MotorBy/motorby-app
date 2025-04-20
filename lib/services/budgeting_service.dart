@@ -48,7 +48,6 @@ class BudgetingService {
     }
 
     totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
-
     totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 0
 
     currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;

@@ -32,15 +32,17 @@ class ReportScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const YMargin(24),
-              // CarSelectorView(
-              //     cars: model.budgetingModel!.budget!,
-              //     currentCar: model.currentCar != null ? '${model.currentCar!.carMake} ${model.currentCar!.carModel} ${model.currentCar!.carYear}' : null,
-              //     allowStyling: false,
-              //     onCarSelected: (car) {
-              //
-              //     }
-              // ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: CarSelectorView(
+                    cars: model.getBudgetData(),
+                    currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
+                    onCarSelected: (car) {
+
+                    }
+                ),
+              ),
+              const YMargin(14),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _buildTabSelector(model),
