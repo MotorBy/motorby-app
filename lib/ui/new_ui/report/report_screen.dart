@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -22,7 +23,7 @@ class ReportScreen extends StatelessWidget {
           title: const NormalText(
             text: 'Report',
             fontSize: 24,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
           centerTitle: false,
           backgroundColor: const Color(0xFFFEF7FF),
@@ -32,6 +33,14 @@ class ReportScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const YMargin(24),
+              // CarSelectorView(
+              //     cars: model.budgetingModel!.budget!,
+              //     currentCar: model.currentCar != null ? '${model.currentCar!.carMake} ${model.currentCar!.carModel} ${model.currentCar!.carYear}' : null,
+              //     allowStyling: false,
+              //     onCarSelected: (car) {
+              //
+              //     }
+              // ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _buildTabSelector(model),
