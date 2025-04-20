@@ -15,6 +15,47 @@ class BudgetingService {
   BudgetingModel? budgetingModel;
   CarId? currentCar;
 
+  int? currentTotalSpent = 0;
+  int currentSetBudget = 0;
+  List<int>? totalCostingAndValue = [
+    0,
+    0,
+    0,
+    0,
+    0
+  ];
+
+  void getCurrentTotalValue({int? index}) {
+
+    for (var element in budgetingModel!.budget![index!].fueling!) {
+      totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
+    }
+
+    if(budgetingModel!.budget![index].servicing != null) {
+
+      for (var element in budgetingModel!.budget![index].servicing!) {
+        totalCostingAndValue![1] = totalCostingAndValue![1] + element.price!;  ///for servicing budget will have index 1
+      }
+
+    }
+
+    if(budgetingModel!.budget![index].repairing != null) {
+
+      for (var element in budgetingModel!.budget![index].repairing!) {
+        totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
+      }
+
+    }
+
+    totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
+
+    totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 0
+
+    currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;
+    currentSetBudget = budgetingModel!.budget![index].budget ?? 0;
+
+  }
+
   Future getBudgets() async {
 
     var response = await http.get(Uri.parse(APIService.getBudget(userId: persistService.getUserID)),

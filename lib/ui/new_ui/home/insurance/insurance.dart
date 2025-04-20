@@ -75,7 +75,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                         title: CarSelectorView(
                             cars: model.getBudgetData(),
                             currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
-                            onCarSelected: (car){
+                            onCarSelected: (car) {
 
                             }
                         ),
@@ -96,7 +96,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                         ),
                       ),
                       ContainerWidget(
-                        onTap: (){
+                        onTap: () {
 
                           showModalBottomSheet(
                             context: context,
@@ -210,7 +210,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                           itemBuilder: (context, index) {
                             final insurance=model.insuranceList[index];
                             return ContainerWidget(
-                              onTap: (){},
+                              onTap: () {
+
+                              },
                               width: 310,
                               margin: const EdgeInsets.symmetric(horizontal: 16.0),
                               borderRadius: BorderRadius.circular(16),
@@ -236,15 +238,15 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                                     children: [
                                       Row(
                                         children: [
-                                          const Text(
-                                            '₦',
-                                            style: TextStyle(
+                                          Text(
+                                            insurance.cost!.split("/")[0].length < 4 ? '' : '₦',
+                                            style: const TextStyle(
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.w700,
                                                 color: Colors.black),
                                           ),
                                           NormalText(
-                                              text: insurance.cost,
+                                              text: insurance.cost!.split("/")[0].length > 4 ? insurance.cost : '${insurance.cost!.split("/")[0]}%/${insurance.cost!.split("/")[1]}',
                                               fontSize: 24,
                                               fontWeight: FontWeight.w700),
                                         ],
