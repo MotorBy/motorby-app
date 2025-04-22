@@ -9,6 +9,7 @@ class ReportViewModel extends BaseViewModel {
 
   int _selectedTab = 0;
   String _selectedTimeFrame = 'This week';
+  BudgetingModel? budgetingModel;
 
   // Form data
   DateTime? _selectedDate;
@@ -29,7 +30,8 @@ class ReportViewModel extends BaseViewModel {
   final String humidity = '60%';
 
   int? currentTotalSpent = 0;
-  int currentSetBudget = 0;
+  int? currentSetBudget = 0;
+  int currentCarBudgetIndex = 0;
   List<int>? totalCostingAndValue = [
     0,
     0,
@@ -45,11 +47,18 @@ class ReportViewModel extends BaseViewModel {
       notifyListeners();
     }
 
+    budgetingModel = budgetingService.budgetingModel;
+    currentCarBudgetIndex = currentIndex;
     budgetingService.getCurrentTotalValue(index: currentIndex);
 
     totalCostingAndValue = budgetingService.totalCostingAndValue;
     currentTotalSpent = budgetingService.currentTotalSpent;
     currentSetBudget = budgetingService.currentSetBudget;
+
+    print(currentSetBudget);
+    print(currentTotalSpent);
+
+    notifyListeners();
 
   }
 

@@ -168,7 +168,7 @@ class InfoDetailsViewModel extends BaseViewModel {
 
   }
 
-  void updateBudgetData({String? value, String? type}) {
+  void updateBudgetData({String? value, String? type, Map<String, dynamic>? otherData}) {
     if(type == "amount") {
       budgetData["price"] = int.parse(value!);
     } else if (type == "date") {
@@ -180,11 +180,11 @@ class InfoDetailsViewModel extends BaseViewModel {
       budgetData["location"] = value;
     } else if (type == "miles") {
       budgetData["mileage"] = value;
-    }  else if (type == "condition") {
+    } else if (type == "condition") {
       budgetData["condition"] = value;
-    }  else if (type == "shop_name") {
+    } else if (type == "shop_name") {
       budgetData["shop_name"] = value;
-    }  else if (type == "fuel_station_name") {
+    } else if (type == "fuel_station_name") {
       budgetData["fuel_station_name"] = value;
     } else if(type == "price_per_liter") {
       budgetData["price_per_liter"] = int.parse(value!);
@@ -195,6 +195,11 @@ class InfoDetailsViewModel extends BaseViewModel {
     } else if(type == "budgeting") {
       budgetData["budget_amount"] = value;
     }
+
+    if(otherData != null) {
+      budgetData.addAll(otherData);
+    }
+
     notifyListeners();
   }
 

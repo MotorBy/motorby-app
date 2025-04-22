@@ -25,7 +25,19 @@ class BudgetingService {
     0
   ];
 
+  void resetTotalCostingAndValue() {
+    totalCostingAndValue = [
+      0,
+      0,
+      0,
+      0,
+      0
+    ];
+  }
+
   void getCurrentTotalValue({int? index}) {
+    resetTotalCostingAndValue();
+
     currentSetBudget = index ?? 0;
 
     for (var element in budgetingModel!.budget![index!].fueling!) {

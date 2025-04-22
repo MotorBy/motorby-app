@@ -360,7 +360,7 @@ class InfoBox extends StatelessWidget {
                   ///weather tile
                   ContainerWidget(
                     elevation: 0.2,
-                    onTap: (){
+                    onTap: () {
 
                       modalBottomSheetMenu(
                         color: Colors.white,

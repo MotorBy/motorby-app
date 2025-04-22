@@ -14,54 +14,50 @@ void listHelperPicker({
 
   modalBottomSheetMenu(
       context: context!,
+      color: Colors.white,
       child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              const YMargin(20),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 24, top: 5, bottom: 8),
-                    child: NormalText(
-                      text: title,
-                      fontWeight: FontWeight.w700,
-                      textColor: XColors.black(),
-                      fontSize: 15,
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const YMargin(20),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 24, top: 5, bottom: 8),
+                  child: NormalText(
+                    text: title,
+                    fontWeight: FontWeight.w700,
+                    textColor: XColors.black(),
+                    fontSize: 15,
                   ),
-                ],
-              ),
-              const YMargin(20),
-              SizedBox(
-                height: height ?? SizeConfig().sh(22 * listString.length) as double?,
-                child: ListView.builder(
-                  itemBuilder: (BuildContext context, index) {
-                    return Padding(
-                      padding:
-                          const EdgeInsets.only(left: 24, top: 5, bottom: 12),
-                      child: InkWell(
-                        onTap: () {
-                          selected!(listString[index]);
-                          Navigator.pop(context);
-                        },
-                        child: NormalText(
-                          text: listString[index],
-                          textColor: XColors.black(),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: listString.length,
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
                 ),
-              ),
-              const YMargin(20),
-            ],
-          ),
+              ],
+            ),
+            const YMargin(20),
+
+            ...List.generate(listString.length, (index) {
+
+              return Padding(
+                padding:
+                const EdgeInsets.only(left: 24, top: 5, bottom: 18),
+                child: InkWell(
+                  onTap: () {
+                    selected!(listString[index]);
+                    Navigator.pop(context);
+                  },
+                  child: NormalText(
+                    text: listString[index],
+                    textColor: XColors.black(),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              );
+
+            }),
+
+            const YMargin(20),
+          ],
         ),
       ),
   );

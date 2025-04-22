@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -21,23 +22,26 @@ class ExpenditureReportView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final List<String> budgetIcon = [
       'assets/images/fuel_guage.png',
       'assets/images/servicng-icon.png',
       'assets/images/repaair-icon.png',
       'assets/images/expenses.png'
     ];
+
     final List<String> budgetTopic = [
       'Fueling',
       'Servicing',
       'Repair',
       'Expenses'
     ];
+    
     final List<String> budgetSubTopic = [
-      '100,030,409',
-      '100,030,409',
-      '100,030,409',
-      '100,030,409'
+      numberFormat(number: model.totalCostingAndValue![0].toDouble()),
+      numberFormat(number: model.totalCostingAndValue![1].toDouble()),
+      numberFormat(number: model.totalCostingAndValue![2].toDouble()),
+      numberFormat(number: 0.0),
     ];
 
     return Padding(
@@ -45,7 +49,12 @@ class ExpenditureReportView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBudgetHeader(),
+          _buildBudgetHeader(
+              currentSpending: model.budgetingModel != null ?
+          numberFormat(number: model.budgetingModel!.budget![model.currentCarBudgetIndex].currentSpending!.toDouble()) : "0",
+              totalBudget: model.budgetingModel != null ?
+              numberFormat(number: model.budgetingModel!.budget![model.currentCarBudgetIndex].budget!.toDouble()) : "0"
+          ),
           const YMargin(24),
           SizedBox(
             height: 280,
@@ -85,6 +94,9 @@ class ExpenditureReportView extends StatelessWidget {
                         child: InfoDetailsView(
                           infoType: infoType!,
                           currentIndex: 0,
+                          onBudgetAction: (){
+
+                          },
                         ),
                       );
 
@@ -133,7 +145,8 @@ class ExpenditureReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildBudgetHeader() {
+  Widget _buildBudgetHeader({String? currentSpending, String? totalBudget}) {
+
     return ContainerWidget(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       backgroundColor: XColors.white(),
@@ -190,7 +203,7 @@ class ExpenditureReportView extends StatelessWidget {
                             fontWeight: FontWeight.w600),
                       ),
                       NormalText(
-                        text: '36,000',
+                        text: currentSpending,
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                         textColor: XColors.black(),
@@ -214,7 +227,7 @@ class ExpenditureReportView extends StatelessWidget {
                             fontWeight: FontWeight.w600),
                       ),
                       NormalText(
-                        text: '100,000',
+                        text: totalBudget,
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         textColor: XColors.black(),
@@ -246,23 +259,29 @@ class ExpenditureReportView extends StatelessWidget {
             ],
           ),
           const YMargin(36),
-          _buildCategoryDistribution(),
+          _buildCategoryDistribution(
+            fueling: model.totalCostingAndValue![0].toDouble(),
+            servicing: model.totalCostingAndValue![1].toDouble(),
+            repairing: model.totalCostingAndValue![2].toDouble(),
+            total: model.currentSetBudget!.toDouble(),
+            spent: model.currentTotalSpent!.toDouble(),
+          ),
           const YMargin(6),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryDistribution() {
+  Widget _buildCategoryDistribution({double? fueling, double? servicing, double? repairing, double? expenses, double? total, double? spent}) {
     final categories = [
-      {'name': 'Fuel', 'value': 36000.0, 'color': Colors.purple[200]},
-      {'name': 'Services', 'value': 25000.0, 'color': Colors.grey[300]},
-      {'name': 'Repair', 'value': 20000.0, 'color': Colors.pink[100]},
-      {'name': 'Other Expenses', 'value': 19000.0, 'color': Colors.blue[100]},
+      {'name': 'Fuel', 'value': fueling ?? 0.0, 'color': Colors.purple[200]},
+      {'name': 'Services', 'value': servicing ?? 0.0, 'color': Colors.grey[300]},
+      {'name': 'Repair', 'value': repairing ?? 0.0, 'color': Colors.pink[100]},
+      {'name': 'Other Expenses', 'value': expenses ?? 0.0, 'color': Colors.blue[100]},
     ];
 
-    final totalSpent = categories.fold(0.0, (sum, item) => sum + (item['value'] as double));
-    const totalBudget = 100000.0; // This should come from your model
+    final totalSpent = spent ?? 0;
+    final totalBudget = total ?? 100000.0; // This should come from your model
     final remainingBudget = totalBudget - totalSpent;
 
     return Column(
@@ -288,7 +307,7 @@ class ExpenditureReportView extends StatelessWidget {
               if (remainingBudget > 0)
                 Expanded(
                   flex: ((remainingBudget / totalBudget) * 100).round(),
-                  child: Container(color: Colors.grey[50]),
+                  child: Container(color: Colors.grey[300]),
                 ),
             ],
           ),

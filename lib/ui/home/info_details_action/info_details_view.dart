@@ -13,6 +13,7 @@ import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
+import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -24,12 +25,14 @@ class InfoDetailsView extends StatelessWidget {
     this.infoType = InfoType.empty,
     this.infoDetailsViewModel,
     this.currentIndex,
-    this.onHistoryNav
+    this.onHistoryNav,
+    this.onBudgetAction
   });
 
   final InfoType? infoType;
   final int? currentIndex;
   final Function? onHistoryNav;
+  final Function? onBudgetAction;
 
   final InfoDetailsViewModel? infoDetailsViewModel;
 
@@ -49,6 +52,7 @@ class InfoDetailsView extends StatelessWidget {
                 FuelBudgetView(
                   infoType: infoType,
                   infoDetailsViewModel: viewModel,
+                  onBudgetAction: onBudgetAction,
                 )
 
               ] else if(infoType == InfoType.servicing || infoType == InfoType.repairing) ... [
@@ -56,6 +60,7 @@ class InfoDetailsView extends StatelessWidget {
                 ServiceRepairBudgetView(
                   infoType: infoType,
                   infoDetailsViewModel: viewModel,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.mileage) ... [
@@ -64,6 +69,7 @@ class InfoDetailsView extends StatelessWidget {
                   infoType: infoType,
                   infoDetailsViewModel: viewModel,
                   currentIndex: currentIndex,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.breakdown) ... [
@@ -72,12 +78,14 @@ class InfoDetailsView extends StatelessWidget {
                   infoType: infoType,
                   infoDetailsViewModel: viewModel,
                   currentIndex: currentIndex,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.fuelUpdate) ... [
 
                 FuelPricingInputView(
                   infoDetailsViewModel: viewModel,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.weatherView) ... [
@@ -97,6 +105,7 @@ class InfoDetailsView extends StatelessWidget {
                 BudgetingInfoView(
                   infoDetailsViewModel: viewModel,
                   currentIndex: currentIndex,
+                  onBudgetAction: onBudgetAction,
                 )
 
               ]
@@ -110,14 +119,16 @@ class InfoDetailsView extends StatelessWidget {
 }
 
 class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
-  FuelBudgetView({
+  const FuelBudgetView({
     super.key,
     this.infoDetailsViewModel,
     this.infoType = InfoType.fueling,
+    this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
+  final Function? onBudgetAction;
 
   @override
   Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
@@ -264,6 +275,7 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                   type: infoType!.toValue().toString(),
                   onCallBack: () {
                     popView(context);
+                    onBudgetAction!.call();
                     showSnackBar(
                         context: context,
                         message: 'Successfully updated into your budget'
@@ -296,11 +308,13 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
   const ServiceRepairBudgetView({
     super.key,
     this.infoDetailsViewModel,
-    this.infoType = InfoType.servicing
+    this.infoType = InfoType.servicing,
+    this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
+  final Function? onBudgetAction;
 
   @override
   Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
@@ -382,6 +396,112 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
               },
             ),
             const YMargin(15),
+            GestureDetector(
+              onTap: () {
+                listHelperPicker(
+                  context: context,
+                  title: "Select Damage Severity",
+                  listString: ["Minor", "Moderate", "Major", "None"],
+                  selected: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      "severity" : value
+                    });
+                  }
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber_rounded, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Select damage severity ${viewModel.budgetData['severity'] != null ? ' (${viewModel.budgetData['severity']})' : ""}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
+            GestureDetector(
+              onTap: () {
+                listHelperPicker(
+                  context: context,
+                  title: "Rate Post-Service Improvement",
+                  listString: ["Good", "Better", "Best"],
+                  selected: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      "improvement" : value
+                    });
+                  }
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.trending_up, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Rate service improvement ${viewModel.budgetData['improvement'] != null ? ' (${viewModel.budgetData['improvement']})' : ""}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
+            GestureDetector(
+              onTap: () async {
+
+                final result = await Navigator.push<Map<String, dynamic>>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchAddressMap(
+                      viewModel: null,
+                    ),
+                  ),
+                );
+
+                if(result != null) {
+                  viewModel.updateCurrentInputAddress(address: result);
+                }
+
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        viewModel.addressInput['address'] ?? infoType == InfoType.servicing ? 'Enter service shop location' : 'Enter repair shop location',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
             MainInputField(
               label: "Amount",
               controller: viewModel.amountInputController,
@@ -394,7 +514,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
             const YMargin(15),
             MainInputField(
               controller: viewModel.addressInputController,
-              label: "Place fixed",
+              label: infoType == InfoType.servicing ?  "Date of servicing" : "Date of repair",
               //isEnabled: false,
               onChanged: (s) {
                 viewModel.updateBudgetData(value: s, type: 'location');
@@ -405,8 +525,6 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Icon(Icons.location_on_rounded, size: 21, color: XColors.textColor(),),
-                      const XMargin(20),
                       GestureDetector(
                         onTap: () async {
                           DateTime? startPickedDate = await showDatePicker(
@@ -473,12 +591,14 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
     super.key,
     this.infoDetailsViewModel,
     this.infoType = InfoType.mileage,
-    this.currentIndex
+    this.currentIndex,
+    this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
   final int? currentIndex;
+  final Function? onBudgetAction;
 
   @override
   Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
@@ -592,12 +712,14 @@ class BreakdownInputView extends ViewModelWidget<InfoDetailsViewModel> {
     super.key,
     this.infoDetailsViewModel,
     this.infoType = InfoType.breakdown,
-    this.currentIndex
+    this.currentIndex,
+    this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
   final int? currentIndex;
+  final Function? onBudgetAction;
 
   @override
   Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
@@ -774,9 +896,11 @@ class FuelPricingInputView extends ViewModelWidget<InfoDetailsViewModel> {
   const FuelPricingInputView({
     super.key,
     this.infoDetailsViewModel,
+    this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
+  final Function? onBudgetAction;
 
   @override
   Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
@@ -1051,10 +1175,12 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
     super.key,
     this.infoDetailsViewModel,
     this.infoType = InfoType.budgeting,
-    this.currentIndex
+    this.currentIndex,
+    this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
+  final Function? onBudgetAction;
   final InfoType? infoType;
   final int? currentIndex;
 

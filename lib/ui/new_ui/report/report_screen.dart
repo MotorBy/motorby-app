@@ -18,6 +18,7 @@ class ReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<ReportViewModel>.reactive(
       viewModelBuilder: () => ReportViewModel(),
+      onViewModelReady: (model) => model.setBudgetData(),
       builder: (context, model, child) => Scaffold(
         backgroundColor: XColors.background(),
         appBar: AppBar(
@@ -39,7 +40,7 @@ class ReportScreen extends StatelessWidget {
                     cars: model.getBudgetData(),
                     currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
                     onCarSelected: ({Budget? budget, int? index}) {
-
+                      model.setBudgetData(currentIndex: index!);
                     }
                 ),
               ),
