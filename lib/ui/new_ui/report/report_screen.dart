@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -37,7 +38,7 @@ class ReportScreen extends StatelessWidget {
                 child: CarSelectorView(
                     cars: model.getBudgetData(),
                     currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
-                    onCarSelected: (car) {
+                    onCarSelected: ({Budget? budget, int? index}) {
 
                     }
                 ),
@@ -50,7 +51,7 @@ class ReportScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Expanded(
                 child: model.selectedTab == 0
-                    ? ExpenditureReportView(model: model)
+                    ? ExpenditureReportView(model: model, ctxt: context,)
                     : MileageReportView(model: model),
               ),
             ],

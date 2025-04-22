@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
@@ -10,11 +11,14 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 
 class ExpenditureReportView extends StatelessWidget {
   final ReportViewModel model;
+  final BuildContext? ctxt;
 
   const ExpenditureReportView({
     Key? key,
     required this.model,
+    this.ctxt,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final List<String> budgetIcon = [
@@ -41,7 +45,7 @@ class ExpenditureReportView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBudgetHeader(context: context),
+          _buildBudgetHeader(),
           const YMargin(24),
           SizedBox(
             height: 280,
@@ -61,6 +65,30 @@ class ExpenditureReportView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     padding: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 16),
+                    onTap: () {
+
+                      InfoType? infoType;
+
+                      if(index == 0) {
+                        infoType = InfoType.fueling;
+                      } else if(index == 1) {
+                        infoType = InfoType.servicing;
+                      } else if(index == 2) {
+                        infoType = InfoType.repairing;
+                      } else if(index == 3) {
+
+                      }
+
+                      modalBottomSheetMenu(
+                        color: Colors.white,
+                        context: ctxt!,
+                        child: InfoDetailsView(
+                          infoType: infoType!,
+                          currentIndex: 0,
+                        ),
+                      );
+
+                    },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -105,7 +133,7 @@ class ExpenditureReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildBudgetHeader({BuildContext? context}) {
+  Widget _buildBudgetHeader() {
     return ContainerWidget(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       backgroundColor: XColors.white(),
@@ -200,8 +228,9 @@ class ExpenditureReportView extends StatelessWidget {
 
                   modalBottomSheetMenu(
                     color: Colors.white,
-                    context: context!,
-                    child: const BudgetingInfoView(
+                    context: ctxt!,
+                    child: const InfoDetailsView(
+                      infoType: InfoType.budgeting,
                       currentIndex: 0,
                     ),
                   );
@@ -274,7 +303,8 @@ class ExpenditureReportView extends StatelessWidget {
                   color: category['color'] as Color?,
                   value: category['value'] as double,
                   percentage: (category['value'] as double) / totalBudget * 100,
-                )),
+                ),
+            ),
             if (remainingBudget > 0)
               _buildLegendItem(
                 name: 'Remaining',

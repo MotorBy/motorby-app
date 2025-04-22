@@ -222,7 +222,7 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
   */
   InputDecoration _inputStyle() {
     return InputDecoration(
-      hintText: "Enter new destination address",
+      hintText: "Enter destination or any address",
       border: InputBorder.none,
       contentPadding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
       hintStyle: TextStyle(

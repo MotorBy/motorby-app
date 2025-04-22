@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -10,17 +11,17 @@ import 'package:stacked/stacked.dart';
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({
     super.key,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
     this.noEmptyData = true
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
   final bool? noEmptyData;
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<HomeViewModel>.reactive(
-        viewModelBuilder: () => homeViewModel!,
+    return ViewModelBuilder<InfoDetailsViewModel>.reactive(
+        viewModelBuilder: () => infoDetailsViewModel!,
         disposeViewModel: false,
         builder: (context, model, child) {
         return Scaffold(

@@ -17,9 +17,10 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class SearchAddressMap extends StatefulWidget {
-  const SearchAddressMap({super.key, required this.viewModel});
+  const SearchAddressMap({super.key, required this.viewModel, this.title});
 
   final MapViewModel? viewModel;
+  final String? title;
 
 
   @override

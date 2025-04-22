@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
@@ -53,8 +54,8 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                   color: Colors.white,
                   isDismissible: false,
                   context: context,
-                  child: InfoDetailsView(
-                    homeViewModel: model,
+                  height: 450,
+                  child: const InfoDetailsView(
                     infoType: InfoType.locationSetup,
                   ),
                 );
@@ -103,8 +104,8 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                           cars: viewModel.budgetingModel!.budget!,
                           currentCar: viewModel.currentCar != null ? '${viewModel.currentCar!.carMake} ${viewModel.currentCar!.carModel} ${viewModel.currentCar!.carYear}' : null,
                           allowStyling: false,
-                          onCarSelected: (car) {
-
+                          onCarSelected: ({Budget? budget, int? index}) {
+                            viewModel.onBudgetViewUpdated(index);
                           }
                       )
 
@@ -175,8 +176,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                           modalBottomSheetMenu(
                             color: Colors.white,
                             context: context,
-                            child: InfoDetailsView(
-                              homeViewModel: viewModel,
+                            child: const InfoDetailsView(
                               infoType: InfoType.fueling,
                             ),
                           );
@@ -365,8 +365,8 @@ class InfoBox extends StatelessWidget {
                       modalBottomSheetMenu(
                         color: Colors.white,
                         context: context,
-                        child: InfoDetailsView(
-                          homeViewModel: model,
+                        height: 550,
+                        child: const InfoDetailsView(
                           infoType: InfoType.weatherView,
                         ),
                       );

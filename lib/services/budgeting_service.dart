@@ -26,6 +26,7 @@ class BudgetingService {
   ];
 
   void getCurrentTotalValue({int? index}) {
+    currentSetBudget = index ?? 0;
 
     for (var element in budgetingModel!.budget![index!].fueling!) {
       totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
