@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
@@ -23,11 +24,20 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 
-class NewHomeScreen extends StatelessWidget {
+class NewHomeScreen extends StatefulWidget {
   const NewHomeScreen({Key? key}) : super(key: key);
 
   @override
+  State<NewHomeScreen> createState() => _NewHomeScreenState();
+}
+
+class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return ViewModelBuilder<HomeViewModel>.reactive(
         viewModelBuilder: () => HomeViewModel(),
         disposeViewModel: false,
@@ -44,8 +54,8 @@ class NewHomeScreen extends StatelessWidget {
                   color: Colors.white,
                   isDismissible: false,
                   context: context,
-                  child: InfoDetailsView(
-                    homeViewModel: model,
+                  height: 450,
+                  child: const InfoDetailsView(
                     infoType: InfoType.locationSetup,
                   ),
                 );
@@ -94,8 +104,8 @@ class NewHomeScreen extends StatelessWidget {
                           cars: viewModel.budgetingModel!.budget!,
                           currentCar: viewModel.currentCar != null ? '${viewModel.currentCar!.carMake} ${viewModel.currentCar!.carModel} ${viewModel.currentCar!.carYear}' : null,
                           allowStyling: false,
-                          onCarSelected: (car) {
-
+                          onCarSelected: ({Budget? budget, int? index}) {
+                            viewModel.onBudgetViewUpdated(index);
                           }
                       )
 
@@ -166,8 +176,7 @@ class NewHomeScreen extends StatelessWidget {
                           modalBottomSheetMenu(
                             color: Colors.white,
                             context: context,
-                            child: InfoDetailsView(
-                              homeViewModel: viewModel,
+                            child: const InfoDetailsView(
                               infoType: InfoType.fueling,
                             ),
                           );
@@ -351,13 +360,13 @@ class InfoBox extends StatelessWidget {
                   ///weather tile
                   ContainerWidget(
                     elevation: 0.2,
-                    onTap: (){
+                    onTap: () {
 
                       modalBottomSheetMenu(
                         color: Colors.white,
                         context: context,
-                        child: InfoDetailsView(
-                          homeViewModel: model,
+                        height: 550,
+                        child: const InfoDetailsView(
                           infoType: InfoType.weatherView,
                         ),
                       );

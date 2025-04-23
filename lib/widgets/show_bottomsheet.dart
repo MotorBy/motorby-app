@@ -12,6 +12,7 @@ void modalBottomSheetMenu({
       isDismissible: isDismissible ?? true,
       context: context,
       isScrollControlled: true,
+      enableDrag: true,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(radius ?? 26),
@@ -20,14 +21,17 @@ void modalBottomSheetMenu({
       ),
       backgroundColor: color ?? Theme.of(context).scaffoldBackgroundColor,
       builder: (builder) {
-        return SingleChildScrollView(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: height,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: SingleChildScrollView(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              constraints: BoxConstraints(
+                maxHeight: height ?? MediaQuery.of(context).size.height * 0.9,
+                minHeight: MediaQuery.of(context).size.height * 0.3,
+              ),
+              child: child,
             ),
-            child: child,
           ),
         );
       }

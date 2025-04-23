@@ -8,7 +8,7 @@ import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
 import 'package:mobile_auto_drive/components/coming_soon_view.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_view.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/shops/shops_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
@@ -50,8 +50,7 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.white,
                 isDismissible: false,
                 context: context,
-                child: InfoDetailsView(
-                  homeViewModel: model,
+                child: const InfoDetailsView(
                   infoType: InfoType.locationSetup,
                 ),
               );
@@ -91,8 +90,7 @@ class HomeScreen extends StatelessWidget {
                               color: Colors.white,
                               isDismissible: false,
                               context: context,
-                              child: InfoDetailsView(
-                                homeViewModel: viewModel,
+                              child: const InfoDetailsView(
                                 infoType: InfoType.locationSetup,
                               ),
                             );
@@ -168,8 +166,7 @@ class HomeScreen extends StatelessWidget {
                             modalBottomSheetMenu(
                               color: Colors.white,
                               context: context,
-                              child: InfoDetailsView(
-                                homeViewModel: viewModel,
+                              child: const InfoDetailsView(
                                 infoType: InfoType.weatherView,
                               ),
                             );
@@ -186,8 +183,7 @@ class HomeScreen extends StatelessWidget {
                             modalBottomSheetMenu(
                               color: Colors.white,
                               context: context,
-                              child: InfoDetailsView(
-                                homeViewModel: viewModel,
+                              child: const InfoDetailsView(
                                 infoType: InfoType.fuelUpdate,
                               ),
                             );
@@ -357,12 +353,12 @@ class HomeScreen extends StatelessWidget {
                           color: Colors.white,
                           context: context,
                           child: InfoDetailsView(
-                            homeViewModel: viewModel,
                             currentIndex: viewModel.currentBudgetViewIndex,
                             infoType: InfoType.budgeting,
                           ),
                         );
                       },
+
                     )
 
                   ] else ... [

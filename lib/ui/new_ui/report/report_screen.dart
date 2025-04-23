@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -17,6 +18,7 @@ class ReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<ReportViewModel>.reactive(
       viewModelBuilder: () => ReportViewModel(),
+      onViewModelReady: (model) => model.setBudgetData(),
       builder: (context, model, child) => Scaffold(
         backgroundColor: XColors.background(),
         appBar: AppBar(
@@ -32,15 +34,17 @@ class ReportScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const YMargin(24),
-              // CarSelectorView(
-              //     cars: model.budgetingModel!.budget!,
-              //     currentCar: model.currentCar != null ? '${model.currentCar!.carMake} ${model.currentCar!.carModel} ${model.currentCar!.carYear}' : null,
-              //     allowStyling: false,
-              //     onCarSelected: (car) {
-              //
-              //     }
-              // ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: CarSelectorView(
+                    cars: model.getBudgetData(),
+                    currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
+                    onCarSelected: ({Budget? budget, int? index}) {
+                      model.setBudgetData(currentIndex: index!);
+                    }
+                ),
+              ),
+              const YMargin(14),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _buildTabSelector(model),
@@ -48,7 +52,7 @@ class ReportScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Expanded(
                 child: model.selectedTab == 0
-                    ? ExpenditureReportView(model: model)
+                    ? ExpenditureReportView(model: model, ctxt: context,)
                     : MileageReportView(model: model),
               ),
             ],

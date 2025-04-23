@@ -165,6 +165,14 @@ class HomeViewModel extends BaseViewModel {
 
       if(onPermissionCallBack != null) {
         onPermissionCallBack();
+
+        Geolocator.getLastKnownPosition().then((Position? position) async {
+          currentPosition = position;
+          if(currentPosition != null) {
+            weatherSetup();
+          }
+        });
+
       }
 
       if(fuelData != null) {
@@ -209,6 +217,26 @@ class HomeViewModel extends BaseViewModel {
       }
 
     }
+
+  }
+
+  void weatherSetup() {
+
+    userService.getWeather(lng: currentPosition!.longitude.toString(), lat: currentPosition!.latitude.toString(),).then((value) {
+
+      if(userService.weatherData != null) {
+
+        currentWeatherValue = userService.weatherData!.payload!.tempMax!.toString();
+        currentWeatherDescription = userService.weatherData!.payload!.description;
+        weatherGuideDescription = userService.weatherData!.payload!.weatherDriveInstruction;
+
+      } else {
+        currentWeatherDescription = 'No weather at the moment';
+      }
+
+      notifyListeners();
+
+    });
 
   }
 
@@ -271,7 +299,7 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void resetBudgetListTotalCost(){
+  void resetBudgetListTotalCost() {
     totalCostingAndValue = [
       0,
       0,
@@ -280,52 +308,6 @@ class HomeViewModel extends BaseViewModel {
       0
     ];
     notifyListeners();
-  }
-
-  void promoteLocationPermission ({bool? willDecline = false}) {
-
-    if(willDecline == false) {
-
-      PermissionUtil().isLocationServiceAndPermissionsActive().then((value) {
-        if (value == false) {
-          PermissionUtil.requestPermission(Permission.location);
-        }
-      });
-
-      Geolocator.getLastKnownPosition().then((Position? position) async {
-        currentPosition = position;
-        if(currentPosition != null) {
-          weatherSetup();
-        }
-      });
-
-    } else {
-
-      locationDeclined = true;
-      notifyListeners();
-
-    }
-
-  }
-
-  void weatherSetup() {
-
-    userService.getWeather(lng: currentPosition!.longitude.toString(), lat: currentPosition!.latitude.toString(),).then((value) {
-
-      if(userService.weatherData != null) {
-
-        currentWeatherValue = userService.weatherData!.payload!.tempMax!.toString();
-        currentWeatherDescription = userService.weatherData!.payload!.description;
-        weatherGuideDescription = userService.weatherData!.payload!.weatherDriveInstruction;
-
-      } else {
-        currentWeatherDescription = 'No weather at the moment';
-      }
-
-      notifyListeners();
-
-    });
-
   }
 
   void resetUpdateBudgetData() {
@@ -451,54 +433,6 @@ class HomeViewModel extends BaseViewModel {
       onErrorCallBack!('No image on current car for sale');
 
     }
-
-  }
-
-  Future updateCurrentFuelPrice({
-    int? price,
-    String? city,
-    String? petrolStation,
-    Function? onCallBack,
-    Function(String e)? onErrorCallBack}) async {
-
-    setBusy(true);
-
-    var dataToUpdate = {
-      "country" : userService.userModel!.payload!.user!.country,
-      "state": userService.userModel!.payload!.user!.state ?? '',
-      "priceList" : {
-        "price_per_liter" : price,
-        "gas_station_name": petrolStation,
-        "price_input_by": persistentService.getUserID,
-        "location": {
-          "city": city,
-          "lat": currentPosition != null ? currentPosition?.latitude.toString() : "",
-          "lng": currentPosition != null ? currentPosition?.longitude.toString() : ""
-        }
-      }
-    };
-
-    await userService.updateFuelPrice(
-      updateData: dataToUpdate,
-      country: userService.userModel!.payload!.user!.country,
-      state: userService.userModel!.payload!.user!.state
-    ).then((value) {
-
-      fuelData = userService.fuelData;
-      if(fuelData != null) {
-        currentFuelPrice = fuelData!.payload!.toInt().toString();
-      }
-
-      setBusy(false);
-      onCallBack!();
-
-    }).onError((error, stackTrace) {
-
-      print(stackTrace);
-      setBusy(false);
-      onErrorCallBack!(error.toString());
-
-    });
 
   }
 

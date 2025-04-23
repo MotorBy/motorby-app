@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/ui/home/history_screen.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/search_address_map.dart';
 import 'package:mobile_auto_drive/utils/circular_paint.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
+import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/widgets/snackbar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -21,22 +23,25 @@ class InfoDetailsView extends StatelessWidget {
   const InfoDetailsView({
     super.key,
     this.infoType = InfoType.empty,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
     this.currentIndex,
-    this.onHistoryNav
+    this.onHistoryNav,
+    this.onBudgetAction
   });
 
   final InfoType? infoType;
   final int? currentIndex;
   final Function? onHistoryNav;
+  final Function? onBudgetAction;
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<HomeViewModel>.reactive(
-        viewModelBuilder: () => homeViewModel!,
+    return ViewModelBuilder<InfoDetailsViewModel>.reactive(
+        viewModelBuilder: () => infoDetailsViewModel ?? InfoDetailsViewModel(),
         disposeViewModel: false,
+        onViewModelReady: (model) => model.initializeTotalCostingAndValue(),
         builder: (context, viewModel, child) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -46,55 +51,61 @@ class InfoDetailsView extends StatelessWidget {
 
                 FuelBudgetView(
                   infoType: infoType,
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
+                  onBudgetAction: onBudgetAction,
                 )
 
               ] else if(infoType == InfoType.servicing || infoType == InfoType.repairing) ... [
 
                 ServiceRepairBudgetView(
                   infoType: infoType,
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.mileage) ... [
 
                 MileageInputView(
                   infoType: infoType,
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
                   currentIndex: currentIndex,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.breakdown) ... [
 
                 BreakdownInputView(
                   infoType: infoType,
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
                   currentIndex: currentIndex,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.fuelUpdate) ... [
 
                 FuelPricingInputView(
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
+                  onBudgetAction: onBudgetAction,
                 ),
 
               ] else if(infoType == InfoType.weatherView) ... [
 
                 WeatherInfoView(
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
                 ),
 
               ] else if(infoType == InfoType.locationSetup) ... [
 
                 PermissionLocationGuide(
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
                 ),
 
               ] else if(infoType == InfoType.budgeting) ... [
 
                 BudgetingInfoView(
-                  homeViewModel: viewModel,
+                  infoDetailsViewModel: viewModel,
                   currentIndex: currentIndex,
+                  onBudgetAction: onBudgetAction,
                 )
 
               ]
@@ -107,18 +118,20 @@ class InfoDetailsView extends StatelessWidget {
 
 }
 
-class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
+class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
   const FuelBudgetView({
     super.key,
-    this.homeViewModel,
-    this.infoType = InfoType.fueling
+    this.infoDetailsViewModel,
+    this.infoType = InfoType.fueling,
+    this.onBudgetAction
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
+  final Function? onBudgetAction;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       children: [
         const YMargin(5),
@@ -126,11 +139,11 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 viewModel.updateBudgetTypeIndex(v: 0);
                 navigate(context, HistoryScreen(
-                  homeViewModel: homeViewModel,
-                  noEmptyData: homeViewModel!.fueling!.isNotEmpty,
+                  infoDetailsViewModel: viewModel,
+                  noEmptyData: viewModel.fueling!.isNotEmpty,
                 ));
               },
               child: NormalText(
@@ -167,7 +180,51 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
             NormalText(
               text:'Fuel bought on: ${viewModel.date}',
               textColor: XColors.textColor(),
-              fontSize: 13,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+            const YMargin(15),
+            GestureDetector(
+              onTap: () async {
+
+                final result = await Navigator.push<Map<String, dynamic>>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchAddressMap(
+                      viewModel: null,
+                    ),
+                  ),
+                );
+
+                if(result != null) {
+
+                  viewModel.updateCurrentInputAddress(
+                      address: result,
+                      addressType: 'gas_station'
+                  );
+
+                }
+
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        viewModel.addressInput['address'] ?? 'Enter gas station location',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const YMargin(15),
             MainInputField(
@@ -220,9 +277,10 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
                 viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
-                  type: infoType.toString(),
+                  type: infoType!.toValue().toString(),
                   onCallBack: () {
                     popView(context);
+                    onBudgetAction!.call();
                     showSnackBar(
                         context: context,
                         message: 'Successfully updated into your budget'
@@ -231,7 +289,6 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
               );
 
             } else {
-
 
             }
 
@@ -252,18 +309,20 @@ class FuelBudgetView extends ViewModelWidget<HomeViewModel> {
 
 }
 
-class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
+class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
   const ServiceRepairBudgetView({
     super.key,
-    this.homeViewModel,
-    this.infoType = InfoType.servicing
+    this.infoDetailsViewModel,
+    this.infoType = InfoType.servicing,
+    this.onBudgetAction
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
+  final Function? onBudgetAction;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       children: [
         const YMargin(5),
@@ -271,16 +330,19 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             GestureDetector(
-              onTap: (){
-                if(infoType == 'servicing') {
+              onTap: () {
+
+                if(infoType == InfoType.servicing) {
                   viewModel.updateBudgetTypeIndex(v: 1);
-                } else if(infoType == 'repairing') {
+                } else if(infoType == InfoType.repairing) {
                   viewModel.updateBudgetTypeIndex(v: 2);
                 }
+
                 navigate(context, HistoryScreen(
-                  homeViewModel: homeViewModel!,
-                  noEmptyData: infoType == 'servicing' ? homeViewModel!.servicing!.isNotEmpty : homeViewModel!.repairing!.isNotEmpty,
+                  infoDetailsViewModel: viewModel,
+                  noEmptyData: infoType == InfoType.servicing ? viewModel.servicing!.isNotEmpty : viewModel.repairing!.isNotEmpty,
                 ));
+
               },
               child: NormalText(
                 text: 'View History',
@@ -339,6 +401,117 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
               },
             ),
             const YMargin(15),
+            GestureDetector(
+              onTap: () {
+                listHelperPicker(
+                  context: context,
+                  title: "Select Damage Severity",
+                  listString: ["Minor", "Moderate", "Major", "None"],
+                  selected: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      "severity" : value
+                    });
+                  }
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber_rounded, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Select damage severity ${viewModel.budgetData['severity'] != null ? ' (${viewModel.budgetData['severity']})' : ""}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
+            GestureDetector(
+              onTap: () {
+                listHelperPicker(
+                  context: context,
+                  title: "Rate Post-Service Improvement",
+                  listString: ["Good", "Better", "Best"],
+                  selected: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      "improvement" : value
+                    });
+                  }
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.trending_up, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Rate service improvement ${viewModel.budgetData['improvement'] != null ? ' (${viewModel.budgetData['improvement']})' : ""}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
+            GestureDetector(
+              onTap: () async {
+
+                final result = await Navigator.push<Map<String, dynamic>>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchAddressMap(
+                      viewModel: null,
+                    ),
+                  ),
+                );
+
+                if(result != null) {
+
+                  viewModel.updateCurrentInputAddress(
+                      address: result,
+                      addressType: infoType == InfoType.servicing ? 'service_shop' : 'repair_shop'
+                  );
+
+                }
+
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        viewModel.addressInput['address'] ?? (infoType == InfoType.servicing ? 'Enter service shop location' : 'Enter repair shop location'),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
             MainInputField(
               label: "Amount",
               controller: viewModel.amountInputController,
@@ -351,7 +524,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
             const YMargin(15),
             MainInputField(
               controller: viewModel.addressInputController,
-              label: "Place fixed",
+              label: infoType == InfoType.servicing ?  "Date of servicing" : "Date of repair",
               //isEnabled: false,
               onChanged: (s) {
                 viewModel.updateBudgetData(value: s, type: 'location');
@@ -362,8 +535,6 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Icon(Icons.location_on_rounded, size: 21, color: XColors.textColor(),),
-                      const XMargin(20),
                       GestureDetector(
                         onTap: () async {
                           DateTime? startPickedDate = await showDatePicker(
@@ -398,10 +569,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
                   type: infoType!.toValue(),
                   onCallBack: (){
                     popView(context);
-                    showSnackBar(
-                        context: context,
-                        message: 'Successfully updated into your budget'
-                    );
+                    onBudgetAction!.call();
                   }
               );
 
@@ -425,20 +593,22 @@ class ServiceRepairBudgetView extends ViewModelWidget<HomeViewModel> {
 
 }
 
-class MileageInputView extends ViewModelWidget<HomeViewModel> {
+class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
   const MileageInputView({
     super.key,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
     this.infoType = InfoType.mileage,
-    this.currentIndex
+    this.currentIndex,
+    this.onBudgetAction
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
   final int? currentIndex;
+  final Function? onBudgetAction;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       children: [
         const YMargin(15),
@@ -544,20 +714,22 @@ class MileageInputView extends ViewModelWidget<HomeViewModel> {
 
 }
 
-class BreakdownInputView extends ViewModelWidget<HomeViewModel> {
+class BreakdownInputView extends ViewModelWidget<InfoDetailsViewModel> {
   const BreakdownInputView({
     super.key,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
     this.infoType = InfoType.breakdown,
-    this.currentIndex
+    this.currentIndex,
+    this.onBudgetAction
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
   final int? currentIndex;
+  final Function? onBudgetAction;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       children: [
         const YMargin(5),
@@ -565,11 +737,11 @@ class BreakdownInputView extends ViewModelWidget<HomeViewModel> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 viewModel.updateBudgetTypeIndex(v: 4);
                 navigate(context, HistoryScreen(
-                  homeViewModel: homeViewModel!,
-                  noEmptyData: homeViewModel!.breakdowns!.isNotEmpty,
+                  infoDetailsViewModel: viewModel,
+                  noEmptyData: viewModel.breakdowns!.isNotEmpty,
                 ));
               },
               child: NormalText(
@@ -726,17 +898,19 @@ class BreakdownInputView extends ViewModelWidget<HomeViewModel> {
 
 }
 
-class FuelPricingInputView extends ViewModelWidget<HomeViewModel> {
+class FuelPricingInputView extends ViewModelWidget<InfoDetailsViewModel> {
 
   const FuelPricingInputView({
     super.key,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
+    this.onBudgetAction
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
+  final Function? onBudgetAction;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       children: [
         const YMargin(5),
@@ -818,7 +992,7 @@ class FuelPricingInputView extends ViewModelWidget<HomeViewModel> {
                         message: 'Successfully updated fuel price in ${viewModel.cityInputController.text} at ${viewModel.priceInputController.text}'
                     );
                   },
-                  onErrorCallBack: (e){
+                  onErrorCallBack: (e) {
 
                   }
               );
@@ -844,16 +1018,16 @@ class FuelPricingInputView extends ViewModelWidget<HomeViewModel> {
 
 }
 
-class PermissionLocationGuide extends ViewModelWidget<HomeViewModel> {
+class PermissionLocationGuide extends ViewModelWidget<InfoDetailsViewModel> {
   const PermissionLocationGuide({
     super.key,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -909,7 +1083,7 @@ class PermissionLocationGuide extends ViewModelWidget<HomeViewModel> {
         ),
         const YMargin(35),
         XButton(
-          onPressed: (){
+          onPressed: () {
             popView(context);
             viewModel.promoteLocationPermission();
           },
@@ -929,16 +1103,16 @@ class PermissionLocationGuide extends ViewModelWidget<HomeViewModel> {
 
 }
 
-class WeatherInfoView extends ViewModelWidget<HomeViewModel> {
+class WeatherInfoView extends ViewModelWidget<InfoDetailsViewModel> {
   const WeatherInfoView({
     super.key,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1003,20 +1177,22 @@ class WeatherInfoView extends ViewModelWidget<HomeViewModel> {
 
 }
 
-class BudgetingInfoView extends ViewModelWidget<HomeViewModel> {
+class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
   const BudgetingInfoView({
     super.key,
-    this.homeViewModel,
+    this.infoDetailsViewModel,
     this.infoType = InfoType.budgeting,
-    this.currentIndex
+    this.currentIndex,
+    this.onBudgetAction
   });
 
-  final HomeViewModel? homeViewModel;
+  final InfoDetailsViewModel? infoDetailsViewModel;
+  final Function? onBudgetAction;
   final InfoType? infoType;
   final int? currentIndex;
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) {
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

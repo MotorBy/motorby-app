@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/buy_insurance_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/claim_screeen.dart';
@@ -75,7 +76,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                         title: CarSelectorView(
                             cars: model.getBudgetData(),
                             currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
-                            onCarSelected: (car) {
+                            onCarSelected: ({Budget? budget, int? index}) {
 
                             }
                         ),

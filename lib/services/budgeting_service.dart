@@ -25,7 +25,20 @@ class BudgetingService {
     0
   ];
 
+  void resetTotalCostingAndValue() {
+    totalCostingAndValue = [
+      0,
+      0,
+      0,
+      0,
+      0
+    ];
+  }
+
   void getCurrentTotalValue({int? index}) {
+    resetTotalCostingAndValue();
+
+    currentSetBudget = index ?? 0;
 
     for (var element in budgetingModel!.budget![index!].fueling!) {
       totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
@@ -48,7 +61,6 @@ class BudgetingService {
     }
 
     totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
-
     totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 0
 
     currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;

@@ -12,7 +12,7 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 
 class CarSelectorView extends StatelessWidget {
   final List<Budget> cars;
-  final Function(Budget) onCarSelected;
+  final Function({ Budget budget, int index}) onCarSelected;
   final String? title;
   final String? currentCar;
   final bool? allowStyling;
@@ -100,7 +100,7 @@ class CarSelectorView extends StatelessWidget {
                           selectedTileColor: Colors.deepPurple.withOpacity(0.1),
                           onTap: () {
                             Navigator.pop(context);
-                            onCarSelected(cars[index]);
+                            onCarSelected(budget: cars[index], index: index);
                           }
                       );
                     },

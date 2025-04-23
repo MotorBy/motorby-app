@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
 class ReportViewModel extends BaseViewModel {
+  final budgetingService = serviceLocator<BudgetingService>();
+
   int _selectedTab = 0;
   String _selectedTimeFrame = 'This week';
+  BudgetingModel? budgetingModel;
 
   // Form data
   DateTime? _selectedDate;
@@ -22,6 +28,47 @@ class ReportViewModel extends BaseViewModel {
   final String temperature = '34C';
   final String weatherCondition = 'Clear Sky';
   final String humidity = '60%';
+
+  int? currentTotalSpent = 0;
+  int? currentSetBudget = 0;
+  int currentCarBudgetIndex = 0;
+  List<int>? totalCostingAndValue = [
+    0,
+    0,
+    0,
+    0,
+    0
+  ];
+
+  Future setBudgetData({int currentIndex = 0}) async {
+
+    if(budgetingService.budgetingModel == null) {
+      await budgetingService.getBudgets();
+      notifyListeners();
+    }
+
+    budgetingModel = budgetingService.budgetingModel;
+    currentCarBudgetIndex = currentIndex;
+    budgetingService.getCurrentTotalValue(index: currentIndex);
+
+    totalCostingAndValue = budgetingService.totalCostingAndValue;
+    currentTotalSpent = budgetingService.currentTotalSpent;
+    currentSetBudget = budgetingService.currentSetBudget;
+
+    print(currentSetBudget);
+    print(currentTotalSpent);
+
+    notifyListeners();
+
+  }
+
+  List<Budget> getBudgetData() {
+    return budgetingService.budgetingModel?.budget ?? [];
+  }
+
+  CarId? getCurrentCar() {
+    return budgetingService.currentCar;
+  }
 
   // Last mileage log
   final String lastTripDate = '14, Nov 2024';

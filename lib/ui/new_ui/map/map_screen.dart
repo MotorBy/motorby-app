@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
@@ -170,6 +171,7 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
   modalBottomSheetMenu(
     context: context,
     radius: 20,
+    height: 670,
     child: ViewModelBuilder<MapViewModel>.reactive(
         viewModelBuilder: () => model,
         disposeViewModel: false,
@@ -226,7 +228,7 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
               CarSelectorView(
                   cars: model.getBudgetData(),
                   currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
-                  onCarSelected: (car){
+                  onCarSelected: ({Budget? budget, int? index}){
 
                   }
               ),
