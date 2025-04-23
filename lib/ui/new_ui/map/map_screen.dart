@@ -171,6 +171,7 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
   modalBottomSheetMenu(
     context: context,
     radius: 20,
+    height: 670,
     child: ViewModelBuilder<MapViewModel>.reactive(
         viewModelBuilder: () => model,
         disposeViewModel: false,

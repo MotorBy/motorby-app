@@ -197,7 +197,12 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                 );
 
                 if(result != null) {
-                  viewModel.updateCurrentInputAddress(address: result);
+
+                  viewModel.updateCurrentInputAddress(
+                      address: result,
+                      addressType: 'gas_station'
+                  );
+
                 }
 
               },
@@ -477,7 +482,12 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                 );
 
                 if(result != null) {
-                  viewModel.updateCurrentInputAddress(address: result);
+
+                  viewModel.updateCurrentInputAddress(
+                      address: result,
+                      addressType: infoType == InfoType.servicing ? 'service_shop' : 'repair_shop'
+                  );
+
                 }
 
               },
@@ -493,7 +503,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        viewModel.addressInput['address'] ?? infoType == InfoType.servicing ? 'Enter service shop location' : 'Enter repair shop location',
+                        viewModel.addressInput['address'] ?? (infoType == InfoType.servicing ? 'Enter service shop location' : 'Enter repair shop location'),
                         style: const TextStyle(fontSize: 16),
                       ),
                     ),
@@ -559,10 +569,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                   type: infoType!.toValue(),
                   onCallBack: (){
                     popView(context);
-                    showSnackBar(
-                        context: context,
-                        message: 'Successfully updated into your budget'
-                    );
+                    onBudgetAction!.call();
                   }
               );
 

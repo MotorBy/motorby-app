@@ -7,6 +7,7 @@ import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
@@ -36,7 +37,7 @@ class ExpenditureReportView extends StatelessWidget {
       'Repair',
       'Expenses'
     ];
-    
+
     final List<String> budgetSubTopic = [
       numberFormat(number: model.totalCostingAndValue![0].toDouble()),
       numberFormat(number: model.totalCostingAndValue![1].toDouble()),
@@ -94,7 +95,13 @@ class ExpenditureReportView extends StatelessWidget {
                         child: InfoDetailsView(
                           infoType: infoType!,
                           currentIndex: 0,
-                          onBudgetAction: (){
+                          onBudgetAction: () {
+                            model.setBudgetData();
+                            FloatingSnackBar.show(
+                                context,
+                                'Successfully updated',
+                                isError: false
+                            );
 
                           },
                         ),
@@ -298,7 +305,7 @@ class ExpenditureReportView extends StatelessWidget {
             children: [
               ...categories.map((category) {
                 final percentage = (category['value'] as double) / totalBudget;
-                final flex = (percentage * 100).round();
+                final flex = percentage > 0 ? (percentage * 100).round() : 0;
                 return Expanded(
                   flex: flex,
                   child: Container(color: category['color'] as Color?),

@@ -227,9 +227,30 @@ class InfoDetailsViewModel extends BaseViewModel {
     });
   }
 
-  void updateCurrentInputAddress({Map<String, dynamic>? address}){
+  void updateCurrentInputAddress({Map<String, dynamic>? address, String? addressType}) {
     addressInput = address!;
     print(addressInput.toString());
+
+    if(addressType == 'gas_station') {
+
+      budgetData['gas_station_address'] = addressInput['address'];
+      budgetData['fuel_station_name'] = addressInput['address'].split(',')[0];
+      budgetData['gas_station_location'] = {
+        "lat": addressInput['lat'],
+        "lng": addressInput['lng']
+      };
+
+    } else if(addressType == 'service_shop' || addressType == 'repair_shop') {
+
+      budgetData['shop_address'] = addressInput['address'];
+      budgetData['shop_name'] = addressInput['address'].split(',')[0];
+      budgetData['shop_location'] = {
+        "lat": addressInput['lat'],
+        "lng": addressInput['lng']
+      };
+
+    }
+
     notifyListeners();
   }
 
