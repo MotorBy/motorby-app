@@ -15,6 +15,8 @@ class CarDocumentsViewModel extends BaseViewModel {
 
   List<CarDocument> _documents = [];
   List<Map<String, dynamic>> docUploads = [];
+  CarId? currentCarDoc;
+  String? currentCarId;
 
   void initialize({String? carId}) {
 
@@ -23,7 +25,9 @@ class CarDocumentsViewModel extends BaseViewModel {
     } else {
 
       if(carId != null) {
+        currentCarId = carId;
         _documents = budgetingService.budgetingModel!.budget!.where((b) => b.carId!.sId == carId).toList()[0].carId!.carDocuments!;
+        currentCarDoc = budgetingService.budgetingModel!.budget!.where((b) => b.carId!.sId == carId).toList()[0].carId!;
       }
 
     }
@@ -75,14 +79,14 @@ class CarDocumentsViewModel extends BaseViewModel {
 
   }
 
-  Future<void> uploadDocument({String? carId, Function? onCallback, Function(String e)? onError}) async {
+  Future<void> uploadDocument({Function? onCallback, Function(String e)? onError}) async {
 
     try {
 
       setBusyForObject('upload', true);
 
       await FirebaseService().uploadFileToStorage(
-          storagePath: 'docs/${docUploads[0]["document_type"]} + "-" + ${docUploads[0]["document_name"]}',
+          storagePath: 'docs/${currentCarDoc!.carMake}/${docUploads[0]["document_type"]}-${docUploads[0]["document_name"]}',
           filePath: filePickerResult!.files.single.path!,
           onCallBack: (s) async {
 
@@ -92,9 +96,9 @@ class CarDocumentsViewModel extends BaseViewModel {
               documents: {
                 "documents": docUploads
               },
-              carId: carId
+              carId: currentCarId
             ).then((e) {
-              initialize(carId: carId);
+              initialize(carId: currentCarId);
 
               setBusyForObject('upload', false);
               onCallback!.call();
