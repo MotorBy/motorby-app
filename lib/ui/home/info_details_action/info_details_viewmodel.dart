@@ -125,6 +125,8 @@ class InfoDetailsViewModel extends BaseViewModel {
     String? city,
     String? petrolStation,
     Function? onCallBack,
+    String? lat,
+    String? lng,
     Function(String e)? onErrorCallBack}) async {
 
     setBusy(true);
@@ -138,8 +140,8 @@ class InfoDetailsViewModel extends BaseViewModel {
         "price_input_by": persistentService.getUserID,
         "location": {
           "city": city,
-          "lat": currentPosition != null ? currentPosition?.latitude.toString() : "",
-          "lng": currentPosition != null ? currentPosition?.longitude.toString() : ""
+          "lat": lat ?? (currentPosition != null ? currentPosition?.latitude.toString() : ""),
+          "lng": lng ?? (currentPosition != null ? currentPosition?.longitude.toString() : "")
         }
       }
     };
@@ -156,7 +158,7 @@ class InfoDetailsViewModel extends BaseViewModel {
       }
 
       setBusy(false);
-      onCallBack!();
+      onCallBack?.call();
 
     }).onError((error, stackTrace) {
 
@@ -213,6 +215,22 @@ class InfoDetailsViewModel extends BaseViewModel {
         }
     ).then((value) async {
       setBusy(false);
+
+      if(type == 'fueling') {
+
+        updateCurrentFuelPrice(
+            petrolStation: addressInput['address'],
+            city: addressInput['address'].split(',')[addressInput['address'].split(',').length - 1],
+            price: int.parse(budgetData["price_per_liter"]),
+            onCallBack: () {
+
+            },
+            onErrorCallBack: (e) {
+
+            }
+        );
+
+      }
 
       if(onCallBack != null) {
         resetUpdateBudgetData();

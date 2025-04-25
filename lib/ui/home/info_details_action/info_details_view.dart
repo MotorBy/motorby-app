@@ -12,6 +12,7 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/widgets/snackbar.dart';
@@ -274,21 +275,24 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
             if(viewModel.priceInputController.text.isNotEmpty &&
                 viewModel.amountInputController.text.isNotEmpty &&
-                viewModel.dateInputController.text.isNotEmpty) {
+                viewModel.dateInputController.text.isNotEmpty &&
+                viewModel.addressInput['address'] != null) {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue().toString(),
                   onCallBack: () {
                     popView(context);
                     onBudgetAction!.call();
-                    showSnackBar(
-                        context: context,
-                        message: 'Successfully updated into your budget'
-                    );
                   }
               );
 
             } else {
+
+              FloatingSnackBar.show(
+                  context,
+                  'Make sure all inputs are complete',
+                  isError: true
+              );
 
             }
 
@@ -563,7 +567,8 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
             if(viewModel.problemInputController.text.isNotEmpty &&
                 viewModel.amountInputController.text.isNotEmpty &&
-                viewModel.dateInputController.text.isNotEmpty) {
+                viewModel.dateInputController.text.isNotEmpty &&
+                viewModel.addressInput['address'] != null) {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue(),
@@ -574,6 +579,12 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
               );
 
             } else {
+
+              FloatingSnackBar.show(
+                  context,
+                  'Make sure all inputs are complete',
+                  isError: true
+              );
 
             }
 

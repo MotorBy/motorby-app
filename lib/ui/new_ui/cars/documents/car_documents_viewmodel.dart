@@ -1,63 +1,120 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/firebase_service.dart';
+import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 import 'document_details_screen.dart';
 
-class CarDocument {
-  final String id;
-  final String name;
-  final String category;
-  final String? filePath;
-  final DateTime? expiryDate;
-
-  CarDocument({
-    required this.id,
-    required this.name,
-    required this.category,
-    this.filePath,
-    this.expiryDate,
-  });
-}
-
 class CarDocumentsViewModel extends BaseViewModel {
-  final List<CarDocument> _documents = [];
+  final budgetingService = serviceLocator<BudgetingService>();
+  final vehicleService = serviceLocator<UserService>();
+
+  List<CarDocument> _documents = [];
+  List<Map<String, dynamic>> docUploads = [];
+
+  void initialize({String? carId}) {
+
+    if(budgetingService.budgetingModel == null) {
+      setBusy(true);
+    } else {
+
+      if(carId != null) {
+        _documents = budgetingService.budgetingModel!.budget!.where((b) => b.carId!.sId == carId).toList()[0].carId!.carDocuments!;
+      }
+
+    }
+
+    setBusy(false);
+
+  }
 
   List<CarDocument> getDocumentsByCategory(String category) {
-    return _documents.where((doc) => doc.category == category).toList();
+    return _documents.where((doc) => doc.documentType == category).toList();
   }
 
   String? documentType = "";
   DateTime? expiryDate;
   FilePickerResult? filePickerResult;
 
-  void setTypeOfDocument({String? type}){
+  void setTypeOfDocument({String? type}) {
     documentType = type;
+    notifyListeners();
+  }
+
+  List<Budget> getBudgetData() {
+    return budgetingService.budgetingModel?.budget ?? [];
+  }
+
+  CarId? getCurrentCar() {
+    return budgetingService.currentCar;
   }
 
   void setExpiryDate({DateTime? eDate, Function? onSelected}) {
+
+    docUploads.clear();
 
     expiryDate = eDate;
     onSelected!.call();
 
     File file = File(filePickerResult!.files.single.path!);
+    String fileName = filePickerResult!.files.single.name;
 
-    _documents.add(
-      CarDocument(
-        id: DateTime.now().toString(),
-        name: filePickerResult!.files.single.name,
-        category: documentType ?? 'Other Documents',
-        filePath: file.path,
-        expiryDate: expiryDate,
-      ),
+    docUploads.add(
+      {
+        "document_name": fileName,
+        "document_type": documentType,
+        "document_expiry_date": '${eDate!.day}/${eDate.month}/${eDate.year}',
+      }
     );
 
     notifyListeners();
 
   }
 
-  Future<void> uploadDocument({ Function? onComplete }) async {
+  Future<void> uploadDocument({String? carId, Function? onCallback, Function(String e)? onError}) async {
+
     try {
+
+      setBusyForObject('upload', true);
+
+      await FirebaseService().uploadFileToStorage(
+          storagePath: 'docs/${docUploads[0]["document_type"]} + "-" + ${docUploads[0]["document_name"]}',
+          filePath: filePickerResult!.files.single.path!,
+          onCallBack: (s) async {
+
+            docUploads[0]["document_path"] = s;
+
+            await vehicleService.uploadCarDocuments(
+              documents: {
+                "documents": docUploads
+              },
+              carId: carId
+            ).then((e) {
+              initialize(carId: carId);
+
+              setBusyForObject('upload', false);
+              onCallback!.call();
+            });
+
+          }
+      );
+
+    } catch (e) {
+      print('Error uploading document: $e');
+
+      setBusyForObject('upload', false);
+      onError!.call(e.toString());
+    }
+
+  }
+
+  Future<void> pickDocument({ Function? onComplete }) async {
+    try {
+
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
@@ -118,7 +175,7 @@ class CarDocumentsViewModel extends BaseViewModel {
               title: const Text('Delete Document', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
-                deleteDocument(document.id);
+                deleteDocument(document.id!);
               },
             ),
           ],

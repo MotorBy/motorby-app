@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_method.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_sub_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
-import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
@@ -69,7 +67,7 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                             borderRadius: BorderRadius.circular(16),
                             margin: const EdgeInsets.symmetric(horizontal: 16),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 20),
+                                horizontal: 20, vertical: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -82,7 +80,7 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                                       : XColors.black(),
                                 ),
                                 const DividerWidget(
-                                  margin: EdgeInsets.symmetric(vertical: 30),
+                                  margin: EdgeInsets.symmetric(vertical: 10),
                                 ),
                                 NormalText(
                                   text: "${model.plansModel!.payload!.subscriptionOptions!.getTierName(ind)} Features",
@@ -90,7 +88,7 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
-                                const YMargin(20),
+                                const YMargin(10),
                                 ...List.generate(model.plansModel!.payload!.subscriptionOptions!.getFeaturesByTier(ind)!.length,
                                   (index) => ListTile(
                                     title: NormalText(

@@ -8,7 +8,6 @@ import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
-import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
@@ -82,6 +81,26 @@ class UserService {
     log(APIService.addCars);
 
     var response = await http.post(Uri.parse(APIService.addCars),
+        headers: APIHelper().requestHeadersWithToken(), body: jsonData);
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if (json["statusCode"] == 200 || json["statusCode"] == 201) {
+      await budgetService.getBudgets();
+    } else {
+      var error = json["message"];
+      throw Exception(error);
+    }
+
+  }
+
+  Future uploadCarDocuments({Map<String, dynamic>? documents, String? carId}) async {
+
+    final jsonData = JSON.json.encode(documents);
+
+    var response = await http.post(Uri.parse(APIService.uploadDocuments(carId: carId)),
         headers: APIHelper().requestHeadersWithToken(), body: jsonData);
 
     final json = JSON.jsonDecode(response.body);
