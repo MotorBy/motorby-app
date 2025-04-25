@@ -62,6 +62,10 @@ class InfoDetailsViewModel extends BaseViewModel {
     if (budgetingModel != null && budgetingModel!.budget!.isNotEmpty) {
       budgetingService.getCurrentTotalValue(index: 0);
       totalCostingAndValue = budgetingService.totalCostingAndValue;
+
+      currentTotalSpent = budgetingService.currentTotalSpent;
+      currentSetBudget = budgetingService.currentSetBudget;
+
       notifyListeners();
     }
 
@@ -226,7 +230,7 @@ class InfoDetailsViewModel extends BaseViewModel {
 
             },
             onErrorCallBack: (e) {
-
+              print(e);
             }
         );
 

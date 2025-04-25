@@ -1260,7 +1260,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
                   fontSize: 11,
                 ),
                 NormalText(
-                  text: '₦${numberFormat(number: viewModel.currentTotalSpent!.toDouble())}',
+                  text: '₦${amtFormatter(viewModel.currentTotalSpent!)}',
                   textColor: XColors.textColor(),
                   fontWeight: FontWeight.w700,
                   fontSize: 21,
@@ -1275,7 +1275,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
                       fontSize: 11,
                     ),
                     NormalText(
-                      text: '₦${numberFormat(number: viewModel.currentSetBudget.toDouble())}',
+                      text: '₦${amtFormatter(viewModel.currentSetBudget)}',
                       textColor: XColors.textColor(),
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
@@ -1343,7 +1343,10 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
           onPressed: !viewModel.isBusy ? () {
             viewModel.updateToBudget(
                 type: 'budgeting',
-                onCallBack: (){
+                onCallBack: () {
+
+                  popView(context);
+                  onBudgetAction!.call();
 
                   if(viewModel.milesInputController.text.isNotEmpty) {
 

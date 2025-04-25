@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 
 final oCcy = NumberFormat("#,##0", "en_US");
 
-
 String amtFormatter(int? value) {
   return oCcy.format(value).toString();
 }
@@ -18,11 +17,12 @@ Map<String, dynamic>? formatObject(Map<String, dynamic>? Obj) {
   return newObj;
 }
 
-String numberFormat({double? number}){
+String numberFormat({double? number}) {
+
   if(number == 0) {
     return '0';
   } else {
-    NumberFormat numberFormat = NumberFormat('#,##,000');
+    NumberFormat numberFormat = NumberFormat('#,##0', "en_US");
     return numberFormat.format(number);
   }
 

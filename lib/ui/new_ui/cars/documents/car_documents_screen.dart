@@ -45,19 +45,14 @@ class CarDocumentsScreen extends StatelessWidget {
             children: [
 
               if(isFromProfile == true) ... [
-
                 CarSelectorView(
                     cars: model.getBudgetData(),
                     currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
                     onCarSelected: ({Budget? budget, int? index}) {
-
                       model.initialize(carId: budget!.carId!.sId);
-
                     }
                 ),
-
                 const SizedBox(height: 26),
-
               ],
 
               _buildDocumentCategory('Vehicle Registration', model, context: context),
