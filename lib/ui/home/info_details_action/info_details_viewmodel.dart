@@ -131,13 +131,14 @@ class InfoDetailsViewModel extends BaseViewModel {
     Function? onCallBack,
     String? lat,
     String? lng,
+    String? state,
     Function(String e)? onErrorCallBack}) async {
 
     setBusy(true);
 
     var dataToUpdate = {
       "country" : userService.userModel!.payload!.user!.country,
-      "state": userService.userModel!.payload!.user!.state ?? '',
+      "state": state ?? userService.userModel!.payload!.user!.state ?? '',
       "priceList" : {
         "price_per_liter" : price,
         "gas_station_name": petrolStation,
@@ -224,8 +225,11 @@ class InfoDetailsViewModel extends BaseViewModel {
 
         updateCurrentFuelPrice(
             petrolStation: addressInput['address'],
-            city: addressInput['address'].split(',')[addressInput['address'].split(',').length - 1],
-            price: int.parse(budgetData["price_per_liter"]),
+            city: addressInput['city'],
+            state: addressInput['state'],
+            price: budgetData["price_per_liter"],
+            lat: addressInput["lat"],
+            lng: addressInput["lng"],
             onCallBack: () {
 
             },

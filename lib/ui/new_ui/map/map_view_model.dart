@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mobile_auto_drive/models/LatLngAddressModel.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/places_nearby_model.dart';
 import 'package:mobile_auto_drive/models/routes_direction_model.dart' as route_direction;
@@ -20,6 +21,8 @@ class MapViewModel extends BaseViewModel {
   final search = TextEditingController();
   GoogleMapController? _mapController;
   Position? currentPosition;
+
+  LatLngAddressModel? latLngAddressModel;
   
   // For nearby places
   List<NearbyPlace>? nearbyPlacesResults = [];
@@ -65,6 +68,8 @@ class MapViewModel extends BaseViewModel {
 
     await _placesService.getAddressFromLatLng(
     latlng: "${currentPosition!.latitude},${currentPosition!.longitude}").then((value) async {
+
+      latLngAddressModel = value;
 
       updateSourceAddress(value.results![0].formatted_address);
       setBusy(false);
