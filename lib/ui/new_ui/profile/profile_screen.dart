@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/payment_and_subscription/payment_sub_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_sub_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
@@ -224,7 +225,9 @@ class NewProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: 'assets/images/auto/file.svg',
           title: 'My documents',
-          onTap: (){},
+          onTap: (){
+            navigate(context!, const CarDocumentsScreen(isFromProfile: true,));
+          },
         ),
         const DividerWidget(),
         _buildMenuItem(

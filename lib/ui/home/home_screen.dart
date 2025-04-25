@@ -1130,7 +1130,7 @@ class MoreCarAction extends StatelessWidget {
                     const YMargin(25),
                     GestureDetector(
                       onTap: (){
-                        navigate(context, ShopsScreen());
+                        navigate(context, const ShopsScreen());
                       },
                       child: NormalText(
                         text:'Fix/service car',
@@ -1185,8 +1185,11 @@ class MoreCarAction extends StatelessWidget {
                     ),
                     const YMargin(45),
                     GestureDetector(
-                      onTap: (){
-                        navigate(context, const CarDocumentsScreen());
+                      onTap: () {
+                        navigate(
+                            context,
+                            CarDocumentsScreen(carId: model.currentCar!.sId,)
+                        );
                       },
                       child: NormalText(
                         text: 'Manage car documents',

@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
-import 'car_documents_viewmodel.dart';
 
 class DocumentDetailsScreen extends StatelessWidget {
   final CarDocument document;
@@ -22,7 +21,7 @@ class DocumentDetailsScreen extends StatelessWidget {
         ),
         centerTitle: false,
         title: NormalText(
-          text: document.name,
+          text: document.documentName,
           fontSize: 18,
           fontWeight: FontWeight.w500,
         ),
@@ -32,8 +31,9 @@ class DocumentDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (document.filePath != null) ...[              
-              if (document.filePath!.toLowerCase().endsWith('.pdf'))
+
+            if (document.documentPath != null) ... [
+              if (document.documentPath!.toLowerCase().endsWith('.pdf'))
                 Container(
                   height: 200,
                   width: double.infinity,
@@ -47,27 +47,27 @@ class DocumentDetailsScreen extends StatelessWidget {
                 )
               else
                 Container(
-                  height: 200,
+                  //height: 350,
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: FileImage(File(document.filePath!)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      document.documentPath!,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
               const SizedBox(height: 24),
             ],
-            _buildInfoRow('Category', document.category),
+
+            _buildInfoRow('Category', document.documentType!),
             const SizedBox(height: 16),
-            _buildInfoRow('Document ID', document.id),
-            if (document.expiryDate != null) ...[              
+            _buildInfoRow('Document name', document.documentName!),
+            if (document.documentExpiryDate != null) ...[
               const SizedBox(height: 16),
               _buildInfoRow(
                 'Expiry Date', 
-                '${document.expiryDate!.day}/${document.expiryDate!.month}/${document.expiryDate!.year}',
+                '${document.documentExpiryDate}',
               ),
             ],
           ],

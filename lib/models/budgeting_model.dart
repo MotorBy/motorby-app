@@ -141,9 +141,10 @@ class CarId {
   String? updatedAt;
   int? iV;
   String? carMake;
+  List<CarDocument>? carDocuments;
 
-  CarId(
-      {this.details,
+  CarId({
+        this.details,
         this.sId,
         this.carModel,
         this.carYear,
@@ -153,7 +154,9 @@ class CarId {
         this.createdAt,
         this.updatedAt,
         this.iV,
-        this.carMake});
+        this.carMake,
+        this.carDocuments
+  });
 
   CarId.fromJson(Map<String, dynamic> json) {
     details =
@@ -168,6 +171,7 @@ class CarId {
     updatedAt = json['updatedAt'];
     iV = json['__v'];
     carMake = json['car_make'];
+    carDocuments = json["car_documents"] == null ? [] : List<CarDocument>.from(json["car_documents"]!.map((x) => CarDocument.fromJson(x)));
   }
 
   Map<String, dynamic> toJson() {
@@ -185,8 +189,46 @@ class CarId {
     data['updatedAt'] = updatedAt;
     data['__v'] = iV;
     data['car_make'] = carMake;
+    data["car_documents"] = carDocuments == null ? [] : List<dynamic>.from(carDocuments!.map((x) => x.toJson()));
     return data;
   }
+
+}
+
+class CarDocument {
+  String? documentType;
+  String? documentExpiryDate;
+  String? documentImage;
+  String? id;
+  String? documentName;
+  String? documentPath;
+
+  CarDocument({
+    this.documentType,
+    this.documentExpiryDate,
+    this.documentImage,
+    this.id,
+    this.documentName,
+    this.documentPath,
+  });
+
+  factory CarDocument.fromJson(Map<String, dynamic> json) => CarDocument(
+    documentType: json["document_type"],
+    documentExpiryDate: json["document_expiry_date"],
+    documentImage: json["document_image"],
+    id: json["_id"],
+    documentName: json["document_name"],
+    documentPath: json["document_path"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "document_type": documentType,
+    "document_expiry_date": documentExpiryDate,
+    "document_image": documentImage,
+    "_id": id,
+    "document_name": documentName,
+    "document_path": documentPath,
+  };
 }
 
 class Details {

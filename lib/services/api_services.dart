@@ -51,6 +51,7 @@ class APIService {
   static String addCars = "$root$CAR/add";
   static String updateCars({String? carId}) => "$root$CAR/$carId";
   static String sales({String? saleId}) => "$root$SALES/$saleId";
+  static String uploadDocuments({String? carId}) => "$root$CAR/documents/$carId";
 
   static String createShop = "$root$SHOP/createShop";
   static String getShops = "$root$SHOP/shops";
