@@ -132,8 +132,16 @@ class CarDocumentsScreen extends StatelessWidget {
                               XButton(
                                 onPressed: () {
 
+                                  if(model.expiryDate == null) {
+                                    FloatingSnackBar.show(
+                                        context,
+                                        "Please select an expiry date for your document",
+                                        isError: true
+                                    );
+                                    return null;
+                                  }
+
                                   model.uploadDocument(
-                                      carId: carId,
                                       onCallback: () {
 
                                         popView(context);
