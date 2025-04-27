@@ -17,6 +17,7 @@ class BudgetingService {
 
   int? currentTotalSpent = 0;
   int currentSetBudget = 0;
+  int? currentBudgetIndex = 0;
   List<int>? totalCostingAndValue = [
     0,
     0,
@@ -38,7 +39,7 @@ class BudgetingService {
   void getCurrentTotalValue({int? index}) {
     resetTotalCostingAndValue();
 
-    currentSetBudget = index ?? 0;
+    currentBudgetIndex = index;
 
     for (var element in budgetingModel!.budget![index!].fueling!) {
       totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0

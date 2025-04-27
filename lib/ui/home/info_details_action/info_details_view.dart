@@ -145,6 +145,7 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                 navigate(context, HistoryScreen(
                   infoDetailsViewModel: viewModel,
                   noEmptyData: viewModel.fueling!.isNotEmpty,
+                  budgetHistoryType: "Fueling",
                 ));
               },
               child: NormalText(
@@ -345,6 +346,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
                 navigate(context, HistoryScreen(
                   infoDetailsViewModel: viewModel,
                   noEmptyData: infoType == InfoType.servicing ? viewModel.servicing!.isNotEmpty : viewModel.repairing!.isNotEmpty,
+                  budgetHistoryType: infoType == InfoType.servicing ? "Servicing" : "Repairing",
                 ));
 
               },
@@ -627,6 +629,26 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             GestureDetector(
+              onTap: () {
+
+                viewModel.updateBudgetTypeIndex(v: 3);
+
+                navigate(context, HistoryScreen(
+                  infoDetailsViewModel: viewModel,
+                  noEmptyData: viewModel.mileageData!.isNotEmpty,
+                  budgetHistoryType: 'Mileage',
+                ));
+
+              },
+              child: NormalText(
+                text: 'View History',
+                textColor: XColors.textColor(),
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
+            const XMargin(45),
+            GestureDetector(
               onTap: (){
                 Navigator.pop(context);
               },
@@ -645,40 +667,101 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
             ),
           ],
         ),
-        const YMargin(5),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NormalText(
-              text:'Your total journey is ',
-              textColor: XColors.textColor(),
-              fontSize: 15,
-            ),
-            NormalText(
-              text: viewModel.totalCostingAndValue![currentIndex!].toString(),
-              textColor: XColors.textColor(),
-              fontWeight: FontWeight.w600,
-              fontSize: 21,
-            ),
-            NormalText(
-              text:' miles.',
-              textColor: XColors.textColor(),
-              fontSize: 15,
-            ),
-          ],
-        ),
         const YMargin(35),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            NormalText(
-              text:'Your last mile update: Monday',
-              textColor: XColors.textColor(),
-              fontSize: 13,
+            const YMargin(15),
+            GestureDetector(
+              onTap: () async {
+
+                final result = await Navigator.push<Map<String, dynamic>>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchAddressMap(
+                      viewModel: null,
+                    ),
+                  ),
+                );
+
+                if(result != null) {
+
+                  viewModel.updateCurrentInputAddress(
+                      address: result,
+                      addressType: 'mileage'
+                  );
+
+                }
+
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        viewModel.addressInput['address'] ?? ('Enter current destination address'),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
+            const YMargin(15),
+            const NormalText(
+              text: 'Current fuel gauge',
+              textColor: Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+            const YMargin(10),
+            Row(
+              children: [
+                Radio<String>(
+                  value: 'full',
+                  groupValue: viewModel.budgetData['current_fuel_gauge'] ?? '',
+                  onChanged: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      'current_fuel_gauge': value
+                    });
+                  },
+                ),
+                const Text('Full'),
+                const XMargin(20),
+                Radio<String>(
+                  value: 'mid',
+                  groupValue: viewModel.budgetData['current_fuel_gauge'] ?? '',
+                  onChanged: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      'current_fuel_gauge': value
+                    });
+                  },
+                ),
+                const Text('Mid'),
+                const XMargin(20),
+                Radio<String>(
+                  value: 'empty',
+                  groupValue: viewModel.budgetData['current_fuel_gauge'] ?? '',
+                  onChanged: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      'current_fuel_gauge': value
+                    });
+                  },
+                ),
+                const Text('Empty'),
+              ],
             ),
             const YMargin(15),
             MainInputField(
-              label: "Update miles",
+              label: "Odometer reading",
               keyboard: TextInputType.number,
               controller: viewModel.milesInputController,
               isEnabled: true,
@@ -694,19 +777,8 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
             viewModel.updateToBudget(
                 type: infoType!.toValue(),
                 onCallBack: (){
-
-                  if(viewModel.milesInputController.text.isNotEmpty) {
-
-                    popView(context);
-                    showSnackBar(
-                        context: context,
-                        message: 'Successfully updated into your budget'
-                    );
-
-                  } else {
-
-                  }
-
+                  popView(context);
+                  onBudgetAction!.call();
                 }
             );
           } : (){},
@@ -753,6 +825,7 @@ class BreakdownInputView extends ViewModelWidget<InfoDetailsViewModel> {
                 navigate(context, HistoryScreen(
                   infoDetailsViewModel: viewModel,
                   noEmptyData: viewModel.breakdowns!.isNotEmpty,
+                  budgetHistoryType: "Breakdown",
                 ));
               },
               child: NormalText(
@@ -958,16 +1031,50 @@ class FuelPricingInputView extends ViewModelWidget<InfoDetailsViewModel> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             NormalText(
-              text:'You can update the fuel price in your city from any close petrol station around you and earn points. '
-                  'You are only allowed to do this for 100 times. And the price must be reasonably similar',
+              text:'You can update the fuel price in your city from any close petrol station around you and earn points. Make sure the price must be reasonably similar',
               textAlign: TextAlign.center,
               textColor: XColors.textColor(),
               fontSize: 13,
             ),
-            const YMargin(25),
-            MainInputField(
-              controller: viewModel.cityInputController,
-              label: "City",
+            const YMargin(55),
+            GestureDetector(
+              onTap: () async {
+
+                final result = await Navigator.push<Map<String, dynamic>>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchAddressMap(
+                      viewModel: null,
+                    ),
+                  ),
+                );
+
+                if(result != null) {
+                  viewModel.updateCurrentInputAddress(
+                      address: result,
+                  );
+                }
+
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        viewModel.addressInput['address'] ?? ('Enter current gas station location'),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const YMargin(15),
             MainInputField(
@@ -977,24 +1084,20 @@ class FuelPricingInputView extends ViewModelWidget<InfoDetailsViewModel> {
               isEnabled: true,
             ),
             const YMargin(15),
-            MainInputField(
-              controller: viewModel.addressInputController,
-              label: "Petrol station",
-              isEnabled: true,
-            ),
           ],
         ),
         const YMargin(35),
         XButton(
           onPressed: !viewModel.isBusy ? () {
 
-            if(viewModel.priceInputController.text.isNotEmpty &&
-                viewModel.cityInputController.text.isNotEmpty &&
-                viewModel.addressInputController.text.isNotEmpty) {
+            if(viewModel.priceInputController.text.isNotEmpty && viewModel.addressInput["address"] != null) {
 
               viewModel.updateCurrentFuelPrice(
-                  petrolStation: viewModel.addressInputController.text,
+                  petrolStation: viewModel.addressInput["address"],
                   city: viewModel.cityInputController.text,
+                  lat: viewModel.addressInput["lat"],
+                  lng: viewModel.addressInput["lng"],
+                  state: viewModel.addressInput["state"],
                   price: int.parse(viewModel.priceInputController.text),
                   onCallBack: () {
                     popView(context);
@@ -1010,6 +1113,11 @@ class FuelPricingInputView extends ViewModelWidget<InfoDetailsViewModel> {
 
             } else {
 
+              FloatingSnackBar.show(
+                  context,
+                  'Make sure all inputs are complete',
+                  isError: true
+              );
 
             }
 
@@ -1260,7 +1368,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
                   fontSize: 11,
                 ),
                 NormalText(
-                  text: '₦${numberFormat(number: viewModel.currentTotalSpent!.toDouble())}',
+                  text: '₦${amtFormatter(viewModel.currentTotalSpent!)}',
                   textColor: XColors.textColor(),
                   fontWeight: FontWeight.w700,
                   fontSize: 21,
@@ -1275,7 +1383,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
                       fontSize: 11,
                     ),
                     NormalText(
-                      text: '₦${numberFormat(number: viewModel.currentSetBudget.toDouble())}',
+                      text: '₦${amtFormatter(viewModel.currentSetBudget)}',
                       textColor: XColors.textColor(),
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
@@ -1343,7 +1451,10 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
           onPressed: !viewModel.isBusy ? () {
             viewModel.updateToBudget(
                 type: 'budgeting',
-                onCallBack: (){
+                onCallBack: () {
+
+                  popView(context);
+                  onBudgetAction!.call();
 
                   if(viewModel.milesInputController.text.isNotEmpty) {
 

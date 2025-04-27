@@ -39,10 +39,10 @@ class ExpenditureReportView extends StatelessWidget {
     ];
 
     final List<String> budgetSubTopic = [
-      numberFormat(number: model.totalCostingAndValue![0].toDouble()),
-      numberFormat(number: model.totalCostingAndValue![1].toDouble()),
-      numberFormat(number: model.totalCostingAndValue![2].toDouble()),
-      numberFormat(number: 0.0),
+      amtFormatter(model.totalCostingAndValue![0]),
+      amtFormatter(model.totalCostingAndValue![1]),
+      amtFormatter(model.totalCostingAndValue![2]),
+      amtFormatter(0),
     ];
 
     return Padding(
@@ -52,9 +52,9 @@ class ExpenditureReportView extends StatelessWidget {
         children: [
           _buildBudgetHeader(
               currentSpending: model.budgetingModel != null ?
-          numberFormat(number: model.budgetingModel!.budget![model.currentCarBudgetIndex].currentSpending!.toDouble()) : "0",
+              amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].currentSpending!) : "0",
               totalBudget: model.budgetingModel != null ?
-              numberFormat(number: model.budgetingModel!.budget![model.currentCarBudgetIndex].budget!.toDouble()) : "0"
+              amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].budget!) : "0"
           ),
           const YMargin(24),
           SizedBox(
@@ -249,8 +249,16 @@ class ExpenditureReportView extends StatelessWidget {
                   modalBottomSheetMenu(
                     color: Colors.white,
                     context: ctxt!,
-                    child: const InfoDetailsView(
+                    child: InfoDetailsView(
                       infoType: InfoType.budgeting,
+                      onBudgetAction: () {
+                        model.setBudgetData();
+                        FloatingSnackBar.show(
+                            ctxt!,
+                            'Car budget successfully updated',
+                            isError: false
+                        );
+                      },
                       currentIndex: 0,
                     ),
                   );

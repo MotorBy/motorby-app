@@ -38,6 +38,16 @@ class _SearchAddressMapState extends State<SearchAddressMap> {
 
   final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
 
+  String? _extractAddressComponent(dynamic components, String type) {
+    if (components == null) return null;
+    for (var component in components) {
+      if (component['types'].contains(type)) {
+        return component['long_name'];
+      }
+    }
+    return null;
+  }
+
   Future<void> _setCustomMapPickupLocPin() async {
     sourceLocationIcon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(devicePixelRatio: 2.5),
@@ -68,10 +78,18 @@ class _SearchAddressMapState extends State<SearchAddressMap> {
             color: Colors.white,
             child: mapActionInfo(model: model, onClick: () {
 
+              final addressComponents = model.latLngAddressModel?.results![0].toJson()['address_components'];
+              
+              final city = _extractAddressComponent(addressComponents, 'locality') ?? 
+                          _extractAddressComponent(addressComponents, 'administrative_area_level_2');
+              final state = _extractAddressComponent(addressComponents, 'administrative_area_level_1');
+
               Map<String, dynamic> pickedAddressFromMap = {
                 "lat": model.SOURCE_LOCATION!.latitude.toString(),
                 "lng": model.SOURCE_LOCATION!.longitude.toString(),
                 "address": model.sourceAddressName,
+                "city": city,
+                "state": state
               };
 
               print(pickedAddressFromMap.toString());
@@ -166,10 +184,17 @@ class _SearchAddressMapState extends State<SearchAddressMap> {
                     final lng = geolocation.coordinates.longitude;
                     searchedPlaceAddress = place.description;
 
+                    final addressComponents = geolocation.fullJSON['address_components'];
+                    final city = _extractAddressComponent(addressComponents, 'locality') ?? 
+                                _extractAddressComponent(addressComponents, 'administrative_area_level_2');
+                    final state = _extractAddressComponent(addressComponents, 'administrative_area_level_1');
+
                     Map<String, dynamic> pickedAddressFromMap = {
                       "lat": lat.toString(),
                       "lng": lng.toString(),
-                      "address": searchedPlaceAddress
+                      "address": searchedPlaceAddress,
+                      "city": city,
+                      "state": state
                     };
 
                     Navigator.pop(context, pickedAddressFromMap);
