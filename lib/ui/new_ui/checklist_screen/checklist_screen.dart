@@ -34,8 +34,8 @@ class ChecklistScreen extends StatelessWidget {
             'Checklist settings',
             style: TextStyle(
               color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -89,7 +89,7 @@ class ChecklistScreen extends StatelessWidget {
                           const Text(
                             'Set frequency',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -142,8 +142,8 @@ class ChecklistScreen extends StatelessWidget {
                         'You will get reminders ${viewModel.selectedFrequency} for the activated checklist below',
                         style: const TextStyle(
                           color: Colors.black45,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -161,7 +161,7 @@ class ChecklistScreen extends StatelessWidget {
                   const Text(
                     'Edit checklist',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -169,7 +169,7 @@ class ChecklistScreen extends StatelessWidget {
                     'Update your car checks here',
                     style: TextStyle(
                       color: Colors.black54,
-                      fontSize: 16,
+                      fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -209,7 +209,7 @@ class ChecklistScreen extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),

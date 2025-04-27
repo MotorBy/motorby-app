@@ -22,7 +22,6 @@ class InfoDetailsViewModel extends BaseViewModel {
   String? currentWeatherDescription = 'No weather';
   String? weatherGuideDescription = '';
 
-  int? currentBudgetViewIndex = 0;
   int? currentBudgetTypeIndex = 0;
   int? currentTotalSpent = 0;
   int? totalCarsAdded = 0;
@@ -52,6 +51,7 @@ class InfoDetailsViewModel extends BaseViewModel {
   List<Servicing>? servicing = [];
   List<Repairing>? repairing = [];
   List<Breakdowns>? breakdowns = [];
+  List<MileageDatum>? mileageData = [];
   List<int>? totalCostingAndValue = [];
 
   Map<String, dynamic> addressInput = {};
@@ -187,6 +187,7 @@ class InfoDetailsViewModel extends BaseViewModel {
       budgetData["location"] = value;
     } else if (type == "miles") {
       budgetData["mileage"] = value;
+      budgetData["odometer_reading"] = value;
     } else if (type == "condition") {
       budgetData["condition"] = value;
     } else if (type == "shop_name") {
@@ -275,16 +276,27 @@ class InfoDetailsViewModel extends BaseViewModel {
         "lng": addressInput['lng']
       };
 
+    } else if(addressType == 'mileage') {
+
+      budgetData['destination_address'] = addressInput['address'];
+      budgetData['destination_location'] = {
+        "lat": addressInput['lat'],
+        "lng": addressInput['lng']
+      };
+
     }
 
     notifyListeners();
   }
 
   void updateBudgetTypeIndex({int? v}) {
-    fueling = budgetingModel!.budget![0].fueling!.reversed.toList();
-    servicing = budgetingModel!.budget![0].servicing!.reversed.toList();
-    repairing = budgetingModel!.budget![0].repairing!.reversed.toList();
-    breakdowns = budgetingModel!.budget![0].breakdowns!.reversed.toList();
+    currentBudgetTypeIndex = v;
+
+    fueling = budgetingModel!.budget![budgetingService.currentBudgetIndex!].fueling!.reversed.toList();
+    servicing = budgetingModel!.budget![budgetingService.currentBudgetIndex!].servicing!.reversed.toList();
+    repairing = budgetingModel!.budget![budgetingService.currentBudgetIndex!].repairing!.reversed.toList();
+    breakdowns = budgetingModel!.budget![budgetingService.currentBudgetIndex!].breakdowns!.reversed.toList();
+    mileageData = budgetingModel!.budget![budgetingService.currentBudgetIndex!].mileageData!.reversed.toList();
 
     notifyListeners();
   }

@@ -7,16 +7,61 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
+import 'package:intl/intl.dart';
+
+import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HistoryScreen extends StatelessWidget {
+  IconData _getHistoryTypeIcon() {
+    switch (budgetHistoryType) {
+      case 'Fueling':
+        return Icons.local_gas_station;
+      case 'Servicing':
+        return Icons.build;
+      case 'Repairing':
+        return Icons.handyman;
+      case 'Breakdown':
+        return Icons.car_repair;
+      case 'Mileage':
+        return Icons.speed;
+      default:
+        return Icons.history;
+    }
+  }
+
+  String _getEntryCount(InfoDetailsViewModel model) {
+    int count = 0;
+    switch (budgetHistoryType) {
+      case 'Fueling':
+        count = model.fueling?.length ?? 0;
+        break;
+      case 'Servicing':
+        count = model.servicing?.length ?? 0;
+        break;
+      case 'Repairing':
+        count = model.repairing?.length ?? 0;
+        break;
+      case 'Breakdown':
+        count = model.breakdowns?.length ?? 0;
+        break;
+      case 'Mileage':
+        count = model.mileageData?.length ?? 0;
+        break;
+    }
+    return '$count ${count == 1 ? 'Entry' : 'Entries'}';
+  }
+
   const HistoryScreen({
     super.key,
     this.infoDetailsViewModel,
-    this.noEmptyData = true
+    this.noEmptyData = true,
+    this.budgetHistoryType
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
   final bool? noEmptyData;
+  final String? budgetHistoryType;
 
   @override
   Widget build(BuildContext context) {
@@ -33,92 +78,235 @@ class HistoryScreen extends StatelessWidget {
                 },
                 child: Icon(Icons.arrow_back_ios_rounded, size: 18, color: XColors.black(),)
             ),
+            title: const NormalText(
+              text: 'Budget History',
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-          body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
+          body: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
 
-                if(noEmptyData == false) ... [
+                  if(noEmptyData == false) ... [
 
-                  const EmptyView(),
+                    const EmptyView(),
 
-                ] else ... [
+                  ] else ... [
 
-                  Column(
-                    children: [
-                      NormalText(
-                        text: 'Total ${ model.currentBudgetTypeIndex == 4 ? 'breakdown' : 'expense' }',
-                        textColor: XColors.textColor().withOpacity(0.6),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                    ///Top header section
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: XColors.highlightColor().withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: XColors.primaryColor().withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      const YMargin(15),
-                      NormalText(
-                        text: model.currentBudgetTypeIndex != 4 ?
-                            '₦${numberFormat(number: model.totalCostingAndValue![model.currentBudgetTypeIndex!].toDouble())}'
-                            : model.totalCostingAndValue![model.currentBudgetTypeIndex!].toString(),
-                        textColor: XColors.textColor(),
-                        fontSize: 25,
-                        fontWeight: FontWeight.w700,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  NormalText(
+                                    text: budgetHistoryType ?? '',
+                                    textColor: XColors.primaryColor(),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  const YMargin(4),
+                                  NormalText(
+                                    text: 'History Overview',
+                                    textColor: XColors.textColor().withOpacity(0.6),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                _getHistoryTypeIcon(),
+                                color: XColors.primaryColor(),
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                          const YMargin(20),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if(budgetHistoryType != 'Mileage') ... [
+
+                                      NormalText(
+                                        text: 'Total Amount',
+                                        textColor: XColors.textColor().withOpacity(0.6),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+
+                                      const YMargin(8),
+                                      NormalText(
+                                        text: budgetHistoryType != 'Breakdown' && budgetHistoryType != 'Mileage' ?
+                                        '₦${numberFormat(number: model.totalCostingAndValue![model.currentBudgetTypeIndex!].toDouble())}'
+                                            : model.totalCostingAndValue![model.currentBudgetTypeIndex!].toString(),
+                                        textColor: XColors.textColor(),
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+
+                                    ] else ... [
+
+                                      NormalText(
+                                        text: 'Current mileage',
+                                        textColor: XColors.textColor().withOpacity(0.6),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+
+                                      const YMargin(8),
+                                      NormalText(
+                                        text: '${model.totalCostingAndValue![model.currentBudgetTypeIndex!]}mph',
+                                        textColor: XColors.textColor(),
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+
+                                    ],
+
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: XColors.primaryColor().withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.history,
+                                      color: XColors.primaryColor(),
+                                      size: 16,
+                                    ),
+                                    const XMargin(6),
+                                    NormalText(
+                                      text: _getEntryCount(model),
+                                      textColor: XColors.primaryColor(),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
 
-                  const YMargin(25),
+                    const YMargin(25),
 
-                ],
+                  ],
 
-                if(model.currentBudgetTypeIndex == 0) ... [
+                  if(budgetHistoryType == "Fueling") ... [
 
-                  ...List.generate(model.fueling!.length, (index) {
-                    return HistoryListView(
-                      body: 'Bought fuel for',
-                      price: '₦${numberFormat(number: model.fueling![index].price!.toDouble())}',
-                      date: model.fueling![index].date,
-                    );
+                    ...List.generate(model.fueling!.length, (index) {
+                      return HistoryListView(
+                        body: 'Bought fuel for',
+                        price: '₦${numberFormat(number: model.fueling![index].price!.toDouble())}',
+                        date: model.fueling![index].date,
+                        location: model.fueling![index].fuelStationName,
+                        address: model.fueling![index].gasStationAddress,
+                        latitude: model.fueling![index].gasStationLocation?.lat,
+                        longitude: model.fueling![index].gasStationLocation?.lng,
+                        shopName: model.fueling![index].fuelStationName,
+                      );
                     }),
 
-                ]
-                else if (model.currentBudgetTypeIndex == 1) ... [
+                  ]
+                  else if (budgetHistoryType == "Servicing") ... [
 
-                  ...List.generate(model.servicing!.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: HistoryListView(
-                        body: model.servicing![index].condition,
-                        price: '₦${numberFormat(number: model.servicing![index].price!.toDouble())}',
-                        date: model.servicing![index].date ?? '',
-                      ),
-                    );
-                  }),
+                    ...List.generate(model.servicing!.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: HistoryListView(
+                          body: model.servicing![index].condition,
+                          price: '₦${numberFormat(number: model.servicing![index].price!.toDouble())}',
+                          date: model.servicing![index].date ?? '',
+                          location: model.servicing![index].shopName,
+                          address: model.servicing![index].shopAddress,
+                          latitude: model.servicing![index].shopLocation?.lat,
+                          longitude: model.servicing![index].shopLocation?.lng,
+                          shopName: model.servicing![index].shopName,
+                        ),
+                      );
+                    }),
 
-                ]
-                else if (model.currentBudgetTypeIndex == 2) ... [
+                  ]
+                  else if (budgetHistoryType == "Repairing") ... [
 
-                  ...List.generate(model.repairing!.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: HistoryListView(
-                        body: model.repairing![index].condition,
-                        price: '₦${numberFormat(number: model.repairing![index].price!.toDouble())}',
-                        date: model.repairing![index].date ?? '',
-                      ),
-                    );
-                  }),
+                    ...List.generate(model.repairing!.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: HistoryListView(
+                          body: model.repairing![index].condition,
+                          price: '₦${numberFormat(number: model.repairing![index].price!.toDouble())}',
+                          date: model.repairing![index].date ?? '',
+                          location: model.repairing![index].shopName,
+                          address: model.repairing![index].shopAddress,
+                          latitude: model.repairing![index].shopLocation?.lat,
+                          longitude: model.repairing![index].shopLocation?.lng,
+                          shopName: model.repairing![index].shopName,
+                        ),
+                      );
+                    }),
 
-                ]
-                else if (model.currentBudgetTypeIndex == 4) ... [
+                  ]
+                  else if (budgetHistoryType == "Breakdown") ... [
 
-                  ...List.generate(model.breakdowns!.length, (index) {
-                    return HistoryListView(
-                      body: 'Had breakdown',
-                      price: 'at ${model.breakdowns![index].location}',
-                      date: model.breakdowns![index].date,
-                    );
-                  }),
+                    ...List.generate(model.breakdowns!.length, (index) {
+                      return HistoryListView(
+                        body: 'Had breakdown',
+                        price: '',
+                        date: model.breakdowns![index].date,
+                        location: model.breakdowns![index].location,
+                        address: model.breakdowns![index].address,
+                        latitude: model.breakdowns![index].breakdownLocation?.lat,
+                        longitude: model.breakdowns![index].breakdownLocation?.lng,
+                      );
+                    }),
+                  ]
+                  else if (budgetHistoryType == "Mileage") ... [
+
+                    ...List.generate(model.mileageData!.length, (index) {
+                      return HistoryListView(
+                        body: 'Mileage update at fuel level: ${model.mileageData![index].currentFuelGauge ?? "N/A"} \nWith destination address',
+                        price: '${model.mileageData![index].odometerReading}mph' ?? 'N/A',
+                        date: model.mileageData![index].inputDate.toString(),
+                        location: model.mileageData![index].destinationAddress,
+                        address: model.mileageData![index].destinationAddress,
+                        latitude: model.mileageData![index].destinationLocation?.lat,
+                        longitude: model.mileageData![index].destinationLocation?.lng,
+                      );
+                    }),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );
@@ -128,11 +316,26 @@ class HistoryScreen extends StatelessWidget {
 }
 
 class HistoryListView extends StatelessWidget {
-  const HistoryListView({super.key, this.body, this.price, this.date});
+  const HistoryListView({
+    super.key, 
+    this.body, 
+    this.price, 
+    this.date,
+    this.location,
+    this.latitude,
+    this.longitude,
+    this.shopName,
+    this.address,
+  });
 
   final String? body;
   final String? price;
   final String? date;
+  final String? location;
+  final double? latitude;
+  final double? longitude;
+  final String? shopName;
+  final String? address;
 
   @override
   Widget build(BuildContext context) {
@@ -142,23 +345,82 @@ class HistoryListView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  NormalText(
-                    text: date,
-                    textColor: XColors.textColor().withOpacity(0.6),
-                    fontSize: 10,
-                  ),
-                  const YMargin(10),
-                  NormalText(
-                    text: body,
-                    textColor: XColors.textColor(),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NormalText(
+                      text: date != null ? formatDate(date!) : '',
+                      textColor: XColors.textColor().withOpacity(0.6),
+                      fontSize: 10,
+                    ),
+                    const YMargin(10),
+                    NormalText(
+                      text: body,
+                      textColor: XColors.textColor(),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    if (location != null) ...[                      
+                      const YMargin(5),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: XColors.highlightColor().withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on, size: 16, color: XColors.primaryColor()),
+                            const XMargin(8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (shopName != null)
+                                        NormalText(
+                                          text: shopName!,
+                                          textColor: XColors.textColor(),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      if (address != null) const YMargin(4),
+                                      NormalText(
+                                        text: shopName != null ? address!.isEmpty ? '' : address!.replaceAll('${shopName!}, ', '') : address!,
+                                        textColor: XColors.textColor(),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // if (latitude != null && longitude != null)
+                            //   IconButton(
+                            //     icon: Icon(Icons.directions, color: XColors.primaryColor()),
+                            //     onPressed: () {
+                            //
+                            //       navigate(context, DirectionsScreen(
+                            //         destination: LatLng(latitude!, longitude!),
+                            //         destinationAddress: location!,destinationName: '',
+                            //       ));
+                            //
+                            //     },
+                            //     iconSize: 20,
+                            //     padding: EdgeInsets.zero,
+                            //     constraints: const BoxConstraints(),
+                            //   ),
+                        ],
+                      ),
+                      )],
+                  ],
+                ),
               ),
+              const XMargin(8),
               NormalText(
                 text: price,
                 textColor: XColors.textColor(),

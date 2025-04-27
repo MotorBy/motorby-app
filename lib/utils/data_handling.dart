@@ -2,6 +2,55 @@ import 'package:intl/intl.dart';
 
 final oCcy = NumberFormat("#,##0", "en_US");
 
+DateTime parseDate(String dateStr) {
+  try {
+    // First try parsing the standard format
+    List<String> parts = dateStr.split('-');
+    if (parts.length == 3) {
+      int day = int.parse(parts[0]);
+      int month = int.parse(parts[1]);
+      int year = int.parse(parts[2]);
+      return DateTime(year, month, day);
+    }
+    // If that fails, try parsing as ISO date
+    return DateTime.parse(dateStr);
+  } catch (e) {
+    // Return current date if parsing fails
+    return DateTime.now();
+  }
+}
+
+String formatDate(String dateStr) {
+  try {
+    DateTime date = parseDate(dateStr);
+    return DateFormat('dd-MM-yyyy').format(date);
+  } catch (e) {
+    return dateStr;
+  }
+}
+
+String getTimeAgo(String dateStr) {
+  final date = DateTime.parse(dateStr);
+  final now = DateTime.now();
+  final difference = now.difference(date);
+
+  if (difference.inDays > 365) {
+    final years = (difference.inDays / 365).floor();
+    return '$years ${years == 1 ? 'year' : 'years'} ago';
+  } else if (difference.inDays > 30) {
+    final months = (difference.inDays / 30).floor();
+    return '$months ${months == 1 ? 'month' : 'months'} ago';
+  } else if (difference.inDays > 0) {
+    return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+  } else {
+    return 'just now';
+  }
+}
+
 String amtFormatter(int? value) {
   return oCcy.format(value).toString();
 }

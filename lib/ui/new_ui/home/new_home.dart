@@ -6,7 +6,6 @@ import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.
 import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -154,21 +153,21 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                           fontWeight: FontWeight.w400,
                           textColor: XColors.black(),
                         ),
-                        trailing: const Row(
+                        trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            NormalText(
+                            const NormalText(
                               text: '₦',
-                              fontSize: 18,
+                              fontSize: 14,
                               fontWeight: FontWeight.w700,
                             ),
                             NormalText(
-                              text: ' 1,150',
+                              text: '${viewModel.currentFuelPrice}/ltr',
                               fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
-                            XMargin(12),
-                            Icon(Icons.chevron_right),
+                            const XMargin(12),
+                            const Icon(Icons.chevron_right),
                           ],
                         ),
                         onTap: () {
@@ -177,7 +176,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                             color: Colors.white,
                             context: context,
                             child: const InfoDetailsView(
-                              infoType: InfoType.fueling,
+                              infoType: InfoType.fuelUpdate,
                             ),
                           );
 
@@ -525,13 +524,13 @@ class InfoBox extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const NormalText(
-                          text: 'Mileage',
+                          text: 'Mileage(mph)',
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
                         const YMargin(12),
                         NormalText(
-                          text: model.hasAddedCar ? model.currentCar!.details!.mileage.toString() : "0",
+                          text: model.hasAddedCar ? '${model.budgetingModel!.budget![model.currentBudgetViewIndex!].mileage!}' : "0",
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
                         ),

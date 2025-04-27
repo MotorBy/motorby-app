@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
+import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
 class MileageReportView extends StatelessWidget {
@@ -20,61 +24,177 @@ class MileageReportView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Weather Section
+            // NormalText(
+            //   text: "Today's weather (Lagos)",
+            //   fontSize: 20,
+            //   fontWeight: FontWeight.w600,
+            //   textColor: XColors.black(),
+            // ),
+            // const SizedBox(height: 16),
+            // ContainerWidget(
+            //   padding: const EdgeInsets.symmetric(horizontal: 24),
+            //   backgroundColor: XColors.containerColor(),
+            //   borderRadius: BorderRadius.circular(20),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       NormalText(
+            //         text: model.temperature,
+            //         fontSize: 28,
+            //         fontWeight: FontWeight.w600,
+            //         textColor: XColors.black(),
+            //       ),
+            //       Container(
+            //         height: 60,
+            //         width: 2,
+            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
+            //       ),
+            //       const GetSvgImage(
+            //           image: 'assets/images/meteocons_sun-hot.svg'),
+            //       Container(
+            //         height: 60,
+            //         width: 2,
+            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
+            //       ),
+            //       const GetSvgImage(image: 'assets/images/bi_cloud-sun.svg'),
+            //       Container(
+            //         height: 60,
+            //         width: 2,
+            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
+            //       ),
+            //       NormalText(
+            //         text: model.weatherCondition,
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.w500,
+            //         textColor: XColors.black().withOpacity(0.8),
+            //       ),
+            //       Container(
+            //         height: 60,
+            //         width: 2,
+            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
+            //       ),
+            //       NormalText(
+            //         text: model.humidity,
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.w500,
+            //         textColor: XColors.black().withOpacity(0.8),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width - 80,
+                  child: const NormalText(
+                    text: 'Update your mileage when you get to any destination to get better reports',
+                    fontSize: 13,
+                    maxLines: 3,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.mode_edit_outline_rounded,
+                    color: XColors.primaryColor(),
+                  ),
+                  onPressed: () {
+
+                    modalBottomSheetMenu(
+                      color: Colors.white,
+                      context: context,
+                      child: InfoDetailsView(
+                        infoType: InfoType.mileage,
+                        currentIndex: 0,
+                        onBudgetAction: () {
+                          model.setBudgetData();
+                          FloatingSnackBar.show(
+                              context,
+                              'Successfully updated',
+                              isError: false
+                          );
+
+                        },
+                      ),
+                    );
+
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 34),
+
+            // Last Mileage Log
             const NormalText(
-              text: "Today's weather (Lagos)",
-              fontSize: 18,
+              text: 'Last Mileage Log',
+              fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 6),
             ContainerWidget(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              backgroundColor: XColors.containerColor(),
-              borderRadius: BorderRadius.circular(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  NormalText(
-                    text: model.temperature,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
+                  SizedBox(
+                    child: Padding(
+                      padding:
+                      const EdgeInsets.only(left: 8.0, top: 10, bottom: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const NormalText(
+                                text: 'Date of trip: ',
+                                fontSize: 13,
+                              ),
+                              NormalText(
+                                text: model.lastTripDate,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                textColor: XColors.black(),
+                              )
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const NormalText(
+                                text: 'Distance traveled: ',
+                                fontSize: 14,
+                              ),
+                              NormalText(
+                                text: '${model.lastTripDistance}km',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                textColor: XColors.black(),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  Container(
-                    height: 60,
-                    width: 2,
-                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
-                  ),
-                  const GetSvgImage(
-                      image: 'assets/images/meteocons_sun-hot.svg'),
-                  Container(
-                    height: 60,
-                    width: 2,
-                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
-                  ),
-                  const GetSvgImage(image: 'assets/images/bi_cloud-sun.svg'),
-                  Container(
-                    height: 60,
-                    width: 2,
-                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
-                  ),
-                  NormalText(
-                    text: model.weatherCondition,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  Container(
-                    height: 60,
-                    width: 2,
-                    color: const Color(0xFFF0E8F8).withOpacity(0.9),
-                  ),
-                  NormalText(
-                    text: model.humidity,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                      child: GetPngImage(
+                        image: 'assets/images/car_millage.png',
+                      ),
+                  )
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+
+            const SizedBox(height: 34),
 
             // Mileage Stats
             Row(
@@ -83,7 +203,7 @@ class MileageReportView extends StatelessWidget {
                   child: _buildStatCard(
                     'Total Mileage',
                     '${model.totalMileage}km',
-                  'assets/images/total-milage.png',
+                    'assets/images/total-milage.png',
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -97,176 +217,29 @@ class MileageReportView extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-
-            // Last Mileage Log
-            const NormalText(text:
-              'Last Mileage Log',
-             
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-           
-            ),
-            const SizedBox(height: 16),
-            ContainerWidget(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 8.0, top: 10, bottom: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const NormalText(
-                                text: 'Date of trip: ',
-                                fontSize: 14,
-                              ),
-                              NormalText(
-                                text: model.lastTripDate,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                textColor: XColors.black().withOpacity(0.7),
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              const NormalText(
-                                text: 'Distance traveled: ',
-                                fontSize: 14,
-                              ),
-                              NormalText(
-                                text: '${model.lastTripDistance}km',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                textColor: XColors.black().withOpacity(0.7),
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              const NormalText(
-                                text: 'Fuel consumed: ',
-                                fontSize: 14,
-                              ),
-                              NormalText(
-                                text: '${model.lastTripFuelConsumed} liters',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                textColor: XColors.black().withOpacity(0.7),
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              const NormalText(
-                                text: 'Efficiency: ',
-                                fontSize: 14,
-                              ),
-                              NormalText(
-                                text: '${model.lastTripEfficiency}km/l',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                textColor: XColors.black().withOpacity(0.7),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                      child: GetPngImage(
-                    image: 'assets/images/car_millage.png',
-                  ))
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Last Refuel and Current Mileage
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      children: [
-                   const GetPngImage(image: 'assets/images/last_refuel.png'),
-                        const SizedBox(height: 12),
-                        const NormalText(
-                          text: 
-                          'Last Refuel',
-                         fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                        
-                        ),
-                                                const SizedBox(height: 12),
-
-                        NormalText(text:
-                          model.lastRefuelDate,
-                         fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                        
-                        ),
-                      ],
-                    ),
+                  child: _buildStatCard(
+                    'Last refuel on',
+                    '${model.totalMileage}km',
+                    'assets/images/total-milage.png',
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Column(
-                      children: [
-                        GetPngImage(image: 'assets/images/last_refuel.png'),
-                        SizedBox(height: 12),
-                        NormalText(
-                          text:
-                          'Recent Amount',
-                          textAlign: TextAlign.center,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-
-                        ),
-                        SizedBox(height: 12),
-
-                        NormalText(text:
-                        '5,000',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-
-                        ),
-                      ],
-                    ),
+                  child: _buildStatCard(
+                    'Last refuel amount',
+                    '${model.fuelEfficiency} km/l',
+                    'assets/images/fuel_guage.png',
                   ),
                 ),
               ],
             ),
+
             const SizedBox(height: 24),
 
             // Add Mileage Log Button
-        
           ],
         ),
       ),
@@ -283,18 +256,20 @@ class MileageReportView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-GetPngImage(image: icon),
+          GetPngImage(image: icon),
           const SizedBox(height: 8),
           NormalText(
             text: title,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            textColor: XColors.black().withOpacity(0.7),
           ),
           const SizedBox(height: 4),
           NormalText(
             text: value,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            textColor: XColors.black(),
           ),
         ],
       ),
