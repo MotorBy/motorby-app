@@ -271,7 +271,7 @@ class AddMileageLogSheet extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () async {
-          await model.saveMileageLog();
+
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: XColors.primaryColor2(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
@@ -19,15 +20,13 @@ class ReportViewModel extends BaseViewModel {
   String _location = '';
 
   // Mileage data
-  final int totalMileage = 12345;
-  final double fuelEfficiency = 15.0;
-  final String lastRefuelDate = '10, Nov 2024';
-  final int currentMileage = 10030409;
-  
-  // Weather data
-  final String temperature = '34C';
-  final String weatherCondition = 'Clear Sky';
-  final String humidity = '60%';
+  int _totalMileage = 0;
+  double _fuelEfficiency = 0.0;
+  String _lastRefuelDate = '';
+  String _lastRefuelAmount = '';
+  int _currentMileage = 0;
+  String _lastTripDate = '';
+  int _lastTripDistance = 0;
 
   int? currentTotalSpent = 0;
   int? currentSetBudget = 0;
@@ -40,8 +39,64 @@ class ReportViewModel extends BaseViewModel {
     0
   ];
 
-  Future setBudgetData({int currentIndex = 0}) async {
+  // Getters for last trip data
+  String get lastTripDate => _lastTripDate;
+  int get lastTripDistance => _lastTripDistance;
 
+  // Getters for mileage data
+  int get totalMileage => _totalMileage;
+  double get fuelEfficiency => _fuelEfficiency.roundToDouble();
+  String get lastRefuelDate => _lastRefuelDate;
+  String get lastRefuelAmount => _lastRefuelAmount;
+  int get currentMileage => _currentMileage;
+
+  void _calculateMileageStats() {
+    if (budgetingModel?.budget == null || budgetingModel!.budget!.isEmpty) return;
+
+    final currentBudget = budgetingModel!.budget![currentCarBudgetIndex];
+    
+    // Calculate total mileage and last trip data
+    if (currentBudget.mileageData != null && currentBudget.mileageData!.isNotEmpty) {
+      final latestMileage = int.tryParse(currentBudget.mileageData!.last.odometerReading ?? '0') ?? 0;
+      final firstMileage = int.tryParse(currentBudget.mileageData!.first.odometerReading ?? '0') ?? 0;
+      _totalMileage = latestMileage - firstMileage;
+      _currentMileage = latestMileage;
+
+      // Set last trip data
+      final lastTrip = currentBudget.mileageData!.last;
+      _lastTripDate = lastTrip.inputDate?.toString().split(' ')[0] ?? '';
+      
+      if (currentBudget.mileageData!.length > 1) {
+        final previousMileage = int.tryParse(currentBudget.mileageData![currentBudget.mileageData!.length - 2].odometerReading ?? '0') ?? 0;
+        _lastTripDistance = latestMileage - previousMileage;
+      } else {
+        _lastTripDistance = 0;
+      }
+    }
+
+    // Calculate fuel efficiency and get last refuel date
+    if (currentBudget.fueling != null && currentBudget.fueling!.isNotEmpty) {
+      final lastFueling = currentBudget.fueling!.last;
+      _lastRefuelDate = lastFueling.date ?? '';
+      _lastRefuelAmount = amtFormatter(lastFueling.price);
+
+      // Calculate average fuel efficiency if we have both mileage and fueling data
+      if (currentBudget.mileageData != null && currentBudget.mileageData!.length > 1) {
+        final totalDistance = _totalMileage;
+        double totalLiters = 0.0;
+        for (var fuel in currentBudget.fueling!) {
+          if (fuel.price != null && fuel.pricePerLiter != null && fuel.pricePerLiter! > 0) {
+            totalLiters += fuel.price! / fuel.pricePerLiter!;
+          }
+        }
+        if (totalLiters > 0) {
+          _fuelEfficiency = totalDistance / totalLiters; // km/L
+        }
+      }
+    }
+  }
+
+  Future setBudgetData({int currentIndex = 0}) async {
     if(budgetingService.budgetingModel == null) {
       await budgetingService.getBudgets();
       notifyListeners();
@@ -55,11 +110,9 @@ class ReportViewModel extends BaseViewModel {
     currentTotalSpent = budgetingService.currentTotalSpent;
     currentSetBudget = budgetingService.currentSetBudget;
 
-    print(currentSetBudget);
-    print(currentTotalSpent);
+    _calculateMileageStats();
 
     notifyListeners();
-
   }
 
   List<Budget> getBudgetData() {
@@ -69,12 +122,6 @@ class ReportViewModel extends BaseViewModel {
   CarId? getCurrentCar() {
     return budgetingService.currentCar;
   }
-
-  // Last mileage log
-  final String lastTripDate = '14, Nov 2024';
-  final int lastTripDistance = 120;
-  final int lastTripFuelConsumed = 11;
-  final double lastTripEfficiency = 15.0;
 
   // Getters
   int get selectedTab => _selectedTab;
@@ -91,10 +138,6 @@ class ReportViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void setTimeFrame(String timeFrame) {
-    _selectedTimeFrame = timeFrame;
-    notifyListeners();
-  }
 
   void setDate(DateTime date) {
     _selectedDate = date;
@@ -121,40 +164,4 @@ class ReportViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  // Actions
-  Future<void> saveMileageLog() async {
-    if (_selectedDate == null || _selectedTime == null || 
-        _odometerReading.isEmpty || _fuelAdded.isEmpty || _location.isEmpty) {
-      // TODO: Handle validation error
-      return;
-    }
-
-    // TODO: Save mileage log to database
-    // Create a map of the log data
-    final logData = {
-      'date': _selectedDate,
-      'time': _selectedTime,
-      'odometer_reading': _odometerReading,
-      'fuel_added': _fuelAdded,
-      'location': _location,
-    };
-
-    // Reset form
-    _selectedDate = null;
-    _selectedTime = null;
-    _odometerReading = '';
-    _fuelAdded = '';
-    _location = '';
-    
-    notifyListeners();
-  }
-
-  void addMileageLog() {
-    // TODO: Implement mileage log addition
-    notifyListeners();
-  }
-
-  // TODO: Add methods to fetch and calculate expense data
-  // TODO: Add methods to handle mileage data when tab is switched
-  // TODO: Add methods to filter data based on selected time frame
 }

@@ -45,109 +45,118 @@ class ExpenditureReportView extends StatelessWidget {
       amtFormatter(0),
     ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBudgetHeader(
-              currentSpending: model.budgetingModel != null ?
-              amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].currentSpending!) : "0",
-              totalBudget: model.budgetingModel != null ?
-              amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].budget!) : "0"
-          ),
-          const YMargin(24),
-          SizedBox(
-            height: 280,
-            child: GridView.builder(
-                itemCount: budgetIcon.length,
-                physics: const AlwaysScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 3 / 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 18,
-                    mainAxisExtent: 118,
-                ),
-                itemBuilder: (context, index) {
-                  return ContainerWidget(
-                    backgroundColor: XColors.containerColor(),
-                    borderRadius: BorderRadius.circular(16),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 16),
-                    onTap: () {
-
-                      InfoType? infoType;
-
-                      if(index == 0) {
-                        infoType = InfoType.fueling;
-                      } else if(index == 1) {
-                        infoType = InfoType.servicing;
-                      } else if(index == 2) {
-                        infoType = InfoType.repairing;
-                      } else if(index == 3) {
-
-                      }
-
-                      modalBottomSheetMenu(
-                        color: Colors.white,
-                        context: ctxt!,
-                        child: InfoDetailsView(
-                          infoType: infoType!,
-                          currentIndex: 0,
-                          onBudgetAction: () {
-                            model.setBudgetData();
-                            FloatingSnackBar.show(
-                                context,
-                                'Successfully updated',
-                                isError: false
-                            );
-
-                          },
-                        ),
-                      );
-
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GetPngImage(image: budgetIcon[index]),
-                        ),
-                        Center(
-                          child: NormalText(
-                            text: budgetTopic[index],
-                            fontSize: 14,
-                            textColor: XColors.primaryColor(),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const YMargin(10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '\u20A6',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: XColors.black(),
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            NormalText(
-                              text: budgetSubTopic[index],
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  );
-                },
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildBudgetHeader(
+                currentSpending: model.budgetingModel != null ?
+                amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].currentSpending!) : "0",
+                totalBudget: model.budgetingModel != null ?
+                amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].budget!) : "0"
             ),
-          )
-        ],
+            const YMargin(24),
+            NormalText(
+              text: "Select any tiles",
+              fontSize: 13,
+              textColor: XColors.primaryColor(),
+              fontWeight: FontWeight.w600,
+            ),
+            const YMargin(14),
+            SizedBox(
+              height: 300,
+              child: GridView.builder(
+                  itemCount: budgetIcon.length,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 300,
+                      childAspectRatio: 3 / 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 18,
+                      mainAxisExtent: 118,
+                  ),
+                  itemBuilder: (context, index) {
+                    return ContainerWidget(
+                      backgroundColor: XColors.containerColor(),
+                      borderRadius: BorderRadius.circular(16),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                      onTap: () {
+
+                        InfoType? infoType;
+
+                        if(index == 0) {
+                          infoType = InfoType.fueling;
+                        } else if(index == 1) {
+                          infoType = InfoType.servicing;
+                        } else if(index == 2) {
+                          infoType = InfoType.repairing;
+                        } else if(index == 3) {
+
+                        }
+
+                        modalBottomSheetMenu(
+                          color: Colors.white,
+                          context: ctxt!,
+                          child: InfoDetailsView(
+                            infoType: infoType!,
+                            currentIndex: 0,
+                            onBudgetAction: () {
+                              model.setBudgetData();
+                              FloatingSnackBar.show(
+                                  context,
+                                  'Successfully updated',
+                                  isError: false
+                              );
+
+                            },
+                          ),
+                        );
+
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: GetPngImage(image: budgetIcon[index]),
+                          ),
+                          Center(
+                            child: NormalText(
+                              text: budgetTopic[index],
+                              fontSize: 14,
+                              textColor: XColors.primaryColor(),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const YMargin(10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '\u20A6',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: XColors.black(),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              NormalText(
+                                text: budgetSubTopic[index],
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    );
+                  },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

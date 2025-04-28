@@ -195,7 +195,13 @@ class MileageReportView extends StatelessWidget {
             ),
 
             const SizedBox(height: 34),
-
+            NormalText(
+              text: "View summary",
+              fontSize: 13,
+              textColor: XColors.primaryColor(),
+              fontWeight: FontWeight.w600,
+            ),
+            const YMargin(14),
             // Mileage Stats
             Row(
               children: [
@@ -210,7 +216,7 @@ class MileageReportView extends StatelessWidget {
                 Expanded(
                   child: _buildStatCard(
                     'Fuel Efficiency',
-                    '${model.fuelEfficiency} km/l',
+                    '${model.fuelEfficiency} km/L',
                     'assets/images/fuel_guage.png',
                   ),
                 ),
@@ -222,7 +228,7 @@ class MileageReportView extends StatelessWidget {
                 Expanded(
                   child: _buildStatCard(
                     'Last refuel on',
-                    '${model.totalMileage}km',
+                    model.lastRefuelDate,
                     'assets/images/total-milage.png',
                   ),
                 ),
@@ -230,7 +236,7 @@ class MileageReportView extends StatelessWidget {
                 Expanded(
                   child: _buildStatCard(
                     'Last refuel amount',
-                    '${model.fuelEfficiency} km/l',
+                    '\u20A6 ${model.lastRefuelAmount}',
                     'assets/images/fuel_guage.png',
                   ),
                 ),
