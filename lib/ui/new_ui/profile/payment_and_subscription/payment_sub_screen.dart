@@ -34,7 +34,11 @@ class _PaymentAndSubscriptionScreenState
         },
         builder: (context, model, child) {
           return Scaffold(
-            appBar: InsuranceAppBar(text1: 'Payment and Subscriptions'),
+            appBar: appBarHeader(
+              hasOnBack: true,
+              context: context,
+              appBarTitle: 'Payment and Subscriptions',
+            ),
             backgroundColor: XColors.background(),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

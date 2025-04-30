@@ -3,6 +3,7 @@ import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
@@ -24,19 +25,10 @@ class CarDocumentsScreen extends StatelessWidget {
       onViewModelReady: (model) => model.initialize(carId: carId),
       builder: (context, model, child) => Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFFEF7FF),
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          centerTitle: false,
-          title: const NormalText(
-            text: 'Car Documents',
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+        appBar: appBarHeader(
+          hasOnBack: true,
+          context: context,
+          appBarTitle: 'Car documents',
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),

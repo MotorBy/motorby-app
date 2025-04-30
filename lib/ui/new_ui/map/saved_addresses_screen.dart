@@ -5,6 +5,7 @@ import 'package:mobile_auto_drive/ui/new_ui/map/search_address_map.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
@@ -24,19 +25,11 @@ class SavedAddressesScreen extends StatelessWidget {
       disposeViewModel: false,
       builder: (context, viewModel, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text("Saved Addresses"),
-            titleTextStyle: TextStyle(
-              color: XColors.textColor(),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            backgroundColor: XColors.highlightColor().withOpacity(0.1),
-            surfaceTintColor: Colors.transparent,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
+          backgroundColor: XColors.background(),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'Saved Addresses',
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),

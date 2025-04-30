@@ -7,6 +7,7 @@ import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -21,21 +22,13 @@ class CarsListScreen extends StatelessWidget {
         onViewModelReady: (model) => model.getBudgetData(),
         builder: (context, viewModel, child) => Scaffold(
             backgroundColor: const Color(0xFFFFFFFF),
-            appBar: AppBar(
-              backgroundColor: const Color(0xFFFEF7FF),
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context),
-              ),
-              centerTitle: false,
-              title: const NormalText(
-                text: 'Your cars',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            body: Container(
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'Your cars',
+          ),
+            body: Padding(
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
 
@@ -55,7 +48,7 @@ class CarsListScreen extends StatelessWidget {
                               hasOutline: true,
                               outlineWidth: 2,
                               radius: 26,
-                              outlineColor: XColors.primaryColor().withOpacity(0.3),
+                              outlineColor: XColors.primaryColor().withOpacity(0.1),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -80,6 +73,7 @@ class CarsListScreen extends StatelessWidget {
                                         modalBottomSheetMenu(
                                           color: Colors.white,
                                           context: context,
+                                          height: 400,
                                           child: MoreCarAction(
                                             homeViewModel: viewModel,
                                           ),
@@ -192,7 +186,7 @@ class CarsListScreen extends StatelessWidget {
 
                   ],
 
-            ],),
+                          ],),
             ),
         )
     );

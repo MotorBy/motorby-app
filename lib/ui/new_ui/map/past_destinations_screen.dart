@@ -3,6 +3,7 @@ import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -20,19 +21,11 @@ class PastDestinationsScreen extends StatelessWidget {
       },
       builder: (context, viewModel, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text("Past destinations"),
-            titleTextStyle: TextStyle(
-              color: XColors.textColor(),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            backgroundColor: XColors.highlightColor().withOpacity(0.1),
-            surfaceTintColor: Colors.transparent,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
+          backgroundColor: XColors.background(),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'Past destinations',
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),

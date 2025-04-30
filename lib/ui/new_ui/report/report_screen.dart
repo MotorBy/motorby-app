@@ -4,12 +4,12 @@ import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'report_viewmodel.dart';
 import 'expenditure_report_view.dart';
 import 'mileage_report_view.dart';
-import 'add_mileage_log_sheet.dart';
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({Key? key}) : super(key: key);
@@ -21,14 +21,10 @@ class ReportScreen extends StatelessWidget {
       onViewModelReady: (model) => model.setBudgetData(),
       builder: (context, model, child) => Scaffold(
         backgroundColor: XColors.background(),
-        appBar: AppBar(
-          title: const NormalText(
-            text: 'Report',
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-          ),
-          centerTitle: false,
-          backgroundColor: const Color(0xFFFEF7FF),
+        appBar: appBarHeader(
+          hasOnBack: false,
+          context: context,
+          appBarTitle: 'Report',
         ),
         body: SafeArea(
           child: Column(

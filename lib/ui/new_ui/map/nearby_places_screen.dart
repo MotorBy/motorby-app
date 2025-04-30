@@ -5,6 +5,7 @@ import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -29,19 +30,11 @@ class NearbyPlacesScreen extends StatelessWidget {
       onViewModelReady: (viewModel) => viewModel.fetchNearbyPlaces(type: placeType),
       builder: (context, viewModel, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-            titleTextStyle: TextStyle(
-              color: XColors.textColor(),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            backgroundColor: XColors.highlightColor().withOpacity(0.1),
-            surfaceTintColor: Colors.transparent,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            onCloseAction: () {
+            },
+            appBarTitle: title,
           ),
           body: viewModel.isBusy
               ? const Center(child: Loader())

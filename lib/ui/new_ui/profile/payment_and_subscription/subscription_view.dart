@@ -30,7 +30,11 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
         },
         builder: (context, model, child) {
           return Scaffold(
-            appBar: InsuranceAppBar(text1: 'Subscription'),
+            appBar: appBarHeader(
+              hasOnBack: true,
+              context: context,
+              appBarTitle: 'Subscription',
+            ),
             backgroundColor: XColors.background(),
             body: SingleChildScrollView(
               child: Column(

@@ -9,6 +9,7 @@ import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -29,22 +30,10 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
         onViewModelReady:(model) async => await model.getInsuranceProducts(),
         builder: (context, model, child) {
         return Scaffold(
-          appBar: AppBar(
-            leading: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: const GetSvgImage(
-                  image: 'assets/images/arrow_back.svg',
-                  boxFit: BoxFit.scaleDown,
-                )),
-            centerTitle: false,
-            backgroundColor: XColors.highlightColor().withOpacity(0.1),
-            title: const NormalText(
-              text: 'Car Insurance',
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'Car Insurance',
           ),
           backgroundColor: XColors.background(),
           body: SingleChildScrollView(

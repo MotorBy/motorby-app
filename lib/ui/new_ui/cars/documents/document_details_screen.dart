@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
 class DocumentDetailsScreen extends StatelessWidget {
@@ -12,19 +13,10 @@ class DocumentDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFEF7FF),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        centerTitle: false,
-        title: NormalText(
-          text: document.documentName,
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-        ),
+      appBar: appBarHeader(
+        hasOnBack: true,
+        context: context,
+        appBarTitle: document.documentName,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

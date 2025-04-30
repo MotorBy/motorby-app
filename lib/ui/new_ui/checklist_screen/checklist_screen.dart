@@ -5,6 +5,7 @@ import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
@@ -23,21 +24,10 @@ class ChecklistScreen extends StatelessWidget {
       onViewModelReady: (model) => model.initializeChecklist(carId),
       builder: (context, viewModel, child) => Scaffold(
         backgroundColor: Colors.grey[50],
-        appBar: AppBar(
-          backgroundColor: Colors.grey[50],
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Checklist settings',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+        appBar: appBarHeader(
+          hasOnBack: true,
+          context: context,
+          appBarTitle: 'Checklist settings',
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: Padding(

@@ -23,7 +23,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         viewModelBuilder: () => ProfileViewModel(),
         builder: (context, model, child) {
           return Scaffold(
-            appBar: InsuranceAppBar(text1: 'Edit Profile'),
+            appBar: appBarHeader(
+              hasOnBack: true,
+              onCloseAction: (){
+              },
+              appBarTitle: 'Edit profile',
+            ),
             backgroundColor: XColors.background(),
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),

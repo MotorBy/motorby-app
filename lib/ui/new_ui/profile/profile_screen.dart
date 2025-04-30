@@ -5,10 +5,12 @@ import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_sub_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/referral/referral_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -23,21 +25,11 @@ class NewProfileScreen extends StatelessWidget {
         model.init();
       },
       builder: (context, model, child) => Scaffold(
-        backgroundColor: const Color(0xFFF8F2FF),
-        appBar: AppBar(
-          backgroundColor: XColors.background(),
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const NormalText(
-            text: 'Profile',
-            textColor: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-          ),
+        backgroundColor: XColors.white(),
+        appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+          appBarTitle: 'Profile',
           actions: [
             PopupMenuButton<int>(
               color: Colors.white,
@@ -82,7 +74,7 @@ class NewProfileScreen extends StatelessWidget {
                 navigate(context, const EditProfileScreen());
               },
             ),
-          ],
+          ]
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -90,9 +82,9 @@ class NewProfileScreen extends StatelessWidget {
             child: Column(
               children: [
                 _buildProfileHeader(model),
-                const SizedBox(height: 24),
+                const SizedBox(height: 44),
                 _buildCarsCard(model, context: context),
-                const SizedBox(height: 24),
+                const SizedBox(height: 44),
                 _buildMenuItems(model, context: context),
               ],
             ),
@@ -105,30 +97,30 @@ class NewProfileScreen extends StatelessWidget {
   Widget _buildProfileHeader(ProfileViewModel model) {
     return Column(
       children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage(model.profileImage),
-            ),
-            Positioned(
-              right: 0,
-              bottom: 5,
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        // Stack(
+        //   children: [
+        //     CircleAvatar(
+        //       radius: 30,
+        //       backgroundImage: AssetImage(model.profileImage),
+        //     ),
+        //     Positioned(
+        //       right: 0,
+        //       bottom: 5,
+        //       child: Container(
+        //         width: 16,
+        //         height: 16,
+        //         decoration: BoxDecoration(
+        //           color: Colors.green,
+        //           shape: BoxShape.circle,
+        //           border: Border.all(
+        //             color: Colors.white,
+        //             width: 2,
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 16),
         NormalText(
           text: model.user != null ? model.user!.fullname : "",
@@ -229,18 +221,14 @@ class NewProfileScreen extends StatelessWidget {
             navigate(context!, const CarDocumentsScreen(isFromProfile: true,));
           },
         ),
-        const DividerWidget(),
-        _buildMenuItem(
-          icon: 'assets/images/auto/user-group.svg',
-          title: 'Referral and earning',
-          onTap: (){},
-        ),
-        const DividerWidget(),
-        _buildMenuItem(
-          icon: 'assets/images/auto/settings.svg',
-          title: 'Upgrade to business',
-          onTap: (){},
-        ),
+        // const DividerWidget(),
+        // _buildMenuItem(
+        //   icon: 'assets/images/auto/user-group.svg',
+        //   title: 'Referral and earning',
+        //   onTap: (){
+        //     navigate(context!, const ReferralScreen());
+        //   },
+        // ),
         const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/about_icon.svg',
