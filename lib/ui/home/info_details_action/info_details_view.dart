@@ -141,10 +141,8 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
           children: [
             GestureDetector(
               onTap: () {
-                viewModel.updateBudgetTypeIndex(v: 0);
                 navigate(context, HistoryScreen(
                   infoDetailsViewModel: viewModel,
-                  noEmptyData: viewModel.fueling!.isNotEmpty,
                   budgetHistoryType: "Fueling",
                 ));
               },
@@ -337,15 +335,8 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
             GestureDetector(
               onTap: () {
 
-                if(infoType == InfoType.servicing) {
-                  viewModel.updateBudgetTypeIndex(v: 1);
-                } else if(infoType == InfoType.repairing) {
-                  viewModel.updateBudgetTypeIndex(v: 2);
-                }
-
                 navigate(context, HistoryScreen(
                   infoDetailsViewModel: viewModel,
-                  noEmptyData: infoType == InfoType.servicing ? viewModel.servicing!.isNotEmpty : viewModel.repairing!.isNotEmpty,
                   budgetHistoryType: infoType == InfoType.servicing ? "Servicing" : "Repairing",
                 ));
 
@@ -631,11 +622,8 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
             GestureDetector(
               onTap: () {
 
-                viewModel.updateBudgetTypeIndex(v: 3);
-
                 navigate(context, HistoryScreen(
                   infoDetailsViewModel: viewModel,
-                  noEmptyData: viewModel.mileageData!.isNotEmpty,
                   budgetHistoryType: 'Mileage',
                 ));
 
@@ -821,10 +809,8 @@ class BreakdownInputView extends ViewModelWidget<InfoDetailsViewModel> {
           children: [
             GestureDetector(
               onTap: () {
-                viewModel.updateBudgetTypeIndex(v: 4);
                 navigate(context, HistoryScreen(
                   infoDetailsViewModel: viewModel,
-                  noEmptyData: viewModel.breakdowns!.isNotEmpty,
                   budgetHistoryType: "Breakdown",
                 ));
               },

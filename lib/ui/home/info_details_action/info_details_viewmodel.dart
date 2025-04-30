@@ -298,6 +298,5 @@ class InfoDetailsViewModel extends BaseViewModel {
     breakdowns = budgetingModel!.budget![budgetingService.currentBudgetIndex!].breakdowns!.reversed.toList();
     mileageData = budgetingModel!.budget![budgetingService.currentBudgetIndex!].mileageData!.reversed.toList();
 
-    notifyListeners();
   }
 }

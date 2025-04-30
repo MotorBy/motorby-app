@@ -5,6 +5,7 @@ import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:intl/intl.dart';
@@ -35,18 +36,23 @@ class HistoryScreen extends StatelessWidget {
     switch (budgetHistoryType) {
       case 'Fueling':
         count = model.fueling?.length ?? 0;
+        model.updateBudgetTypeIndex(v: 0);
         break;
       case 'Servicing':
         count = model.servicing?.length ?? 0;
+        model.updateBudgetTypeIndex(v: 1);
         break;
       case 'Repairing':
         count = model.repairing?.length ?? 0;
+        model.updateBudgetTypeIndex(v: 2);
         break;
       case 'Breakdown':
         count = model.breakdowns?.length ?? 0;
+        model.updateBudgetTypeIndex(v: 4);
         break;
       case 'Mileage':
         count = model.mileageData?.length ?? 0;
+        model.updateBudgetTypeIndex(v: 3);
         break;
     }
     return '$count ${count == 1 ? 'Entry' : 'Entries'}';
@@ -55,34 +61,27 @@ class HistoryScreen extends StatelessWidget {
   const HistoryScreen({
     super.key,
     this.infoDetailsViewModel,
-    this.noEmptyData = true,
     this.budgetHistoryType
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
-  final bool? noEmptyData;
   final String? budgetHistoryType;
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<InfoDetailsViewModel>.reactive(
-        viewModelBuilder: () => infoDetailsViewModel!,
+        viewModelBuilder: () => infoDetailsViewModel ?? InfoDetailsViewModel(),
+        onViewModelReady: (model) {
+          model.initializeTotalCostingAndValue();
+        },
         disposeViewModel: false,
         builder: (context, model, child) {
         return Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppBar(
-            leading: GestureDetector(
-                onTap: () {
-                  popView(context);
-                },
-                child: Icon(Icons.arrow_back_ios_rounded, size: 18, color: XColors.black(),)
-            ),
-            title: const NormalText(
-              text: 'Budget History',
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'Budget History',
           ),
           body: SingleChildScrollView(
             child: Container(
@@ -90,7 +89,7 @@ class HistoryScreen extends StatelessWidget {
               child: Column(
                 children: [
 
-                  if(noEmptyData == false) ... [
+                  if(_getEntryCount.call(model) == '0') ... [
 
                     const EmptyView(),
 
