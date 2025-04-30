@@ -125,7 +125,7 @@ class MileageReportView extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 34),
+            const SizedBox(height: 44),
 
             // Last Mileage Log
             const NormalText(
@@ -133,7 +133,6 @@ class MileageReportView extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 6),
             ContainerWidget(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -147,7 +146,7 @@ class MileageReportView extends StatelessWidget {
                   SizedBox(
                     child: Padding(
                       padding:
-                      const EdgeInsets.only(left: 8.0, top: 10, bottom: 10),
+                      const EdgeInsets.only( top: 10, bottom: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -188,6 +187,7 @@ class MileageReportView extends StatelessWidget {
                   const Expanded(
                       child: GetPngImage(
                         image: 'assets/images/car_millage.png',
+                        height: 70,
                       ),
                   )
                 ],

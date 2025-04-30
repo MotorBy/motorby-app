@@ -4,8 +4,6 @@ import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
-import '../utils/size_config.dart';
-
 class InsuranceAppBar extends StatelessWidget implements PreferredSizeWidget {
   InsuranceAppBar({
     super.key,
