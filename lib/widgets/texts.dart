@@ -43,7 +43,7 @@ class NormalText extends StatelessWidget {
       this.textColor,
       this.fontWeight,
       this.textAlign,
-      this.maxLines
+      this.maxLines,
     });
 
   @override

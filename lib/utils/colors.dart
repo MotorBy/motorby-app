@@ -4,7 +4,7 @@ class XColors {
 
   static bool getDarkMode = false;
 
-  static Color background() => getDarkMode != true ? const Color(0xFFFAF8FD) : const Color(0xFF000000);
+  static Color background() => getDarkMode != true ? Colors.white : const Color(0xFF000000);
   static Color white() => getDarkMode != true ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
   static Color black() => const Color(0xFF000000);
   static Color primaryColor() => Colors.purpleAccent;
