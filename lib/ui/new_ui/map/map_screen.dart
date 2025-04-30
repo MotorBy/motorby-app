@@ -172,6 +172,7 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
     context: context,
     radius: 20,
     height: 670,
+    color: XColors.background(),
     child: ViewModelBuilder<MapViewModel>.reactive(
         viewModelBuilder: () => model,
         disposeViewModel: false,

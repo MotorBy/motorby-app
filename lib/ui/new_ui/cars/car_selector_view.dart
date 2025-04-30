@@ -69,7 +69,7 @@ class CarSelectorView extends StatelessWidget {
             if(cars.isNotEmpty) ... [
 
               const NormalText(
-                text: 'Selecting a car will be set across all the activity within the Motorby application.',
+                text: 'Selecting any of your cars',
                 fontSize: 13,
                 textColor: Colors.black,
                 fontWeight: FontWeight.w500,
