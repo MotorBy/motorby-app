@@ -87,20 +87,17 @@ class CommunityScreen extends StatelessWidget {
 
                     ...List.generate(
                             model.communities!.isNotEmpty ? model.communities!.length : 4,
-                          (index) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Shimmer(
-                          child: ShimmerLoading(
-                            isLoading: model.isBusy,
-                            child: _buildItem(
-                                isLoading: model.isBusy,
-                                context: context,
-                                model: model,
-                                index: index
+                          (index) => Shimmer(
+                            child: ShimmerLoading(
+                              isLoading: model.isBusy,
+                              child: _buildItem(
+                                  isLoading: model.isBusy,
+                                  context: context,
+                                  model: model,
+                                  index: index
+                              ),
                             ),
                           ),
-                        ),
-                      ),
                     ),
 
                   ],
@@ -155,7 +152,7 @@ class CommunityScreen extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () {
-              model!.onSelectCommunity(community: model.communities![index!]);
+              model.onSelectCommunity(community: model.communities![index!]);
 
               navigate(
                   context,
@@ -184,18 +181,19 @@ class CommunityScreen extends StatelessWidget {
                               text: '${model!.communities![index!].discussions!.length}',
                               textColor:
                               XColors.textColor(),
+                              fontWeight: FontWeight.w600,
                               fontSize: 11,
                             ),
                           ),
                           const XMargin(5),
                           Icon(
                             Icons.chat_outlined,
-                            size: 12,
-                            color: XColors.primaryColor(),
+                            size: 16,
+                            color: XColors.primaryColor().withOpacity(0.3),
                           ),
                         ],
                       ),
-                      const XMargin(15),
+                      const XMargin(20),
                       Row(
                         children: [
                           GestureDetector(
@@ -203,8 +201,8 @@ class CommunityScreen extends StatelessWidget {
                             },
                             child: NormalText(
                               text: '${model.communities![index].userTotal ?? 0}',
-                              textColor:
-                              XColors.textColor(),
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w600,
                               fontSize: 11,
                             ),
                           ),
@@ -212,8 +210,8 @@ class CommunityScreen extends StatelessWidget {
                           Icon(
                             Icons
                                 .supervisor_account_outlined,
-                            size: 12,
-                            color: XColors.primaryColor(),
+                            size: 16,
+                            color: XColors.primaryColor().withOpacity(0.3),
                           ),
                         ],
                       ),
@@ -261,23 +259,18 @@ class CommunityScreen extends StatelessWidget {
                                   }
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets
-                                      .symmetric(
-                                      vertical: 5,
-                                      horizontal: 5),
-                                  decoration: BoxDecorators
-                                      .containerDecoration(
+                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                                  decoration: BoxDecorators.containerDecoration(
                                     hasOutline: true,
-                                    outlineWidth: 0.5,
+                                    outlineWidth: 1.5,
                                     radius: 26,
                                     outlineColor:
-                                    XColors.primaryColor()
-                                        .withOpacity(0.3),
+                                    XColors.primaryColor().withOpacity(0.3),
                                   ),
                                   child: NormalText(
                                     text: 'Join',
-                                    textColor:
-                                    XColors.textColor(),
+                                    textColor: XColors.textColor(),
+                                    fontWeight: FontWeight.w600,
                                     fontSize: 11,
                                   ),
                                 ),

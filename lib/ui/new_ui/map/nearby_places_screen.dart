@@ -30,10 +30,10 @@ class NearbyPlacesScreen extends StatelessWidget {
       onViewModelReady: (viewModel) => viewModel.fetchNearbyPlaces(type: placeType),
       builder: (context, viewModel, child) {
         return Scaffold(
+          backgroundColor: XColors.background(),
           appBar: appBarHeader(
             hasOnBack: true,
-            onCloseAction: () {
-            },
+            context: context,
             appBarTitle: title,
           ),
           body: viewModel.isBusy
