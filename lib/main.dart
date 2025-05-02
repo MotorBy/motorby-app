@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_screen.dart';
@@ -22,6 +23,9 @@ void main() {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
+    // Initialize notification service
+    await NotificationService.instance.initialize();
 
     Future<PackageInfo> packageInfo() async => await PackageInfo.fromPlatform();
 
