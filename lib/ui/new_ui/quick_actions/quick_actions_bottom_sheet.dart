@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/ui/community/community_screen.dart';
 import 'package:mobile_auto_drive/ui/home/history_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'quick_actions_viewmodel.dart';
@@ -148,7 +150,7 @@ class QuickActionsBottomSheet extends StatelessWidget {
                     context,
                     label: 'Enter community',
                     onTap: () {
-                      navigate(context, const MarketPlace());
+                      navigate(context, const CommunityScreen());
                     },
                   ),
                   const YMargin(6),
@@ -156,7 +158,13 @@ class QuickActionsBottomSheet extends StatelessWidget {
                     context,
                     label: 'Marketplace',
                     onTap: () {
-                      navigate(context, const InsuranceScreen());
+
+                      FloatingSnackBar.show(
+                          context,
+                          backgroundColor: XColors.primaryColor(),
+                          'Marketplace is coming soon',
+                      );
+
                     },
                   ),
                 ],

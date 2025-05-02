@@ -7,18 +7,21 @@ class FloatingSnackBar extends StatelessWidget {
   final String message;
   final bool isError;
   final SnackBarPosition position;
+  final Color? backgroundColor;
 
   const FloatingSnackBar({
     Key? key,
     required this.message,
     this.isError = true,
     this.position = SnackBarPosition.top,
+    this.backgroundColor,
   }) : super(key: key);
 
   static void show(
     BuildContext context,
     String message, {
     bool isError = true,
+        Color? backgroundColor,
     SnackBarPosition position = SnackBarPosition.top,
   }) {
     OverlayEntry overlayEntry;
@@ -57,6 +60,7 @@ class FloatingSnackBar extends StatelessWidget {
               message: message,
               isError: isError,
               position: position,
+              backgroundColor: backgroundColor,
             ),
           ),
         ),
@@ -75,7 +79,7 @@ class FloatingSnackBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isError ? Colors.red : Colors.green,
+        color: backgroundColor ?? (isError ? Colors.red : Colors.green),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
