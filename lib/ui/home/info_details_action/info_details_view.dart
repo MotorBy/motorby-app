@@ -109,6 +109,13 @@ class InfoDetailsView extends StatelessWidget {
                   onBudgetAction: onBudgetAction,
                 )
 
+              ] else if(infoType == InfoType.reminder) ... [
+
+                ReminderInputView(
+                  infoDetailsViewModel: viewModel,
+                  onBudgetAction: onBudgetAction,
+                )
+
               ]
             ],
           ),
@@ -595,6 +602,197 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
       ],);
   }
 
+}
+
+class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
+  const ReminderInputView({
+    super.key,
+    this.infoDetailsViewModel,
+    this.onBudgetAction
+  });
+
+  final InfoDetailsViewModel? infoDetailsViewModel;
+  final Function? onBudgetAction;
+
+  @override
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
+    return Column(
+      children: [
+        const YMargin(5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            GestureDetector(
+              onTap: () {
+                navigate(context, HistoryScreen(
+                  infoDetailsViewModel: viewModel,
+                  budgetHistoryType: "Reminders",
+                ));
+              },
+              child: NormalText(
+                text: 'View History',
+                textColor: XColors.textColor(),
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
+            const XMargin(45),
+            GestureDetector(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: const Icon(Icons.close_rounded, size: 31,),
+            ),
+          ],
+        ),
+        const YMargin(20),
+        Row(
+          children: [
+            NormalText(
+              text: 'CUSTOM REMINDER',
+              textColor: XColors.textColor(),
+              fontWeight: FontWeight.w700,
+              fontSize: 23,
+            ),
+          ],
+        ),
+        const YMargin(35),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            MainInputField(
+              controller: viewModel.titleInputController,
+              label: "Reminder Title",
+              isEnabled: true,
+              onChanged: (s){
+                viewModel.updateBudgetData(value: s, type: 'title');
+              },
+            ),
+            const YMargin(15),
+            MainInputField(
+              controller: viewModel.descriptionInputController,
+              label: "Description",
+              maxLines: 3,
+              isEnabled: true,
+              onChanged: (s){
+                viewModel.updateBudgetData(value: s, type: 'description');
+              },
+            ),
+            const YMargin(15),
+            MainInputField(
+              controller: viewModel.dateInputController,
+              label: "Date & Time",
+              isEnabled: false,
+              suffixIcon: Container(
+                width: 80,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        TimeOfDay? selectedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (selectedTime != null) {
+                          String formattedTime = '${selectedTime.hour}:${selectedTime.minute}';
+                          viewModel.updateBudgetData(value: formattedTime, type: 'time');
+                        }
+                      },
+                      child: Icon(Icons.access_time_rounded, size: 21, color: XColors.textColor()),
+                    ),
+                    const XMargin(10),
+                    GestureDetector(
+                      onTap: () async {
+                        DateTime? startPickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(DateTime.now().year + 10));
+                        if (startPickedDate != null) {
+                          String formattedDate =
+                              '${startPickedDate.day}-${startPickedDate.month}-${startPickedDate.year}';
+                          viewModel.date = formattedDate;
+                          viewModel.updateBudgetData(value: viewModel.date, type: 'date');
+                        }
+                      },
+                      child: Icon(Icons.calendar_month_rounded, size: 21, color: XColors.textColor()),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
+            GestureDetector(
+              onTap: () {
+                listHelperPicker(
+                  context: context,
+                  title: "Select Reminder Frequency",
+                  listString: ["Once", "Daily", "Weekly", "Monthly", "Yearly"],
+                  selected: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      "frequency" : value
+                    });
+                  }
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.repeat, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Select reminder frequency ${viewModel.budgetData['frequency'] != null ? ' (${viewModel.budgetData['frequency']})' : ""}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const YMargin(35),
+        XButton(
+          onPressed: !viewModel.isBusy ? () {
+            if(viewModel.titleInputController.text.isNotEmpty &&
+                viewModel.descriptionInputController.text.isNotEmpty &&
+                viewModel.dateInputController.text.isNotEmpty &&
+                viewModel.budgetData['frequency'] != null) {
+              viewModel.updateToBudget(
+                  type: 'reminder',
+                  onCallBack: (){
+                    popView(context);
+                    onBudgetAction!.call();
+                  }
+              );
+            } else {
+              FloatingSnackBar.show(
+                  context,
+                  'Make sure all inputs are complete',
+                  isError: true
+              );
+            }
+          } : (){},
+          text: "Set Reminder",
+          height: 56,
+          textColor: Colors.white,
+          buttonColor: XColors.primaryColor(),
+          progressColor: Colors.white,
+          isLoading: viewModel.isBusy,
+          radius: 26,
+          width: SizeConfig().sw(400) as double?,
+        ),
+        const YMargin(15),
+      ],
+    );
+  }
 }
 
 class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {

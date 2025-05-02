@@ -42,6 +42,8 @@ class InfoDetailsViewModel extends BaseViewModel {
   final TextEditingController priceInputController = TextEditingController();
   final TextEditingController problemInputController = TextEditingController();
   final TextEditingController addressInputController = TextEditingController();
+  final TextEditingController titleInputController = TextEditingController();
+  final TextEditingController descriptionInputController = TextEditingController();
 
   Map<String, dynamic> budgetData = {};
   String? date = '';
@@ -82,6 +84,8 @@ class InfoDetailsViewModel extends BaseViewModel {
     priceInputController.clear();
     problemInputController.clear();
     addressInputController.clear();
+    titleInputController.clear();
+    descriptionInputController.clear();
 
     budgetData = {};
     date = '';

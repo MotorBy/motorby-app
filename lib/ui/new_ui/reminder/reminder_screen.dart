@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/decorator.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
-import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
 class ReminderScreen extends StatefulWidget {
@@ -17,10 +21,52 @@ class _ReminderScreenState extends State<ReminderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarHeader(
-        hasOnBack: false,
-        context: context,
-        appBarTitle: 'Reminder',
+      appBar: AppBar(
+        backgroundColor: XColors.highlightColor().withOpacity(0.1),
+        surfaceTintColor: Colors.transparent,
+        centerTitle: false,
+        title: const NormalText(
+          text: 'Reminder',
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+        actions: [
+
+          GestureDetector(
+            onTap: () {
+
+              modalBottomSheetMenu(
+                color: Colors.white,
+                isDismissible: false,
+                context: context,
+                height: 650,
+                child: const InfoDetailsView(
+                  infoType: InfoType.reminder,
+                ),
+              );
+
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              decoration: BoxDecorators.containerDecoration(
+                hasOutline: true,
+                outlineWidth: 1.5,
+                radius: 26,
+                outlineColor:
+                XColors.primaryColor(),
+              ),
+              child: NormalText(
+                text: 'Create Reminder',
+                textColor: XColors.textColor(),
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ),
+
+          const XMargin(10),
+
+        ],
       ),
       backgroundColor: XColors.background(),
       body: Expanded(

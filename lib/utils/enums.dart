@@ -8,7 +8,8 @@ enum InfoType {
   weatherView,
   locationSetup,
   budgeting,
-  empty;
+  empty,
+  reminder;
 
   static InfoType fromString(String value) {
     switch (value) {
@@ -30,6 +31,8 @@ enum InfoType {
         return InfoType.locationSetup;
       case 'budgeting':
         return InfoType.budgeting;
+      case 'reminder':
+        return InfoType.reminder;
       default:
         return InfoType.empty;
     }
@@ -55,6 +58,8 @@ enum InfoType {
         return 'location_setup';
       case InfoType.budgeting:
         return 'budgeting';
+      case InfoType.reminder:
+        return 'reminder';
       case InfoType.empty:
         return '';
     }
