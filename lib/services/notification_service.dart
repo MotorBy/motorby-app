@@ -52,9 +52,14 @@ class NotificationService {
         final payload = details.payload;
         if (payload != null) {
           final data = json.decode(payload);
-          // Handle navigation or other actions based on payload
         }
       },
+      // onDidReceiveBackgroundNotificationResponse: (res){
+      //   final payload = res.payload;
+      //   if (payload != null) {
+      //     final data = json.decode(payload);
+      //   }
+      // }
     );
 
     // Handle background messages

@@ -45,7 +45,9 @@ AppBar appBarHeader({
   String? appBarTitle,
   List<Widget>? actions,
   BuildContext? context,
-  bool? hasOnBack = true }) {
+  bool? hasOnBack = true,
+  bool? centerTitle = true,
+}) {
 
   return AppBar(
     elevation: 0,
@@ -68,7 +70,7 @@ AppBar appBarHeader({
         child: Icon(Icons.arrow_back_ios, size: 22, color: XColors.textColor()),
       ),
     ) : null,
-    centerTitle: true,
+    centerTitle: centerTitle,
     title: NormalText(
       text: appBarTitle!,
       fontSize: 17,
