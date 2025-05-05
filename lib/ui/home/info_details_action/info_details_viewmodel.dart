@@ -4,6 +4,7 @@ import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/permission_handling.dart';
@@ -14,6 +15,7 @@ class InfoDetailsViewModel extends BaseViewModel {
   final budgetingService = serviceLocator<BudgetingService>();
   final userService = serviceLocator<UserService>();
   final persistentService = serviceLocator<PersistenceService>();
+  final reminderService = serviceLocator<ReminderService>();
 
   Position? currentPosition;
   bool? locationDeclined = false;
@@ -90,6 +92,58 @@ class InfoDetailsViewModel extends BaseViewModel {
     budgetData = {};
     date = '';
     notifyListeners();
+  }
+
+  Future createReminder({
+    String? budgetId,
+    required String title,
+    required String description,
+    required String? dueDate,
+    required String? dueTime,
+    required String frequency,
+    required String category,
+    bool? emailNotification,
+    bool? pushNotification,
+    bool? smsNotification,
+    int? remindBefore,
+    Function? onCallBack,
+    Function(String e)? onErrorCallBack
+  }) async {
+
+    setBusy(true);
+
+    final notificationPreferences = {
+      'email': emailNotification ?? true,
+      'push': pushNotification ?? true,
+      'sms': smsNotification ?? true,
+      'remind_me_before': remindBefore ?? 30
+    };
+
+    await reminderService.createReminder(
+      budgetId: budgetId,
+      title: title,
+      description: description,
+      dueDate: dueDate,
+      dueTime: dueTime,
+      frequency: frequency,
+      category: category,
+      notificationPreferences: notificationPreferences,
+    ).then((v) {
+
+      setBusy(false);
+      if(onCallBack != null) {
+        onCallBack();
+      }
+
+    }).onError((error, stackTrace) {
+      print(stackTrace);
+
+      if (onErrorCallBack != null) {
+        onErrorCallBack(error.toString());
+      }
+
+    });
+
   }
 
   void promoteLocationPermission ({bool? willDecline = false}) {

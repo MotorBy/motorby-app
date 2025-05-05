@@ -35,14 +35,14 @@ class ExpenditureReportView extends StatelessWidget {
       'Fueling',
       'Servicing',
       'Repair',
-      'Expenses'
+      'Remaining'
     ];
 
     final List<String> budgetSubTopic = [
       amtFormatter(model.totalCostingAndValue![0]),
       amtFormatter(model.totalCostingAndValue![1]),
       amtFormatter(model.totalCostingAndValue![2]),
-      amtFormatter(0),
+      amtFormatter(model.currentSetBudget! - model.currentTotalSpent!),
     ];
 
     return SingleChildScrollView(
@@ -94,7 +94,7 @@ class ExpenditureReportView extends StatelessWidget {
                         } else if(index == 2) {
                           infoType = InfoType.repairing;
                         } else if(index == 3) {
-
+                          infoType = InfoType.budgeting;
                         }
 
                         modalBottomSheetMenu(
@@ -104,6 +104,7 @@ class ExpenditureReportView extends StatelessWidget {
                             infoType: infoType!,
                             currentIndex: 0,
                             onBudgetAction: () {
+
                               model.setBudgetData();
                               FloatingSnackBar.show(
                                   context,
@@ -201,7 +202,7 @@ class ExpenditureReportView extends StatelessWidget {
             fontWeight: FontWeight.w400,
             textColor: XColors.black().withOpacity(0.8),
           ),
-          const YMargin(24),
+          const YMargin(16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -282,7 +283,7 @@ class ExpenditureReportView extends StatelessWidget {
               ),
             ],
           ),
-          const YMargin(36),
+          const YMargin(26),
           _buildCategoryDistribution(
             fueling: model.totalCostingAndValue![0].toDouble(),
             servicing: model.totalCostingAndValue![1].toDouble(),

@@ -176,7 +176,7 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
               text: infoType!.toValue().toUpperCase(),
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
-              fontSize: 23,
+              fontSize: 18,
             ),
           ],
         ),
@@ -622,20 +622,6 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            GestureDetector(
-              onTap: () {
-                navigate(context, HistoryScreen(
-                  infoDetailsViewModel: viewModel,
-                  budgetHistoryType: "Reminders",
-                ));
-              },
-              child: NormalText(
-                text: 'View History',
-                textColor: XColors.textColor(),
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
-            ),
             const XMargin(45),
             GestureDetector(
               onTap: (){
@@ -652,7 +638,7 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
               text: 'CUSTOM REMINDER',
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
-              fontSize: 23,
+              fontSize: 18,
             ),
           ],
         ),
@@ -660,12 +646,48 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            GestureDetector(
+              onTap: () {
+                listHelperPicker(
+                  context: context,
+                  title: "Select Reminder Category",
+                  listString: ["Maintenance", "Changes", "Repairs", "Budget", "Trips", "Breakdown", "Fueling", "Service", "Insurance", "Other"],
+                  selected: (value) {
+                    viewModel.updateBudgetData(otherData: {
+                      "category" : value
+                    });
+                  }
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: XColors.highlightColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.category, color: XColors.primaryColor()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        viewModel.budgetData['category'] ?? 'Select reminder category',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const YMargin(15),
             MainInputField(
               controller: viewModel.titleInputController,
               label: "Reminder Title",
               isEnabled: true,
               onChanged: (s){
-                viewModel.updateBudgetData(value: s, type: 'title');
+                viewModel.updateBudgetData(otherData: {
+                  "title" : s
+                });
               },
             ),
             const YMargin(15),
@@ -675,7 +697,9 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
               maxLines: 3,
               isEnabled: true,
               onChanged: (s){
-                viewModel.updateBudgetData(value: s, type: 'description');
+                viewModel.updateBudgetData(otherData: {
+                  "description" : s
+                });
               },
             ),
             const YMargin(15),
@@ -690,33 +714,54 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
                   children: [
                     GestureDetector(
                       onTap: () async {
-                        TimeOfDay? selectedTime = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (selectedTime != null) {
-                          String formattedTime = '${selectedTime.hour}:${selectedTime.minute}';
-                          viewModel.updateBudgetData(value: formattedTime, type: 'time');
-                        }
-                      },
-                      child: Icon(Icons.access_time_rounded, size: 21, color: XColors.textColor()),
-                    ),
-                    const XMargin(10),
-                    GestureDetector(
-                      onTap: () async {
                         DateTime? startPickedDate = await showDatePicker(
                             context: context,
                             initialDate: DateTime.now(),
                             firstDate: DateTime.now(),
                             lastDate: DateTime(DateTime.now().year + 10));
                         if (startPickedDate != null) {
-                          String formattedDate =
-                              '${startPickedDate.day}-${startPickedDate.month}-${startPickedDate.year}';
-                          viewModel.date = formattedDate;
-                          viewModel.updateBudgetData(value: viewModel.date, type: 'date');
+                          final isoString = startPickedDate.toUtc().toIso8601String();
+                          final displayDate = '${startPickedDate.year}-${startPickedDate.month.toString().padLeft(2, '0')}-${startPickedDate.day.toString().padLeft(2, '0')}';
+                          viewModel.date = displayDate;
+                          viewModel.updateBudgetData(otherData: {
+                            "due_date" : isoString
+                          });
+                          final dueTime = viewModel.budgetData['due_time'] ?? '';
+                          final formattedDateTime = '$displayDate${dueTime.isNotEmpty ? ', $dueTime' : ''}';
+                          viewModel.dateInputController.text = formattedDateTime;
                         }
                       },
                       child: Icon(Icons.calendar_month_rounded, size: 21, color: XColors.textColor()),
+                    ),
+                    const XMargin(30),
+                    GestureDetector(
+                      onTap: () async {
+                        TimeOfDay? selectedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (selectedTime != null) {
+                          final displayTime = selectedTime.format(context);
+                          if (viewModel.budgetData['due_date'] != null) {
+                            final dueDate = DateTime.parse(viewModel.budgetData['due_date']);
+                            final combinedDateTime = DateTime(
+                              dueDate.year,
+                              dueDate.month,
+                              dueDate.day,
+                              selectedTime.hour,
+                              selectedTime.minute
+                            );
+                            final isoString = combinedDateTime.toUtc().toIso8601String();
+                            viewModel.updateBudgetData(otherData: {
+                              "due_date": dueDate.toIso8601String(),
+                              "due_time": displayTime
+                            });
+                            final formattedDateTime = '${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}, $displayTime';
+                            viewModel.dateInputController.text = formattedDateTime;
+                          }
+                        }
+                      },
+                      child: Icon(Icons.access_time_rounded, size: 21, color: XColors.textColor()),
                     ),
                   ],
                 ),
@@ -728,7 +773,7 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
                 listHelperPicker(
                   context: context,
                   title: "Select Reminder Frequency",
-                  listString: ["Once", "Daily", "Weekly", "Monthly", "Yearly"],
+                  listString: ["Daily", "Weekly", "Monthly"],
                   selected: (value) {
                     viewModel.updateBudgetData(otherData: {
                       "frequency" : value
@@ -764,14 +809,30 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
             if(viewModel.titleInputController.text.isNotEmpty &&
                 viewModel.descriptionInputController.text.isNotEmpty &&
                 viewModel.dateInputController.text.isNotEmpty &&
-                viewModel.budgetData['frequency'] != null) {
-              viewModel.updateToBudget(
-                  type: 'reminder',
+                viewModel.budgetData['frequency'] != null &&
+                viewModel.budgetData['category'] != null) {
+
+              viewModel.createReminder(
+                  budgetId: null,
+                  title: viewModel.titleInputController.text,
+                  description: viewModel.descriptionInputController.text,
+                  dueDate: viewModel.budgetData['due_date'],
+                  dueTime: viewModel.budgetData['due_time'],
+                  frequency: viewModel.budgetData['frequency'].toLowerCase(),
+                  category: viewModel.budgetData['category'],
                   onCallBack: (){
                     popView(context);
                     onBudgetAction!.call();
+                  },
+                  onErrorCallBack: (e) {
+                      FloatingSnackBar.show(
+                        context,
+                        e,
+                        isError: true
+                    );
                   }
               );
+
             } else {
               FloatingSnackBar.show(
                   context,
@@ -849,7 +910,7 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
               text: infoType!.toValue().toUpperCase(),
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
-              fontSize: 23,
+              fontSize: 18,
             ),
           ],
         ),
@@ -1035,7 +1096,7 @@ class BreakdownInputView extends ViewModelWidget<InfoDetailsViewModel> {
               text: infoType!.toValue().toUpperCase(),
               textColor: XColors.textColor(),
               fontWeight: FontWeight.w700,
-              fontSize: 23,
+              fontSize: 18,
             ),
           ],
         ),
