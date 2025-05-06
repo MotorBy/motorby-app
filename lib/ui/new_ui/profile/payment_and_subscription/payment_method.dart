@@ -33,7 +33,11 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
         viewModelBuilder: () => PaymentViewModel(),
         builder: (context, model, child) {
           return Scaffold(
-            appBar: InsuranceAppBar(text1: 'Payment Method'),
+            appBar: appBarHeader(
+              hasOnBack: true,
+              context: context,
+              appBarTitle: 'Payment Method',
+            ),
             backgroundColor: XColors.background(),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

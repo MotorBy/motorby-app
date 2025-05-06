@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/claim_screeen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_history_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';

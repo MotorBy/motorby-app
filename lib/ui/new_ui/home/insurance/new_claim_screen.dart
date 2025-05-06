@@ -27,7 +27,11 @@ class _NewClaimScreenState extends State<NewClaimScreen> {
         viewModelBuilder: () => InsuranceViewModel(),
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: InsuranceAppBar(text1: 'New Claim'),
+            appBar: appBarHeader(
+              hasOnBack: true,
+              context: context,
+              appBarTitle: 'New Claim',
+            ),
             backgroundColor: XColors.background(),
             body: SingleChildScrollView(
               child: Padding(

@@ -19,8 +19,10 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: InsuranceAppBar(
-      text1: 'Car Insurance',
+      appBar: appBarHeader(
+        hasOnBack: true,
+        context: context,
+        appBarTitle: 'Buy Insurance',
       ),
       backgroundColor: XColors.background(),
       body: SingleChildScrollView(

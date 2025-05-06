@@ -24,7 +24,11 @@ class _ViewClaimDetailsState extends State<ViewClaimDetails> {
         viewModelBuilder: () => InsuranceViewModel(),
         builder: (context, model, child) {
         return Scaffold(
-          appBar: InsuranceAppBar(text1: 'View Details'),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'View details',
+          ),
           backgroundColor: XColors.background(),
           body: SingleChildScrollView(
             child: Padding(

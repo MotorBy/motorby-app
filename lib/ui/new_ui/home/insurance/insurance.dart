@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/buy_insurance_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/claim_screeen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_history_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -34,6 +34,24 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
             hasOnBack: true,
             context: context,
             appBarTitle: 'Car Insurance',
+            actions: [
+              ContainerWidget(
+                onTap: (){
+                  navigate(context, const ClaimScreen());
+                },
+                borderColor: XColors.primaryColor2(),
+                hasBorder: true,
+                borderThickness: 2,
+                borderRadius: BorderRadius.circular(21),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: const NormalText(
+                  text: 'History',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const XMargin(10)
+            ]
           ),
           backgroundColor: XColors.background(),
           body: SingleChildScrollView(
@@ -50,16 +68,13 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                     textColor: XColors.black(),
                   ),
                 ),
-                const YMargin(36),
+                const YMargin(26),
                 ContainerWidget(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 3),
                   backgroundColor: XColors.white(),
                   borderRadius: BorderRadius.circular(16),
                   child: Column(
                     children: [
                       ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                         dense: true,
                         visualDensity: const VisualDensity(horizontal: -4),
                         title: CarSelectorView(
@@ -68,21 +83,6 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                             onCarSelected: ({Budget? budget, int? index}) {
 
                             }
-                        ),
-                        trailing: ContainerWidget(
-                          onTap: (){
-                            navigate(context, const ClaimScreen());
-                          },
-                          borderColor: XColors.primaryColor2(),
-                          hasBorder: true,
-                          borderThickness: 2,
-                          borderRadius: BorderRadius.circular(21),
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: const NormalText(
-                            text: 'Claim',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
                         ),
                       ),
                       ContainerWidget(
