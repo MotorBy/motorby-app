@@ -56,7 +56,7 @@ class DiscussionsScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecorators.containerDecoration(
                       hasOutline: false,
-                      color: XColors.primaryColor(),
+                      color: XColors.primaryColor2(),
                       outlineWidth: 2,
                       radius: 32,
                     ),
@@ -124,7 +124,7 @@ class DiscussionsScreen extends StatelessWidget {
                                                   fontWeight: FontWeight.w700,
                                                   fontSize: 13,
                                                 ),
-                                                const YMargin(10),
+                                                const YMargin(2),
                                                 NormalText(
                                                   text: model
                                                       .discussions[index].content,
@@ -150,17 +150,16 @@ class DiscussionsScreen extends StatelessWidget {
                                                         },
                                                         child: Row(
                                                           children: [
-                                                            NormalText(
-                                                              text: '${model.discussions[index].comments!.length}',
-                                                              textColor:
-                                                                  XColors.textColor(),
-                                                              fontSize: 13,
-                                                            ),
-                                                            const XMargin(5),
                                                             Icon(
                                                               Icons.chat_outlined,
-                                                              size: 13,
-                                                              color: XColors.primaryColor(),
+                                                              size: 16,
+                                                              color: XColors.primaryColor().withOpacity(0.6),
+                                                            ),
+                                                            const XMargin(5),
+                                                            NormalText(
+                                                              text: '${model.discussions[index].comments!.length}',
+                                                              textColor: XColors.textColor(),
+                                                              fontSize: 14,
                                                             ),
                                                           ],
                                                         ),

@@ -173,6 +173,12 @@ class CommunityScreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
+                          Icon(
+                            Icons.chat_outlined,
+                            size: 16,
+                            color: XColors.primaryColor().withOpacity(0.3),
+                          ),
+                          const XMargin(5),
                           GestureDetector(
                             onTap: () {
 
@@ -185,17 +191,18 @@ class CommunityScreen extends StatelessWidget {
                               fontSize: 11,
                             ),
                           ),
-                          const XMargin(5),
-                          Icon(
-                            Icons.chat_outlined,
-                            size: 16,
-                            color: XColors.primaryColor().withOpacity(0.3),
-                          ),
                         ],
                       ),
                       const XMargin(20),
                       Row(
                         children: [
+                          Icon(
+                            Icons
+                                .supervisor_account_outlined,
+                            size: 16,
+                            color: XColors.primaryColor().withOpacity(0.3),
+                          ),
+                          const XMargin(5),
                           GestureDetector(
                             onTap: () {
                             },
@@ -205,13 +212,6 @@ class CommunityScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               fontSize: 11,
                             ),
-                          ),
-                          const XMargin(5),
-                          Icon(
-                            Icons
-                                .supervisor_account_outlined,
-                            size: 16,
-                            color: XColors.primaryColor().withOpacity(0.3),
                           ),
                         ],
                       ),
