@@ -8,6 +8,7 @@ import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
+import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
@@ -143,7 +144,7 @@ class ChecklistScreen extends StatelessWidget {
 
                 if(viewModel.isBusy) ... [
 
-                  const Center(child: CircularProgressIndicator())
+                  const Center(child: Loader())
 
                 ] else ... [
 
