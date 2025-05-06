@@ -4,9 +4,12 @@ import 'package:mobile_auto_drive/ui/cars/add_car_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
+import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
@@ -24,6 +27,48 @@ class AddCarsScreen extends StatefulWidget {
 
 class _AddCarsScreenState extends State<AddCarsScreen> {
 
+  Widget _buildFeatureItem({
+    required BuildContext context,
+    required String icon,
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 24,
+              width: 24,
+              child: Image.asset(icon),
+            ),
+            const YMargin(8),
+            NormalText(
+              text: label,
+              fontSize: 12,
+              textColor: Colors.grey[600]!,
+            ),
+            const YMargin(4),
+            NormalText(
+              text: value,
+              textColor: XColors.black(),
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   final TextEditingController _carMakeController = TextEditingController();
   final TextEditingController _carModelController = TextEditingController();
   final TextEditingController _carYearController = TextEditingController();
@@ -31,6 +76,11 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
   final TextEditingController _carAmtBoughtController = TextEditingController();
   final TextEditingController _mileageController = TextEditingController();
   final TextEditingController _vinController = TextEditingController();
+  final TextEditingController _chassisNumberController = TextEditingController();
+  final TextEditingController _engineNumberController = TextEditingController();
+  final TextEditingController _registrationNumberController = TextEditingController();
+  
+  bool _showAdvancedFields = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -41,88 +91,23 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
         disposeViewModel: false,
         onViewModelReady: (model) => model.init(initAction: widget.action, dataSetup: (){}),
         builder: (context, model, child) {
-        return Form(
-          key: _formKey,
-          child: Scaffold(
-            body: SingleChildScrollView(
+        return Scaffold(
+          backgroundColor: XColors.background(),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'New car',
+          ),
+          body: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
                   children: [
-                    const YMargin(45),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: (){
-                            Navigator.pop(context, false);
-                          },
-                            child: const Icon(Icons.close_rounded, size: 31,),
-                        ),
-                      ],
-                    ),
+                    const SizedBox(height: 8),
+                    _buildImageUploader(model),
                     const YMargin(15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            model.pickImages();
-                          },
-                          child: Container(
-                            decoration: BoxDecorators.containerDecoration(
-                                hasOutline: true,
-                                outlineWidth: 2,
-                                radius: 32,
-                                outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  NormalText(
-                                    text: 'Add Images (${model.addImagesList.length})',
-                                    textColor: XColors.black(),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13,
-                                  ),
-                                  const XMargin(10),
-                                  Icon(Icons.add, size: 17, color: XColors.black(),),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const YMargin(5),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                            ...List.generate(
-                                model.addImagesList.length,
-                                (index) => Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(14.0),
-                                        child: Container(
-                                            width: 110,
-                                            height: 110,
-                                            child: Image.file(
-                                              model.addImagesList[index],
-                                              fit: BoxFit.cover,
-                                            ),
-                                        ),
-                                      ),
-                                    ),
-                            )
-                          ],
-                        ),
-                      ),
-                      const YMargin(15),
                     MainInputField(
                       controller: _carMakeController,
                       isEnabled: false,
@@ -143,7 +128,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                             },
                           );
                         },
-                          child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
+                        child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
                       ),
                     ),
                     const YMargin(15),
@@ -206,7 +191,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                             },
                           );
                         },
-                          child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
+                        child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
                       ),
                     ),
                     const YMargin(15),
@@ -230,204 +215,144 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                             },
                           );
                         },
-                          child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
+                        child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
                       ),
                     ),
-                    if(!model.isBusinessOrForSale) ... [
-                      const YMargin(15),
-                      MainInputField(
-                        controller: _carAmtBoughtController,
-                        label: "Amount bought",
-                        keyboard: TextInputType.number,
-                        validator: (s) {
-                          return AnyInputValidator.emptyValidate(s, inputName: 'amount');
-                        },
-                        isEnabled: true,
-                        onChanged: (s){
-                          model.updateSetCarData(data: s, dataType: 'amount');
-                        },
-                      ),
-                    ],
-                    const YMargin(35),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: (){
-                              listHelperPicker(
-                                height: 220,
-                                context: context,
-                                title: 'Gear type',
-                                listString: [
-                                  "Automatic",
-                                  "Manual",],
-                                selected: (s) {
-                                  model.updateSetCarData(data: s, dataType: 'gear');
-                                },
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 20,
-                                  width: 20,
-                                  child:
-                                  Image.asset('assets/images/icons/gearbox.png'),
-                                ),
-                                const XMargin(5),
-                                NormalText(
-                                  text: model.gear ?? 'Set',
-                                  textColor: XColors.black(),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ],
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: (){
-                              listHelperPicker(
-                                height: 220,
-                                context: context,
-                                title: 'Seats',
-                                listString: [
-                                  "1",
-                                  "2",
-                                  "3",
-                                  "4",
-                                  "5"],
-                                selected: (s) {
-                                  model.updateSetCarData(data: s, dataType: 'seats');
-                                },
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 20,
-                                  width: 20,
-                                  child: Image.asset('assets/images/icons/seat.png'),
-                                ),
-                                const XMargin(5),
-                                NormalText(
-                                  text: model.seats ?? '0',
-                                  textColor: XColors.black(),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ],
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: (){
-                              listHelperPicker(
-                                height: 220,
-                                context: context,
-                                title: 'Air bags',
-                                listString: [
-                                  "1",
-                                  "2",
-                                ],
-                                selected: (s) {
-                                  model.updateSetCarData(data: s, dataType: 'air_bag');
-                                },
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 20,
-                                  width: 20,
-                                  child:
-                                  Image.asset('assets/images/icons/airbag.png'),
-                                ),
-                                const XMargin(5),
-                                NormalText(
-                                  text: model.airBag ?? 'Set',
-                                  textColor: XColors.black(),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                    const YMargin(15),
+                    MainInputField(
+                      controller: _carAmtBoughtController,
+                      label: "Car cost",
+                      keyboard: TextInputType.number,
+                      validator: (s) {
+                        return AnyInputValidator.emptyValidate(s, inputName: 'amount');
+                      },
+                      isEnabled: true,
+                      onChanged: (s){
+                        model.updateSetCarData(data: s, dataType: 'amount');
+                      },
                     ),
-                    const YMargin(35),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: (){
-                              listHelperPicker(
-                                height: 220,
-                                context: context,
-                                title: 'Air condition',
-                                listString: [
-                                  "Ok", 'None'],
-                                selected: (s) {
-                                  model.updateSetCarData(data: s, dataType: 'air_conditioner');
-                                },
-                              );
-                            },
-                            child: Row(
+                    const YMargin(15),
+                    MainInputField(
+                      label: "Color",
+                      isEnabled: true,
+                      keyboard: TextInputType.text,
+                      onChanged: (s){
+                        model.updateSetCarData(data: s, dataType: 'color');
+                      },
+                    ),
+                    ///cars details section
+                    const YMargin(25),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const NormalText(
+                              text: 'Car Features',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              textColor: Colors.black87,
+                            ),
+                            const YMargin(20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Container(
-                                  height: 20,
-                                  width: 20,
-                                  child: Image.asset('assets/images/icons/aircondition.png'),
+                                _buildFeatureItem(
+                                  context: context,
+                                  icon: 'assets/images/icons/gearbox.png',
+                                  label: 'Transmission',
+                                  value: model.gear ?? 'Select type',
+                                  onTap: () {
+                                    listHelperPicker(
+                                      height: 220,
+                                      context: context,
+                                      title: 'Transmission Type',
+                                      listString: ["Automatic", "Manual"],
+                                      selected: (s) {
+                                        model.updateSetCarData(data: s, dataType: 'gear');
+                                      },
+                                    );
+                                  },
                                 ),
-                                const XMargin(5),
-                                NormalText(
-                                  text: model.airConditioner ?? 'set',
-                                  textColor: XColors.black(),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
+                                _buildFeatureItem(
+                                  context: context,
+                                  icon: 'assets/images/icons/seat.png',
+                                  label: 'Seats',
+                                  value: model.seats ?? 'Select total',
+                                  onTap: () {
+                                    listHelperPicker(
+                                      height: 220,
+                                      context: context,
+                                      title: 'Number of Seats',
+                                      listString: ["1", "2", "3", "4", "5"],
+                                      selected: (s) {
+                                        model.updateSetCarData(data: s, dataType: 'seats');
+                                      },
+                                    );
+                                  },
+                                ),
+                                _buildFeatureItem(
+                                  context: context,
+                                  icon: 'assets/images/icons/airbag.png',
+                                  label: 'Airbags',
+                                  value: model.airBag ?? 'Select total',
+                                  onTap: () {
+                                    listHelperPicker(
+                                      height: 220,
+                                      context: context,
+                                      title: 'Number of Airbags',
+                                      listString: ["1", "2"],
+                                      selected: (s) {
+                                        model.updateSetCarData(data: s, dataType: 'air_bag');
+                                      },
+                                    );
+                                  },
                                 ),
                               ],
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: (){
-                              listHelperPicker(
-                                height: 220,
-                                context: context,
-                                title: 'Working Speakers',
-                                listString: [
-                                  "5",
-                                  "6",
-                                  "11",
-                                  "15",
-                                  "21"],
-                                selected: (s) {
-                                  model.updateSetCarData(data: s, dataType: 'speakers');
-                                },
-                              );
-                            },
-                            child: Row(
+                            const YMargin(20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Container(
-                                  height: 20,
-                                  width: 20,
-                                  child:
-                                  Image.asset('assets/images/icons/speaker.png'),
+                                _buildFeatureItem(
+                                  context: context,
+                                  icon: 'assets/images/icons/aircondition.png',
+                                  label: 'AC Status',
+                                  value: model.airConditioner ?? 'Select status',
+                                  onTap: () {
+                                    listHelperPicker(
+                                      height: 220,
+                                      context: context,
+                                      title: 'Air Conditioning Status',
+                                      listString: ["Ok", "None"],
+                                      selected: (s) {
+                                        model.updateSetCarData(data: s, dataType: 'air_conditioner');
+                                      },
+                                    );
+                                  },
                                 ),
-                                const XMargin(5),
-                                NormalText(
-                                  text: model.speakers ?? 'Set',
-                                  textColor: XColors.black(),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
+                                _buildFeatureItem(
+                                  context: context,
+                                  icon: 'assets/images/icons/speaker.png',
+                                  label: 'Speakers',
+                                  value: model.speakers ?? 'Select total',
+                                  onTap: () {
+                                    listHelperPicker(
+                                      height: 220,
+                                      context: context,
+                                      title: 'Number of Working Speakers',
+                                      listString: ["5", "6", "11", "15", "21"],
+                                      selected: (s) {
+                                        model.updateSetCarData(data: s, dataType: 'speakers');
+                                      },
+                                    );
+                                  },
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     const YMargin(15),
@@ -472,18 +397,6 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                           Expanded(
                             child: MainInputField(
                               //controller: _mileageController,
-                              label: "Color",
-                              isEnabled: true,
-                              keyboard: TextInputType.text,
-                              onChanged: (s){
-                                model.updateSetCarData(data: s, dataType: 'color');
-                              },
-                            ),
-                          ),
-                          const XMargin(10),
-                          Expanded(
-                            child: MainInputField(
-                              //controller: _mileageController,
                               label: "Unit(s)",
                               isEnabled: true,
                               keyboard: TextInputType.number,
@@ -493,6 +406,69 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    ],
+                    const YMargin(25),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _showAdvancedFields = !_showAdvancedFields;
+                        });
+                      },
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const NormalText(
+                              text: 'Advance (for Insurance needs)',
+                              textColor: Colors.black87,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                            Icon(
+                              _showAdvancedFields ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                              color: Colors.black87,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (_showAdvancedFields) ...[
+                      const YMargin(15),
+                      MainInputField(
+                        controller: _chassisNumberController,
+                        label: "Chassis Number",
+                        isEnabled: true,
+                        onChanged: (s){
+                          model.updateSetCarData(data: s, dataType: 'chassis_number');
+                        },
+                      ),
+                      const YMargin(15),
+                      MainInputField(
+                        controller: _engineNumberController,
+                        label: "Engine Number",
+                        isEnabled: true,
+                        onChanged: (s){
+                          model.updateSetCarData(data: s, dataType: 'engine_number');
+                        },
+                      ),
+                      const YMargin(15),
+                      MainInputField(
+                        controller: _registrationNumberController,
+                        label: "Registration Number",
+                        isEnabled: true,
+                        onChanged: (s){
+                          model.updateSetCarData(data: s, dataType: 'registration_number');
+                        },
+                      ),
+                      const YMargin(15),
+                      MainInputField(
+                        controller: _chassisNumberController,
+                        label: "Vin number",
+                        isEnabled: true,
+                        onChanged: (s){
+                          model.updateSetCarData(data: s, dataType: 'vin_number');
+                        },
                       ),
                     ],
                     const YMargin(35),
@@ -521,7 +497,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       width: SizeConfig().sw(400) as double?,
                     ),
                     const YMargin(15),
-                ],),
+                  ],),
               ),
             ),
           ),
@@ -529,4 +505,136 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
       }
     );
   }
+
+  Widget _buildImageUploader(AddCarViewModel model) {
+    final PageController _pageController =
+    PageController(viewportFraction: 0.8);
+
+    if (model.addImagesList.isNotEmpty) {
+      return SizedBox(
+        height: 250,
+        child: ListView.builder(
+            controller: _pageController,
+            itemCount: model.addImagesList.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14.0),
+                      child: Container(
+                        width: 250,
+                        height: 250,
+                        child: Image.file(
+                          model.addImagesList[index],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 5,
+                      top: 2,
+                      child: ContainerWidget(
+                        onTap:()=> model.removeCarByIndex(index),
+                        decoration:const BoxDecoration(
+                          color: Colors.red, shape: BoxShape.circle,),padding: const EdgeInsets.all(2),
+                        child: const Center(
+                          child: Icon(
+                            Icons.close,
+                            size: 10,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+        ),
+      );
+    }
+    return Container(
+        width: double.infinity,
+        height: 250,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF4EFFB),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const GetSvgImage(image: 'assets/images/file_uploadfile.svg'),
+            const YMargin(16),
+            GestureDetector(
+              onTap: (){
+                model.pickImages();
+              },
+              child: const NormalText(
+                text: 'Click to upload',
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const NormalText(
+              text: 'PNG, JPG (max. 800×400px)',
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: Color(0xFFD0D5DD),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.0),
+                    child: NormalText(
+                      text: 'OR',
+                      fontSize: 14,
+                      textColor: Colors.black,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: Color(0xFFD0D5DD),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: model.browseFiles,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF7A1CAC),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: NormalText(
+                text: 'Browse Files',
+                textColor: XColors.white(),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+    );
+  }
+
 }

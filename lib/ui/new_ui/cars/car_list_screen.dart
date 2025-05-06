@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
 import 'package:mobile_auto_drive/ui/home/home_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
@@ -8,6 +9,7 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -26,6 +28,24 @@ class CarsListScreen extends StatelessWidget {
             hasOnBack: true,
             context: context,
             appBarTitle: 'Your cars',
+            actions: [
+              ContainerWidget(
+                onTap: (){
+                  navigate(context, const AddCarsScreen());
+                },
+                borderColor: XColors.primaryColor2(),
+                hasBorder: true,
+                borderThickness: 2,
+                borderRadius: BorderRadius.circular(21),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: const NormalText(
+                  text: 'Add new car',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const XMargin(10)
+            ]
           ),
             body: Padding(
               padding: const EdgeInsets.all(10.0),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert' as JSON;
 
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_auto_drive/models/sales_model.dart';
 import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
@@ -41,9 +42,7 @@ class AddCarViewModel extends BaseViewModel {
   String? speakers;
   String? vinNumber = '';
 
-  Map<String, dynamic> setCarData = {
-
-  };
+  Map<String, dynamic> setCarData = { };
 
   void init({
     bool? forSale = false,
@@ -126,116 +125,115 @@ class AddCarViewModel extends BaseViewModel {
 
   }
 
-  void updateSetCarData({dynamic data, String? dataType, }) {
+  void updateSetCarData({dynamic data, String? dataType}) {
     setBusy(false);
 
-    if(action == "sell") {
-      if(dataType == 'make') {
-        setCarData['car_details']['car_make'] = data!;
-        salesService.currentCarMake = data!;
-      } else if(dataType == 'year') {
-        setCarData['car_details']['car_year'] = data!;
+    Map<String, dynamic> updateData = {};
+    
+    if (action == "sell") {
+      final carDetails = <String, dynamic>{
+        if (dataType == 'make') 'car_make': data,
+        if (dataType == 'year') 'car_year': data,
+        if (dataType == 'model') 'car_model': data,
+        if (dataType == 'grade') 'condition': data,
+        if (dataType == 'mileage') 'mileage': int.parse(data!),
+        if (dataType == 'vin') 'vin_number': data,
+        if (dataType == 'color') 'color': data,
+        if (dataType == 'seats') 'seats': int.parse(data!),
+        if (dataType == 'speakers') 'speakers': int.parse(data!),
+        if (dataType == 'gear') 'gear': data,
+        if (dataType == 'breaks') 'breaks': data,
+        if (dataType == 'air_bag') 'air_bag': data,
+        if (dataType == 'air_conditioner') 'air_conditioner': data,
+      };
 
-      } else if (dataType == "model") {
-        setCarData['car_details']['car_model'] = data!;
+      final salesDetails = <String, dynamic>{
+        if (dataType == 'selling price') 'amount_for_sale': int.parse(data!),
+        if (dataType == 'units') 'units_left': int.parse(data!),
+      };
 
-      } else if(dataType == "grade") {
-        setCarData['car_details']['condition'] = data!;
-
-      } else if(dataType == "mileage") {
-        setCarData['car_details']['mileage'] = int.parse(data!);
-
-      } else if(dataType == "vin") {
-        setCarData['car_details']['vin_number'] = data!;
-
-      } else if(dataType == "selling price") {
-        setCarData['sales_details']['amount_for_sale'] = int.parse(data!);
-
-      } else if(dataType == "units") {
-        setCarData['sales_details']['units_left'] = int.parse(data!);
-
-      } else if(dataType == "color") {
-        setCarData['car_details']['color'] = data!;
-
-      } else if(dataType == "seats") {
-        setCarData['car_details']['seats'] = int.parse(data!);
-        seats = data;
-
-      } else if(dataType == "speakers") {
-        setCarData['car_details']['speakers'] = int.parse(data!);
-        speakers = data;
-
-      } else if(dataType == "gear") {
-        setCarData['car_details']['gear'] = data!;
-        gear = data;
-
-      } else if(dataType == "breaks") {
-        setCarData['car_details']['breaks'] = data!;
-
-      } else if(dataType == "air_bag") {
-        setCarData['car_details']['air_bag'] = data!;
-        airBag = data;
-
-      } else if(dataType == "air_conditioner") {
-        setCarData['car_details']['air_conditioner'] = data!;
-        airConditioner = data;
-
+      if (carDetails.isNotEmpty) {
+        updateData['car_details'] = carDetails;
       }
-    } else if(action == 'add') {
-
-      if(dataType == 'make') {
-        setCarData['car_make'] = data!;
-        salesService.currentCarMake = data!;
-      } else if(dataType == 'year') {
-        setCarData['car_year'] = data!;
-
-      } else if (dataType == "model") {
-        setCarData['car_model'] = data!;
-
-      } else if(dataType == "grade") {
-        setCarData['details']['condition'] = data!;
-
-      } else if(dataType == "amount") {
-        setCarData['amount_bought'] = int.parse(data!);
-
-      } else if(dataType == "mileage") {
-        setCarData['details']['mileage'] = int.parse(data!);
-
-      } else if(dataType == "vin") {
-        setCarData['vin_number'] = data!;
-
-      } else if(dataType == "speakers") {
-        setCarData['details']['speakers'] = data!;
-        speakers = data;
-
-      } else if(dataType == "gear") {
-        setCarData['details']['gear'] = data!;
-        gear = data;
-
-      }  else if(dataType == "seats") {
-        setCarData['details']['seats'] = data!;
-        seats = data;
-
-      } else if(dataType == "breaks") {
-        setCarData['details']['breaks'] = data!;
-
-      } else if(dataType == "air_bag") {
-        setCarData['details']['air_bag'] = data!;
-        airBag = data;
-
-      } else if(dataType == "air_conditioner") {
-        setCarData['details']['air_conditioner'] = data!;
-        airConditioner = data;
-
+      if (salesDetails.isNotEmpty) {
+        updateData['sales_details'] = salesDetails;
       }
 
+      setCarData.addAll(updateData);
+
+      if (dataType == 'make') {
+        salesService.currentCarMake = data;
+      }
+
+    } else if (action == 'add') {
+      final details = <String, dynamic>{
+        if (dataType == 'grade') 'condition': data,
+        if (dataType == 'mileage') 'mileage': int.parse(data!),
+        if (dataType == 'speakers') 'speakers': data,
+        if (dataType == 'gear') 'gear': data,
+        if (dataType == 'seats') 'seats': data,
+        if (dataType == 'breaks') 'breaks': data,
+        if (dataType == 'air_bag') 'air_bag': data,
+        if (dataType == 'air_conditioner') 'air_conditioner': data,
+        if (dataType == 'color') 'color': data,
+      };
+
+      final mainData = <String, dynamic>{
+        if (dataType == 'make') 'car_make': data,
+        if (dataType == 'year') 'car_year': data,
+        if (dataType == 'model') 'car_model': data,
+        if (dataType == 'amount') 'amount_bought': int.parse(data!),
+        if (dataType == 'vin') 'vin_number': data,
+        if (dataType == 'chassis_number') 'chassis_number': data,
+        if (dataType == 'engine_number') 'engine_number': data,
+        if (dataType == 'registration_number') 'registration_number': data,
+      };
+
+      if (details.isNotEmpty) {
+        updateData['details'] = details;
+      }
+      if (mainData.isNotEmpty) {
+        updateData.addAll(mainData);
+      }
+
+      setCarData.addAll(updateData);
+
+      if (dataType == 'make') {
+        salesService.currentCarMake = data;
+      }
     }
 
-    if(action == "sell") {
+    // Update local state variables
+    if (dataType == 'seats') seats = data;
+    if (dataType == 'speakers') speakers = data;
+    if (dataType == 'gear') gear = data;
+    if (dataType == 'air_bag') airBag = data;
+    if (dataType == 'air_conditioner') airConditioner = data;
+
+    if (action == "sell") {
       salesModel = SalesModel.fromJson(JSON.json.decode(JSON.json.encode(setCarData)));
     }
 
     print(setCarData.toString());
+    notifyListeners();
+  }
+
+  Future<void> browseFiles() async {
+    final ImagePicker picker = ImagePicker();
+    try {
+      final List<XFile> images = await picker.pickMultiImage();
+      if (images.isNotEmpty && images.length <= 5) {
+        addImagesList = images.map((xfile) => File(xfile.path)).toList();
+        notifyListeners();
+      }
+    } catch (e) {
+      // TODO: Handle error
+      print('Error picking images: $e');
+    }
+  }
+
+  void removeCarByIndex(int index){
+    addImagesList.removeAt(index);
     notifyListeners();
   }
 

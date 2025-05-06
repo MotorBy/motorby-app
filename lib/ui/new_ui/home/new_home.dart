@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
-import 'package:mobile_auto_drive/ui/new_ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
@@ -132,7 +132,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                           ],
                         ),
                         onTap: () {
-                          navigate(context, const AddCarScreen());
+                          navigate(context, const AddCarsScreen());
                         },
                       ),
                     ],
