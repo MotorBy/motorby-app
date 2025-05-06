@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/home/home_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
@@ -44,23 +43,52 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               onPageChanged: (index) {
                 model.changeTabIndex(index);
               },
-              children: [
-                const NewHomeScreen(),
-                const ReportScreen(),
-                Container(),
-                const ReminderScreen(),
-                const MapScreen(),
+              children: const [
+                NewHomeScreen(),
+                ReportScreen(),
+                ReminderScreen(),
+                MapScreen(),
               ],
             ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                modalBottomSheetMenu(
+                  context: context,
+                  radius: 24,
+                  child: const QuickActionsBottomSheet(),
+                );
+              },
+              backgroundColor: XColors.primaryColor(),
+              child: const GetSvgImage(
+                image: 'assets/images/primary_button.svg',
+              ),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
             bottomNavigationBar: BottomNavbar(
               onTap: (index) {
-                _pageController.animateToPage(
-                  index, duration: const Duration( milliseconds: 10 ), // Increase duration for smooth animation
-                  curve: Curves.easeInOut,
-                );
-                model.changeTabIndex(index); // Update the active tab index
+
+                if(index == 3) {
+
+                  _pageController.animateToPage(
+                    2,
+                    duration: const Duration(milliseconds: 10),
+                    curve: Curves.easeInOut,
+                  );
+                  model.changeTabIndex(index);
+
+                } else {
+
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 10),
+                    curve: Curves.easeInOut,
+                  );
+                  model.changeTabIndex(index);
+
+                }
+
               },
-              model: model, // Pass the ViewModel instance
+              model: model,
             ),
           );
         },
@@ -71,7 +99,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
 class BottomNavbar extends StatelessWidget {
   final Function(int) onTap;
-  final DashboardViewModel model; // Accept ViewModel instance
+  final DashboardViewModel model;
 
   const BottomNavbar({super.key, required this.onTap, required this.model});
 
@@ -100,18 +128,13 @@ class BottomNavbar extends StatelessWidget {
           backgroundColor: XColors.background(),
         ),
         const BottomNavigationBarItem(
-            label: '',
-            activeIcon: GetSvgImage(
-              image: 'assets/images/primary_button.svg',
-            ),
-            icon: GetSvgImage(
-              image: 'assets/images/primary_button.svg',
-            ),
+          label: "",
+          icon: SizedBox(width: 50),
         ),
         BottomNavigationBarItem(
           label: "Reminder",
           activeIcon: const GetSvgImage(
-            image: 'assets/images/remider_inactive.svg',
+            image: 'assets/images/remider_active.svg',
           ),
           icon: const GetSvgImage(
             image: 'assets/images/remider_inactive.svg',
@@ -129,26 +152,15 @@ class BottomNavbar extends StatelessWidget {
           backgroundColor: XColors.background(),
         ),
       ],
-      currentIndex: model.currentindex, // Ensure the index updates
+      currentIndex: model.currentindex,
       selectedItemColor: XColors.black(),
       selectedFontSize: 12.0,
       backgroundColor: XColors.background(),
       unselectedItemColor: XColors.textColor(),
       type: BottomNavigationBarType.fixed,
-      showSelectedLabels: model.currentindex == 2 ? false : true,
+      showSelectedLabels: true,
       showUnselectedLabels: true,
-      onTap: (index) {
-        if (index == 2) {
-          // Show quick actions bottom sheet when center button is tapped
-          modalBottomSheetMenu(
-            context: context,
-            radius: 24,
-            child: const QuickActionsBottomSheet(),
-          );
-        } else {
-          onTap(index); // Call the original onTap for other tabs
-        }
-      },
+      onTap: onTap,
     );
   }
 }

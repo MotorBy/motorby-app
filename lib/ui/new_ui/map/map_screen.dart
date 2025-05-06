@@ -52,7 +52,7 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
                 Positioned(
-                  bottom: 0,
+                  bottom: 20,
                   left: 0,
                   right: 0,
                   child: GestureDetector(

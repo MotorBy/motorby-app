@@ -40,12 +40,28 @@ class QuickActionsBottomSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Title
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 16),
-                    child: TitleText(
-                      text: 'Your Quick actions',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const TitleText(
+                          text: 'Your Quick actions',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            popView(context);
+                          },
+                          child: TitleText(
+                            text: 'Close',
+                            fontSize: 13,
+                            textColor: XColors.primaryColor2().withOpacity(0.7),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
@@ -163,6 +179,20 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           context,
                           backgroundColor: XColors.primaryColor(),
                           'Marketplace is coming soon',
+                      );
+
+                    },
+                  ),
+                  const YMargin(6),
+                  _buildFullWidthButton(
+                    context,
+                    label: 'Vin checks',
+                    onTap: () {
+
+                      FloatingSnackBar.show(
+                        context,
+                        backgroundColor: XColors.primaryColor(),
+                        'Vin checks is coming soon',
                       );
 
                     },
