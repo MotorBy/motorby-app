@@ -28,6 +28,7 @@ dependencies:
   http: ^1.2.0
   image_picker: 1.0.7
   image_cropper: 5.0.0
+  flutter_html: ^3.0.0
   app_links: 6.3.3
   location: 6.0.0
   geolocator: ^11.0.0

@@ -1,4 +1,5 @@
-import 'package:mobile_auto_drive/models/get_insuraance_model.dart';
+import 'package:mobile_auto_drive/models/get_insurance_product_model.dart';
+import 'package:mobile_auto_drive/models/insurance_product_details.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
@@ -7,7 +8,10 @@ import 'dart:convert' as JSON;
 import 'package:http/http.dart' as http;
 class InsuranceService {
   final persistService = serviceLocator<PersistenceService>();
+
  GetInsuranceModel? insuranceProduct;
+ GetInsuranceProduct? insuranceProductDetails;
+ String? currentInsuranceId = '';
 
   Future getInsuranceList() async {
 
@@ -28,4 +32,29 @@ class InsuranceService {
       var error = json["message"];
       throw Exception(error);
     }
-  }}
+  }
+
+  Future getInsuranceProductDetails({String? productId}) async {
+    print(APIService.getInsuranceProductsDetails+productId!);
+
+    var response = await http.get(Uri.parse(APIService.getInsuranceProductsDetails+productId!),
+        headers: APIHelper().requestHeadersWithToken());
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+    print(APIHelper().requestHeaders());
+
+    if (json["statusCode"] == 200 || json["statusCode"] == 201) {
+
+      insuranceProductDetails = GetInsuranceProduct.fromJson(json);
+      return insuranceProductDetails;
+
+    } else {
+
+      var error = json["message"];
+      throw Exception(error);
+
+    }
+  }
+
+}

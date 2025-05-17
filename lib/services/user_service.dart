@@ -7,6 +7,7 @@ import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:http/http.dart' as http;
@@ -37,6 +38,7 @@ class UserService {
 
     print(json.toString());
     print(persistService.getUserToken);
+    print(NotificationService.fcmToken);
 
     if(response.statusCode == 200 || response.statusCode == 201) {
       UserModel? user = UserModel.fromJson(json);

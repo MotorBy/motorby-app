@@ -358,7 +358,6 @@ class InfoBox extends StatelessWidget {
 
                   ///weather tile
                   ContainerWidget(
-                    elevation: 0.2,
                     onTap: () {
 
                       modalBottomSheetMenu(
@@ -373,7 +372,7 @@ class InfoBox extends StatelessWidget {
                     },
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF0E8F8),
+                    backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -384,10 +383,10 @@ class InfoBox extends StatelessWidget {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
-                        const YMargin(12),
+                        const YMargin(6),
                         NormalText(
                           text: '${model.currentWeatherValue} \u2103',
-                          fontSize: 24,
+                          fontSize: 22,
                           fontWeight: FontWeight.w700,
                         ),
                       ],
@@ -400,7 +399,7 @@ class InfoBox extends StatelessWidget {
                     children: [
                       ///Map section view
                       ContainerWidget(
-                        elevation: 0.2,
+                        elevation: 0.3,
                         height: 302,
                         borderRadius: BorderRadius.circular(16),
                         backgroundColor: Colors.black26,
@@ -474,10 +473,9 @@ class InfoBox extends StatelessWidget {
                             );
                           });
                     },
-                    elevation: 0.2,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF0E8F8),
+                    backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                     width: double.infinity,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -514,10 +512,9 @@ class InfoBox extends StatelessWidget {
 
                   ///Mileage tile
                   ContainerWidget(
-                    elevation: 0.2,
                     padding: const EdgeInsets.only(top: 16),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF0E8F8),
+                    backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -557,10 +554,9 @@ class InfoBox extends StatelessWidget {
 
                   ///Expenditures tile
                   ContainerWidget(
-                    elevation: 0.2,
                     padding: const EdgeInsets.only(top: 16),
                     borderRadius: BorderRadius.circular(16),
-                    backgroundColor: const Color(0xFFF0E8F8),
+                    backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

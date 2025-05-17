@@ -229,7 +229,11 @@ class MileageReportView extends StatelessWidget {
                   child: _buildStatCard(
                     'Last refuel on',
                     model.lastRefuelDate,
-                    'assets/images/total-milage.png',
+                    null,
+                    setIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.calendar_month_rounded, size: 20, color: XColors.primaryColor()),
+                    )
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -237,7 +241,11 @@ class MileageReportView extends StatelessWidget {
                   child: _buildStatCard(
                     'Last refuel amount',
                     '\u20A6 ${model.lastRefuelAmount}',
-                    'assets/images/fuel_guage.png',
+                      null,
+                      setIcon: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(Icons.money, size: 20, color: XColors.primaryColor()),
+                      )
                   ),
                 ),
               ],
@@ -252,17 +260,21 @@ class MileageReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String value, String icon) {
+  Widget _buildStatCard(String title, String value, String? icon, { Widget? setIcon }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: XColors.containerColor(),
+        color: XColors.secondaryColor().withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          GetPngImage(image: icon),
+          if(icon != null) ... [
+            GetPngImage(image: icon),
+          ] else ... [
+            setIcon!
+          ],
           const SizedBox(height: 8),
           NormalText(
             text: title,

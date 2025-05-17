@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/kyc_verification_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/insurance/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class BuyInsuranceScreen extends StatefulWidget {
-  const BuyInsuranceScreen({super.key});
+  const BuyInsuranceScreen({super.key, this.insuranceViewModel});
+
+  final InsuranceViewModel? insuranceViewModel;
 
   @override
   State<BuyInsuranceScreen> createState() => _BuyInsuranceScreenState();
@@ -18,126 +27,254 @@ class BuyInsuranceScreen extends StatefulWidget {
 class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBarHeader(
-        hasOnBack: true,
-        context: context,
-        appBarTitle: 'Buy Insurance',
-      ),
-      backgroundColor: XColors.background(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              NormalText(
-                text: 'Comprehensive Party Insurance',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                textColor: XColors.black(),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              const NormalText(
-                text:
-                    'Comprehensive coverage for your vehicle, offering protection against accidents, theft, and natural disasters',
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-              const YMargin(32),
-              const NormalText(
-                text: 'Coverage Includes',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-              const YMargin(10),
-              const CoverageBox(
-                title:
-                    'Damage to your car from accidents, fire, or natural disasters.  ',
-              ),
-              const YMargin(2),
-              const CoverageBox(
-                title: 'Theft or Vandalism.  ',
-              ),
-              const YMargin(2),
-              const CoverageBox(
-                title:
-                    'Third party liability for property damage or injury.   ',
-              ),
-              const YMargin(2),
-              const CoverageBox(
-                title: 'Personal accident cover for drivers and passengers.',
-              ),
-              const YMargin(32),
-              const NormalText(
-                text: 'Benefits',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-              const YMargin(10),
-              const CoverageBox(
-                title: 'Full peace of mind with wide ranging coverage.',
-              ),
-              const YMargin(2),
-              const CoverageBox(
-                title: 'Access to a networking or repair garage. ',
-              ),
-              const YMargin(2),
-              const CoverageBox(
-                title: 'Optional roadside assistance  ',
-              ),
-              const YMargin(32),
-              const NormalText(
-                text: 'Base Price',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-              const YMargin(10),
-              const NormalText(
-                text:
-                    'N15,000 - N25,000 Per month (Depending on car type, age, value   ',
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              const YMargin(10),
-              const CoverageBox(
-                title: 'Zero deprecation covers N15,000 monthly ',
-              ),
-              const YMargin(2),
-              const CoverageBox(
-                title: 'Engine protection covers N15,000 monthly ',
-              ),
-              const YMargin(2),
-              const CoverageBox(
-                title: 'Return to invoice covers N15,000 monthly ',
-              ),
-              const YMargin(60),
-              ContainerWidget(
-                onTap: (){
-                      showModalBottomSheet(
-                          context: context,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                          builder: (context) =>
-                              const PaymentMethod(),
-                        );
-                },
-                backgroundColor: XColors.primaryColor2(),
-                borderRadius: BorderRadius.circular(8),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                width: double.infinity,
-                child: Center(child: NormalText(text: 'Buy Now',textColor: XColors.white(),fontSize: 16,fontWeight: FontWeight.w600,)),
-              ),
-                            const YMargin(30),
+    return ViewModelBuilder<InsuranceViewModel>.reactive(
+        viewModelBuilder: () => widget.insuranceViewModel ?? InsuranceViewModel(),
+        disposeViewModel: false,
+        onViewModelReady:(model) async {
+          await model.getInsuranceProductDetails();
+        },
+        builder: (context, model, child) {
 
-            ],
+          if(model.isBusy) {
+            return Scaffold(
+                appBar: appBarHeader(
+                  hasOnBack: true,
+                  context: context,
+                  appBarTitle: 'Buy Insurance',
+                ),
+                body: const Center(child: Loader())
+            );
+          }
+
+          if(model.insuranceProductDetails == null) {
+            return Scaffold(
+              appBar: appBarHeader(
+                hasOnBack: true,
+                context: context,
+                appBarTitle: 'Buy Insurance',
+              ),
+              backgroundColor: XColors.background(),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    NormalText(
+                      text: 'Insurance product is currently unavailable',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      textColor: XColors.black(),
+                    ),
+                    const YMargin(16),
+                    ContainerWidget(
+                      onTap: () => model.getInsuranceProductDetails(),
+                      backgroundColor: XColors.primaryColor2(),
+                      borderRadius: BorderRadius.circular(8),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      child: NormalText(
+                        text: 'Retry',
+                        textColor: XColors.white(),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return Scaffold(
+          appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+            appBarTitle: 'Buy Insurance',
+            actions: [
+              ContainerWidget(
+                onTap: () {
+
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20)),
+                    ),
+                    builder: (context) =>
+                    const InsuranceQuoteBottomSheet(),
+                  );
+
+                },
+                borderColor: XColors.primaryColor2(),
+                hasBorder: true,
+                borderThickness: 2,
+                borderRadius: BorderRadius.circular(21),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: const NormalText(
+                  text: 'Request quote',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const XMargin(10)
+            ]
           ),
-        ),
-      ),
+          backgroundColor: XColors.background(),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const YMargin(10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      NormalText(
+                        text: model.insuranceProductDetails?.payload?.name ?? 'Insurance Product',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        textColor: XColors.black(),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width - 70,
+                        child: NormalText(
+                          text: "by ${model.insuranceProductDetails?.payload?.provider!.companyName}" ?? 'MyCover',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          textColor: XColors.black(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const YMargin(10),
+                  NormalText(
+                    text: model.insuranceProductDetails?.payload?.description ?? 'Insurance product description',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  const YMargin(32),
+                  const NormalText(
+                    text: 'Key Benefits',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  if (model.insuranceProductDetails?.payload?.keyBenefits != null)
+                    Html(
+                      data: model.insuranceProductDetails!.payload!.keyBenefits!,
+                      style: {
+                        "body": Style(
+                          fontSize: FontSize(14),
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                        ),
+                      },
+                    ),
+                  const YMargin(32),
+                  const NormalText(
+                    text: 'How It Works',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  if (model.insuranceProductDetails?.payload?.howItWorks != null)
+                    Html(
+                      data: model.insuranceProductDetails!.payload!.howItWorks!,
+                      style: {
+                        "body": Style(
+                          fontSize: FontSize(14),
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                        ),
+                      },
+                    ),
+                  const YMargin(32),
+                  const NormalText(
+                    text: 'Monthly Premium',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  const YMargin(10),
+                  if(model.insuranceProductDetails?.payload?.variant == 1) ... [
+
+                    NormalText(
+                      text: '₦${model.insuranceProductDetails?.payload?.price ?? '0.0'} of vehicle value',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+
+                  ] else ...  [
+
+                    NormalText(
+                      text: '${model.insuranceProductDetails?.payload?.price ?? '0.0'}% of vehicle value',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+
+                  ],
+                  const YMargin(30),
+                  if (model.hasKycVerification == false) ... [
+                    ContainerWidget(
+                      backgroundColor: const Color(0xFFFEF3F2),
+                      borderRadius: BorderRadius.circular(8),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.warning_amber_rounded, color: XColors.red()),
+                              const XMargin(8),
+                              NormalText(
+                                text: 'KYC Verification Required',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                textColor: XColors.red(),
+                              ),
+                            ],
+                          ),
+                          const YMargin(8),
+                          const NormalText(
+                            text: 'Please complete your KYC verification to proceed with insurance purchase.',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          const YMargin(16),
+                          ContainerWidget(
+                            onTap: () {
+                              navigate(context, KYCVerificationScreen(viewModel: model,));
+                            },
+                            backgroundColor: XColors.primaryColor2(),
+                            borderRadius: BorderRadius.circular(8),
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                            child: NormalText(
+                              text: 'Complete KYC',
+                              textColor: XColors.white(),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const YMargin(30),
+                  ],
+                  const YMargin(30),
+                  XButton(
+                    onPressed: () {
+
+                    },
+                    text: 'Buy now',
+                    isLoading: model.isBusy,
+                    width: MediaQuery.of(context).size.width,
+                    buttonColor: model.hasKycVerification ? XColors.primaryColor() : XColors.primaryColor().withOpacity(0.3),
+                  ),
+                  const YMargin(10),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 }

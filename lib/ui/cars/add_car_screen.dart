@@ -221,7 +221,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                     const YMargin(15),
                     MainInputField(
                       controller: _carAmtBoughtController,
-                      label: "Car cost",
+                      label: "Car cost (Amount bought)",
                       keyboard: TextInputType.number,
                       validator: (s) {
                         return AnyInputValidator.emptyValidate(s, inputName: 'amount');
@@ -535,15 +535,18 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                     ),
                     Positioned(
                       right: 5,
-                      top: 2,
+                      top: 5,
                       child: ContainerWidget(
                         onTap:()=> model.removeCarByIndex(index),
                         decoration:const BoxDecoration(
-                          color: Colors.red, shape: BoxShape.circle,),padding: const EdgeInsets.all(2),
+                          color: Colors.red, shape: BoxShape.circle,),
+                        padding: const EdgeInsets.all(2),
+                        height: 26,
+                        width: 26,
                         child: const Center(
                           child: Icon(
                             Icons.close,
-                            size: 10,
+                            size: 20,
                             color: Colors.white,
                           ),
                         ),

@@ -79,7 +79,7 @@ class ExpenditureReportView extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     return ContainerWidget(
-                      backgroundColor: XColors.containerColor(),
+                      backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                       borderRadius: BorderRadius.circular(16),
                       padding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 16),
@@ -202,7 +202,7 @@ class ExpenditureReportView extends StatelessWidget {
             fontWeight: FontWeight.w400,
             textColor: XColors.black().withOpacity(0.8),
           ),
-          const YMargin(16),
+          const YMargin(26),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -299,9 +299,9 @@ class ExpenditureReportView extends StatelessWidget {
 
   Widget _buildCategoryDistribution({double? fueling, double? servicing, double? repairing, double? expenses, double? total, double? spent}) {
     final categories = [
-      {'name': 'Fuel', 'value': fueling ?? 0.0, 'color': Colors.purple[200]},
-      {'name': 'Services', 'value': servicing ?? 0.0, 'color': Colors.grey[300]},
-      {'name': 'Repair', 'value': repairing ?? 0.0, 'color': Colors.pink[100]},
+      {'name': 'Fuel', 'value': fueling ?? 0.0, 'color': XColors.primaryColor()},
+      {'name': 'Services', 'value': servicing ?? 0.0, 'color': Colors.green},
+      {'name': 'Repair', 'value': repairing ?? 0.0, 'color': Colors.red},
       {'name': 'Other Expenses', 'value': expenses ?? 0.0, 'color': Colors.blue[100]},
     ];
 
@@ -315,7 +315,7 @@ class ExpenditureReportView extends StatelessWidget {
         Container(
           height: 30,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(9),
             color: Colors.grey[100],
           ),
           clipBehavior: Clip.hardEdge,

@@ -72,6 +72,7 @@ class User {
   PlanDetails? planDetails;
   Subscription? subscription;
   BusinessDetails? businessDetails;
+  KycData? kycData;
   String? fullname;
   String? firstname;
   String? lastname;
@@ -101,6 +102,7 @@ class User {
     this.state,
     this.phonenumber,
     this.userType,
+    this.kycData,
     this.userId,
     this.referralCode,
     this.favourites,
@@ -115,6 +117,7 @@ class User {
     planDetails: json["plan_details"] != null ? PlanDetails.fromJson(json["plan_details"]) : null,
     businessDetails: json["business_details"] != null ? BusinessDetails.fromJson(json["business_details"]) : null,
     subscription: json["subscription"] != null ? Subscription.fromJson(json["subscription"]) : null,
+    kycData: json["kyc_data"] != null ? KycData.fromJson(json["kyc_data"]) : null,
     fullname: json["fullname"],
     firstname: json["firstname"],
     lastname: json["lastname"],
@@ -137,6 +140,7 @@ class User {
     "plan_details": planDetails!.toJson(),
     "business_details": businessDetails!.toJson(),
     "subscription": subscription!.toJson(),
+    "kyc_data": kycData?.toJson(),
     "fullname": fullname,
     "firstname": firstname,
     "lastname": lastname,
@@ -151,6 +155,86 @@ class User {
     "createdAt": createdAt!.toIso8601String(),
     "updatedAt": updatedAt!.toIso8601String(),
     "__v": v,
+  };
+}
+
+class KycData {
+  List<Document>? documents;
+  String? country;
+  DateTime? dateOfBirth;
+  String? gender;
+  String? name;
+  String? nationality;
+  String? placeOfBirth;
+
+  KycData({
+    this.documents,
+    this.country,
+    this.dateOfBirth,
+    this.gender,
+    this.name,
+    this.nationality,
+    this.placeOfBirth,
+  });
+
+  factory KycData.fromJson(Map<String, dynamic> json) => KycData(
+    documents: json["documents"] == null ? [] : List<Document>.from(json["documents"]!.map((x) => Document.fromJson(x))),
+    country: json["country"],
+    dateOfBirth: json["date_of_birth"] == null ? null : DateTime.parse(json["date_of_birth"]),
+    gender: json["gender"],
+    name: json["name"],
+    nationality: json["nationality"],
+    placeOfBirth: json["place_of_birth"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "documents": documents == null ? [] : List<dynamic>.from(documents!.map((x) => x.toJson())),
+    "country": country,
+    "date_of_birth": "${dateOfBirth!.year.toString().padLeft(4, '0')}-${dateOfBirth!.month.toString().padLeft(2, '0')}-${dateOfBirth!.day.toString().padLeft(2, '0')}",
+    "gender": gender,
+    "name": name,
+    "nationality": nationality,
+    "place_of_birth": placeOfBirth,
+  };
+}
+
+class Document {
+  String? type;
+  String? number;
+  String? url;
+  String? front;
+  String? back;
+  String? expiryDate;
+  String? id;
+
+  Document({
+    this.type,
+    this.number,
+    this.url,
+    this.front,
+    this.back,
+    this.expiryDate,
+    this.id,
+  });
+
+  factory Document.fromJson(Map<String, dynamic> json) => Document(
+    type: json["type"],
+    number: json["number"],
+    url: json["url"],
+    front: json["front"],
+    back: json["back"],
+    expiryDate: json["expiry_date"],
+    id: json["_id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "type": type,
+    "number": number,
+    "url": url,
+    "front": front,
+    "back": back,
+    "expiry_date": expiryDate,
+    "_id": id,
   };
 }
 

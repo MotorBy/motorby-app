@@ -17,7 +17,7 @@ class GetInsuranceModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['statusCode'] = statusCode;
     data['message'] = message;
     if (payload != null) {
@@ -33,34 +33,47 @@ class InsuranceList {
   String? type;
   String? cost;
   String? broker;
+  String? paymentFrequency;
+  String? amountType;
+  bool? isPercentage;
   String? productId;
   List<String>? country;
 
-  InsuranceList(
-      {this.company,
+  InsuranceList({
+    this.company,
       this.name,
       this.type,
       this.cost,
+    this.paymentFrequency,
+        this.amountType,
+        this.isPercentage,
       this.broker,
       this.productId,
-      this.country});
+      this.country
+  });
 
   InsuranceList.fromJson(Map<String, dynamic> json) {
     company = json['company'];
     name = json['name'];
     type = json['type'];
     cost = json['cost'];
+    paymentFrequency = json['payment_frequency'];
+    amountType = json['amount_type'];
+    isPercentage = json['is_percentage'];
     broker = json['broker'];
     productId = json['product_id'];
     country = json['country'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['company'] = company;
     data['name'] = name;
     data['type'] = type;
     data['cost'] = cost;
+    data['payment_frequency'] = paymentFrequency;
+    data['amount_type'] = amountType;
+    data['is_percentage'] = isPercentage;
     data['broker'] = broker;
     data['product_id'] = productId;
     data['country'] = country;

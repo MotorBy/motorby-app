@@ -57,7 +57,8 @@ class APIService {
   static String getShops = "$root$SHOP/shops";
   static String getPlans = "$root$PLANS/";
   static String getCurrentPlans = "$root$PLANS/current";
-  static String getInsuranceProducts='$root/car/insurance/products';
+  static String getInsuranceProducts = '$root/car/insurance/products';
+  static String getInsuranceProductsDetails ='$root$CAR/insurance/products-details?product_id=';
 
   static String addFuelUpdate = "$root/$FUEL/add-price";
   static String getFuelUpdate({String? state, String? country, String? city}) => "$root/$FUEL/location?state=$state&country=$country&city=$city";

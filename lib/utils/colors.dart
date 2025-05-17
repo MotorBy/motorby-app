@@ -15,6 +15,7 @@ class XColors {
   static Color highlightColor() => const Color(0xFFF7D1CD);
   static Color containerColor() => const Color(0xFFF4EFFB);
   static Color surfaceColor() => getDarkMode != true ? const Color(0xFFC42D32) : const Color(0xFFFFFFFF);
+  static Color red() => const Color(0xFFC42D32);
   static Color decoratorContainerColor() => getDarkMode != true ? const Color(0xFFFFFFFF) : const Color(0xFF2D0203) ;
   static Color textColor() => getDarkMode != true ? Colors.black87 : const Color(0xFFFFFFFF).withOpacity(0.9);
 

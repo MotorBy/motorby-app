@@ -1,14 +1,22 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
-import 'package:mobile_auto_drive/models/get_insuraance_model.dart';
+import 'package:mobile_auto_drive/models/get_insurance_product_model.dart';
+import 'package:mobile_auto_drive/models/insurance_product_details.dart';
+import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/insurance_service.dart';
+import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
 class InsuranceViewModel extends BaseViewModel {
   final insuranceService = serviceLocator<InsuranceService>();
   final budgetingService = serviceLocator<BudgetingService>();
+  final userService =  serviceLocator<UserService>();
+
+  UserModel? userModel = serviceLocator<UserService>().userModel;
 
   String selectedVehicle = '';
   String selectedModel = '';
@@ -20,7 +28,91 @@ class InsuranceViewModel extends BaseViewModel {
   String incidentType = 'choose';
   int selectedIncidentTypeIndex = -1;
 
+  bool hasKycVerification = false;
+  FilePickerResult? filePickerResultMain;
+  FilePickerResult? filePickerResultBack;
+
+  // KYC Data Fields
+  Map<String, dynamic> kycData = {
+    'kyc_data': {
+      'country': '',
+      'name': '',
+      'date_of_birth': '',
+      'place_of_birth': '',
+      'gender': '',
+      'nationality': '',
+      'documents': [{
+        'type': 'national_id',
+        'number': "",
+        'url': '',
+        'front': '',
+        'back': '',
+        'expiry_date': ""
+      }]
+    }
+  };
+
+  void prefillUserData({
+    required TextEditingController nameController,
+    required TextEditingController nationalityController,
+    required TextEditingController stateController,
+  }) {
+    if (userService.userModel?.payload?.user != null) {
+
+      final user = userService.userModel!.payload!.user!;
+      nameController.text = user.fullname ?? '';
+      nationalityController.text = user.country ?? '';
+      stateController.text = user.state ?? '';
+
+    }
+  }
+
+  // KYC Data Handling
+  Future<void> updateKycData({
+    required String fullName,
+    required String dateOfBirth,
+    required String placeOfBirth,
+    required String gender,
+    required String nationality,
+    required String nationalIdNumber,
+    String? state,
+    Function? onCallBack,
+    Function(String? e)? onError,
+  }) async {
+
+    kycData['kyc_data']['country'] = nationality;
+    kycData['kyc_data']['name'] = fullName;
+    kycData['kyc_data']['date_of_birth'] = dateOfBirth;
+    kycData['kyc_data']['place_of_birth'] = placeOfBirth;
+    kycData['kyc_data']['gender'] = gender.toLowerCase();
+    kycData['kyc_data']['nationality'] = nationality;
+    kycData['kyc_data']['state'] = state;
+    kycData['kyc_data']['documents'][0]['number'] = nationalIdNumber;
+
+    setBusy(true);
+
+    await uploadDocument(front: true, onCallback: () {});
+    await uploadDocument(front: false, onCallback: () async {
+
+      await userService.updateUsers(data: kycData).then((v) {
+
+        setBusy(false);
+        userModel = userService.userModel;
+        hasKycVerification = true;
+        onCallBack?.call();
+
+      }).onError((e, s) {
+        print(s);
+        setBusy(false);
+        onError?.call(e.toString());
+      });
+
+    });
+
+  }
+
   GetInsuranceModel? insuranceProduct;
+  GetInsuranceProduct? insuranceProductDetails;
   List<InsuranceList> insuranceList = [];
 
   void updateIncidentChoice(String choice, int selectedIndex) {
@@ -62,6 +154,10 @@ class InsuranceViewModel extends BaseViewModel {
   final descriptionOfIncident = TextEditingController();
 
   Future getInsuranceProducts() async {
+
+    print(userService.userModel!.payload!.user!.kycData.toString());
+    hasKycVerification = userService.userModel!.payload!.user!.kycData != null;
+
     if (insuranceService.insuranceProduct != null) {
       insuranceProduct = insuranceService.insuranceProduct;
       insuranceList = insuranceProduct?.payload ?? [];
@@ -78,6 +174,85 @@ class InsuranceViewModel extends BaseViewModel {
     print('the list of product: ${insuranceList.first.company}');
   }
 
+  Future getInsuranceProductDetails({String? productId}) async {
+    setBusy(true);
+    insuranceService.currentInsuranceId = productId ?? insuranceService.currentInsuranceId;
+
+    await insuranceService.getInsuranceProductDetails(productId: productId ?? insuranceService.currentInsuranceId).then((v) {
+
+      insuranceProductDetails = insuranceService.insuranceProductDetails;
+      setBusy(false);
+
+    }).onError((e, s) {
+      print(s);
+      setBusy(false);
+    });
+
+  }
+
+  Future<void> pickDocument({ bool? front = true, Function? onComplete }) async {
+    try {
+
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+      );
+
+      if (result != null) {
+
+        if(onComplete != null) {
+          if(front!) {
+            filePickerResultMain = result;
+          } else {
+            filePickerResultBack = result;
+          }
+          onComplete();
+        }
+
+      }
+
+    } catch (e) {
+      print('Error uploading document: $e');
+    }
+  }
+
+  Future<void> uploadDocument({ bool? front = true, Function? onCallback, Function(String e)? onError}) async {
+
+    try {
+
+      setBusyForObject('upload', true);
+
+      await FirebaseService().uploadFileToStorage(
+          storagePath: 'profile/kyc/${userService.userModel!.payload!.user?.userId}/${front == true ? filePickerResultMain!.files.single.name : filePickerResultBack!.files.single.name}',
+          filePath: front == true ? filePickerResultMain!.files.single.path! : filePickerResultBack!.files.single.path!,
+          onCallBack: (s) async {
+            if(front!) {
+              kycData['kyc_data']['documents'][0]['front'] = s;
+              kycData['kyc_data']['documents'][0]['url'] = s;
+            } else {
+              kycData['kyc_data']['documents'][0]['back'] = s;
+              kycData['kyc_data']['documents'][0]['url'] = s;
+            }
+
+            onCallback?.call();
+
+          }
+      );
+
+    } catch (e) {
+      print('Error uploading document: $e');
+
+      setBusyForObject('upload', false);
+      onError!.call(e.toString());
+    }
+
+  }
+
+  void setSelectedInsuranceProduct({String? id}){
+    insuranceService.currentInsuranceId = id;
+    notifyListeners();
+  }
+
   List<Budget> getBudgetData() {
     return budgetingService.budgetingModel?.budget ?? [];
   }
@@ -85,7 +260,6 @@ class InsuranceViewModel extends BaseViewModel {
   CarId? getCurrentCar() {
     return budgetingService.currentCar;
   }
-
 
   List<PaymentMethod> paymentMethod = [
     PaymentMethod(

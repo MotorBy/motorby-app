@@ -11,6 +11,7 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -85,41 +86,14 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                             }
                         ),
                       ),
-                      ContainerWidget(
-                        onTap: () {
-
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            builder: (context) =>
-                            const InsuranceQuoteBottomSheet(),
-                          );
-
-                        },
-                        borderColor: XColors.primaryColor2(),
-                        hasBorder: true,
-                        borderThickness: 2,
-                        borderRadius: BorderRadius.circular(21),
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        child: const NormalText(
-                          text: 'Request quote',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const YMargin(16),
                     ],
                   ),
                 ),
-                const YMargin(32),
+                const YMargin(26),
                 ContainerWidget(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  backgroundColor: const Color(0xFFF3F3FA),
+                  backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                   borderRadius: BorderRadius.circular(16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -189,113 +163,144 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const YMargin(20),
-                    SizedBox(
-                      height: 140,
-                      child: ListView.builder(
-                          itemCount: model.insuranceList.length,
-                          scrollDirection: Axis.horizontal,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            final insurance=model.insuranceList[index];
-                            return ContainerWidget(
+                    const YMargin(10),
+                    ///Insurance list display section
+                    if(model.isBusy) ... [
+                      const YMargin(25),
+                      const Center(child: Loader())
+                    ] else ... [
+                      ListView.builder(
+                        itemCount: model.insuranceList.length,
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        itemBuilder: (context, index) {
+                          final insurance = model.insuranceList[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: ContainerWidget(
                               onTap: () {
-
+                                model.setSelectedInsuranceProduct(id: insurance.productId);
                               },
-                              width: 310,
-                              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                              backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                               borderRadius: BorderRadius.circular(16),
-                              backgroundColor: XColors.secondaryColor(),
-                              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                              padding: const EdgeInsets.all(20),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  NormalText(
-                                    text:insurance.name!.toUpperCase(),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  const YMargin(10),
-                                  NormalText(
-                                    text: insurance.type,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  const YMargin(15),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            insurance.cost!.split("/")[0].length < 4 ? '' : '₦',
-                                            style: const TextStyle(
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.black),
-                                          ),
-                                          NormalText(
-                                              text: insurance.cost!.split("/")[0].length > 4 ? insurance.cost : '${insurance.cost!.split("/")[0]}%/${insurance.cost!.split("/")[1]}',
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w700),
-                                        ],
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            NormalText(
+                                              text: insurance.name!.toUpperCase(),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                            const YMargin(8),
+                                            NormalText(
+                                              text: insurance.type?.replaceAll('-', ' ').replaceAll('buy ', '').toUpperCase() ?? '',
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w500,
+                                              textColor: Colors.black54,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       ContainerWidget(
-                                        onTap: (){
-                                          navigate(context, const BuyInsuranceScreen());
+                                        onTap: () {
+                                          model.setSelectedInsuranceProduct(id: insurance.productId);
+                                          navigate(context, BuyInsuranceScreen(insuranceViewModel: model));
                                         },
                                         backgroundColor: XColors.white(),
-                                        borderRadius: BorderRadius.circular(8),
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 16),
+                                        borderRadius: BorderRadius.circular(12),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                         child: NormalText(
                                           text: 'Buy Now',
-                                          fontSize: 12,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w600,
                                           textColor: XColors.primaryColor2(),
                                         ),
                                       ),
                                     ],
                                   ),
+                                  const YMargin(16),
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          insurance.isPercentage == true ? '' : '₦',
+                                          style: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        NormalText(
+                                          text: '${insurance.cost!.split("/")[0]}${insurance.isPercentage == true ? '%' : ''} ',
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                        NormalText(
+                                          text: '${insurance.paymentFrequency!.contains('ly') ? insurance.paymentFrequency : '/ ${insurance.paymentFrequency!}'}',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          textColor: Colors.black54,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
-                            );
-                          }),
-                    ),
-                    const YMargin(62),
-                    const Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          child: NormalText(
-                            text: 'Your Certification Of Insurance',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                    const YMargin(82),
+                    ///Insurance Broker section
+                    ContainerWidget(
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                      backgroundColor: XColors.white(),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const YMargin(16),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.security,
+                                color: XColors.primaryColor(),
+                                size: 20,
+                              ),
+                              const XMargin(16),
+                              const NormalText(
+                                text: 'Exceptos Licensed Insurance Partner',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                textColor: Colors.black87,
+                              ),
+                            ],
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          child: NormalText(
-                              text: 'Here’s what you need to prove that you have a policy with comprehensive party insurance',
-                            textAlign: TextAlign.center,
+                          const YMargin(8),
+                          const NormalText(
+                            text: 'myCovergenius is a licensed insurance broker partnered with Exceptos to provide comprehensive vehicle insurance solutions through the Motorby app.',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            textColor: Colors.black54,
                           ),
-                        ),
-                        YMargin(26),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GetSvgImage(
-                                image: 'assets/images/material-symbols_download.svg'),
-                            NormalText(
-                              text: 'Download certificate',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              textColor: Colors.green,
-                            )
-                          ],
-                        ),
-                      ],
+                          const YMargin(16),
+                        ],
+                      ),
                     ),
                     const YMargin(50),
                   ],
@@ -807,8 +812,6 @@ class EngineTableBottomSheet extends StatelessWidget {
         });
   }
 }
-
-
 
 Widget buildField(
     BuildContext context,
