@@ -148,6 +148,12 @@ class CarId {
   String? carModel;
   String? carYear;
   String? color;
+  String? registrationNumber;
+  String? engineNumber;
+  String? chassisNumber;
+  String? vinNumber;
+  String? type;
+  int? amountBought;
   String? by;
   List<String>? images;
   String? createdAt;
@@ -164,6 +170,11 @@ class CarId {
         this.color,
         this.by,
         this.images,
+        this.registrationNumber,
+        this.engineNumber,
+        this.chassisNumber,
+        this.vinNumber,
+        this.amountBought,
         this.createdAt,
         this.updatedAt,
         this.iV,
@@ -177,6 +188,12 @@ class CarId {
     sId = json['_id'];
     carModel = json['car_model'];
     carYear = json['car_year'];
+    amountBought = json['amount_bought'];
+    registrationNumber = json['vehicle_registration_number'];
+    engineNumber = json['engine_number'];
+    chassisNumber = json['chassis_number'];
+    vinNumber = json['vin_number'];
+    type = json['type'];
     color = json['color'];
     by = json['by'];
     images = json['images'].cast<String>();
@@ -197,6 +214,12 @@ class CarId {
     data['car_year'] = carYear;
     data['color'] = color;
     data['by'] = by;
+    data['vehicle_registration_number'] = registrationNumber;
+    data['engine_number'] = engineNumber;
+    data['chassis_number'] = chassisNumber;
+    data['vin_number'] = vinNumber;
+    data['type'] = type;
+    data['amount_bought'] = amountBought;
     data['images'] = images;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;

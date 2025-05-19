@@ -161,7 +161,8 @@ class User {
 class KycData {
   List<Document>? documents;
   String? country;
-  DateTime? dateOfBirth;
+  String? dateOfBirth;
+  String? homeAddress;
   String? gender;
   String? name;
   String? nationality;
@@ -171,6 +172,7 @@ class KycData {
     this.documents,
     this.country,
     this.dateOfBirth,
+    this.homeAddress,
     this.gender,
     this.name,
     this.nationality,
@@ -180,7 +182,8 @@ class KycData {
   factory KycData.fromJson(Map<String, dynamic> json) => KycData(
     documents: json["documents"] == null ? [] : List<Document>.from(json["documents"]!.map((x) => Document.fromJson(x))),
     country: json["country"],
-    dateOfBirth: json["date_of_birth"] == null ? null : DateTime.parse(json["date_of_birth"]),
+    homeAddress: json["home_address"],
+    dateOfBirth: json["date_of_birth"],
     gender: json["gender"],
     name: json["name"],
     nationality: json["nationality"],
@@ -190,8 +193,9 @@ class KycData {
   Map<String, dynamic> toJson() => {
     "documents": documents == null ? [] : List<dynamic>.from(documents!.map((x) => x.toJson())),
     "country": country,
-    "date_of_birth": "${dateOfBirth!.year.toString().padLeft(4, '0')}-${dateOfBirth!.month.toString().padLeft(2, '0')}-${dateOfBirth!.day.toString().padLeft(2, '0')}",
+    "date_of_birth": dateOfBirth,
     "gender": gender,
+    "home_address": homeAddress,
     "name": name,
     "nationality": nationality,
     "place_of_birth": placeOfBirth,

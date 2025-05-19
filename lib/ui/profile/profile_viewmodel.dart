@@ -22,6 +22,14 @@ class ProfileViewModel extends BaseViewModel {
   final bool isOnline = true;
   final bool isPremium = false;
 
+  String? profileImagePath;
+
+  Future<void> updateProfileImage(String imagePath) async {
+    profileImagePath = imagePath;
+    // TODO: Implement API call to upload profile image
+    notifyListeners();
+  }
+
   UserModel? userModel;
   User? user;
 

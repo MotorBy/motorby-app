@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/get_insurance_product_model.dart';
 import 'package:mobile_auto_drive/models/insurance_product_details.dart';
@@ -8,6 +9,7 @@ import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
@@ -31,85 +33,6 @@ class InsuranceViewModel extends BaseViewModel {
   bool hasKycVerification = false;
   FilePickerResult? filePickerResultMain;
   FilePickerResult? filePickerResultBack;
-
-  // KYC Data Fields
-  Map<String, dynamic> kycData = {
-    'kyc_data': {
-      'country': '',
-      'name': '',
-      'date_of_birth': '',
-      'place_of_birth': '',
-      'gender': '',
-      'nationality': '',
-      'documents': [{
-        'type': 'national_id',
-        'number': "",
-        'url': '',
-        'front': '',
-        'back': '',
-        'expiry_date': ""
-      }]
-    }
-  };
-
-  void prefillUserData({
-    required TextEditingController nameController,
-    required TextEditingController nationalityController,
-    required TextEditingController stateController,
-  }) {
-    if (userService.userModel?.payload?.user != null) {
-
-      final user = userService.userModel!.payload!.user!;
-      nameController.text = user.fullname ?? '';
-      nationalityController.text = user.country ?? '';
-      stateController.text = user.state ?? '';
-
-    }
-  }
-
-  // KYC Data Handling
-  Future<void> updateKycData({
-    required String fullName,
-    required String dateOfBirth,
-    required String placeOfBirth,
-    required String gender,
-    required String nationality,
-    required String nationalIdNumber,
-    String? state,
-    Function? onCallBack,
-    Function(String? e)? onError,
-  }) async {
-
-    kycData['kyc_data']['country'] = nationality;
-    kycData['kyc_data']['name'] = fullName;
-    kycData['kyc_data']['date_of_birth'] = dateOfBirth;
-    kycData['kyc_data']['place_of_birth'] = placeOfBirth;
-    kycData['kyc_data']['gender'] = gender.toLowerCase();
-    kycData['kyc_data']['nationality'] = nationality;
-    kycData['kyc_data']['state'] = state;
-    kycData['kyc_data']['documents'][0]['number'] = nationalIdNumber;
-
-    setBusy(true);
-
-    await uploadDocument(front: true, onCallback: () {});
-    await uploadDocument(front: false, onCallback: () async {
-
-      await userService.updateUsers(data: kycData).then((v) {
-
-        setBusy(false);
-        userModel = userService.userModel;
-        hasKycVerification = true;
-        onCallBack?.call();
-
-      }).onError((e, s) {
-        print(s);
-        setBusy(false);
-        onError?.call(e.toString());
-      });
-
-    });
-
-  }
 
   GetInsuranceModel? insuranceProduct;
   GetInsuranceProduct? insuranceProductDetails;
@@ -174,15 +97,30 @@ class InsuranceViewModel extends BaseViewModel {
     print('the list of product: ${insuranceList.first.company}');
   }
 
+  double? purchaseAmount = 0.0;
+  final double processingFee = 800.0;
+
   Future getInsuranceProductDetails({String? productId}) async {
     setBusy(true);
     insuranceService.currentInsuranceId = productId ?? insuranceService.currentInsuranceId;
 
     await insuranceService.getInsuranceProductDetails(productId: productId ?? insuranceService.currentInsuranceId).then((v) {
-
       insuranceProductDetails = insuranceService.insuranceProductDetails;
-      setBusy(false);
 
+      if (insuranceProductDetails?.payload != null) {
+        final vehicleValue = budgetingService.vehicleValue;
+
+        if (insuranceProductDetails!.payload!.variant == 1) {
+          purchaseAmount = double.tryParse(insuranceProductDetails!.payload!.price ?? '0.0');
+        } else {
+          final percentage = double.tryParse(insuranceProductDetails!.payload!.price ?? '0.0') ?? 0.0;
+          purchaseAmount = (percentage / 100) * vehicleValue!.toInt();
+        }
+
+        purchaseAmount = (purchaseAmount ?? 0.0) + processingFee;
+      }
+      
+      setBusy(false);
     }).onError((e, s) {
       print(s);
       setBusy(false);
@@ -190,62 +128,98 @@ class InsuranceViewModel extends BaseViewModel {
 
   }
 
-  Future<void> pickDocument({ bool? front = true, Function? onComplete }) async {
-    try {
+  String? currentPayRef = '';
+  Future makePayment({
+    Function(String? error)? onInitialisedError,
+    Function(PaystackInitializedTraction? initTransc)? onShowPayModal}) async {
 
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
-      );
+    final request = PaystackTransactionRequest(
+      reference: 'MBY-${DateTime.now().microsecondsSinceEpoch}',
+      secretKey: APIKey.payStackSKey,
+      email: userModel!.payload!.user!.email!,
+      amount: purchaseAmount!.ceil() * 100,
+      currency: PaystackCurrency.ngn,
+      channel: [
+        PaystackPaymentChannel.mobileMoney,
+        PaystackPaymentChannel.card,
+        PaystackPaymentChannel.ussd,
+        PaystackPaymentChannel.bankTransfer,
+        PaystackPaymentChannel.bank,
+      ],
+    );
 
-      if (result != null) {
+    final initializedTransaction = await PaymentService.initializeTransaction(request);
 
-        if(onComplete != null) {
-          if(front!) {
-            filePickerResultMain = result;
-          } else {
-            filePickerResultBack = result;
-          }
-          onComplete();
-        }
-
+    if (!initializedTransaction.status) {
+      if(onInitialisedError != null) {
+        onInitialisedError(initializedTransaction.message);
       }
-
-    } catch (e) {
-      print('Error uploading document: $e');
+      return;
+    } else {
+      currentPayRef = initializedTransaction.data?.reference ?? request.reference;
+      onShowPayModal!(initializedTransaction);
     }
+
   }
 
-  Future<void> uploadDocument({ bool? front = true, Function? onCallback, Function(String e)? onError}) async {
-
+  Future verifyPayment() async {
     try {
+      setBusy(true);
+      
+      final currentCar = getCurrentCar();
+      final user = userModel?.payload?.user;
+      
+      if (currentCar == null || user == null) {
+        throw Exception('Car or user data not found');
+      }
 
-      setBusyForObject('upload', true);
+      final Map<String, dynamic> purchaseData = {
+        "name": insuranceProductDetails?.payload?.name,
+        "type": insuranceProduct!.payload!.where((it) => it.productId == insuranceService.currentInsuranceId).toList()[0].type,
+        "product_id": insuranceService.currentInsuranceId,
+        "by": user.userId,
+        "attached_car": currentCar.sId,
+        "insurance_amount": purchaseAmount,
+        "insurance_product": insuranceProductDetails?.payload?.name,
+        "payment_provider": "Paystack",
+        "payment_reference": currentPayRef,
+        "payment_date": DateTime.now().toIso8601String(),
+        "payment_status": "success",
+        "start_date": DateTime.now().toIso8601String().split('T')[0],
+        "activation_date": "",
+        "expiration_date": "",
+        "delayedRoute": true,
+        "purchase_id": "STI-MC-${DateTime.now().millisecondsSinceEpoch}",
+        "productId": insuranceService.currentInsuranceId,
+        "car": {
+          "make": currentCar.carMake,
+          "model": currentCar.carModel,
+          //"registration_number": currentCar.registrationNumber,
+          //"engine_number": currentCar.engineNumber,
+          //"chassis_number": currentCar.chassisNumber,
+          "type": "Car"
+        },
+        "user": {
+          "first_name": user.firstname,
+          "last_name": user.lastname,
+          "email": user.email,
+          "phone": user.phonenumber,
+          "dob": user.kycData?.dateOfBirth.toString(),
+          "id_type": user.kycData?.documents?[0].type,
+          "id_url": user.kycData?.documents?[0].url,
+          //"address": user.address,
+          "state": user.state,
+          "country": user.country
+        }
+      };
 
-      await FirebaseService().uploadFileToStorage(
-          storagePath: 'profile/kyc/${userService.userModel!.payload!.user?.userId}/${front == true ? filePickerResultMain!.files.single.name : filePickerResultBack!.files.single.name}',
-          filePath: front == true ? filePickerResultMain!.files.single.path! : filePickerResultBack!.files.single.path!,
-          onCallBack: (s) async {
-            if(front!) {
-              kycData['kyc_data']['documents'][0]['front'] = s;
-              kycData['kyc_data']['documents'][0]['url'] = s;
-            } else {
-              kycData['kyc_data']['documents'][0]['back'] = s;
-              kycData['kyc_data']['documents'][0]['url'] = s;
-            }
-
-            onCallback?.call();
-
-          }
-      );
-
+      //await insuranceService.purchaseInsurance(purchaseData);
+      setBusy(false);
+      
     } catch (e) {
-      print('Error uploading document: $e');
-
-      setBusyForObject('upload', false);
-      onError!.call(e.toString());
+      setBusy(false);
+      rethrow;
     }
-
   }
 
   void setSelectedInsuranceProduct({String? id}){

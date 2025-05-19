@@ -15,6 +15,9 @@ class BudgetingService {
   BudgetingModel? budgetingModel;
   CarId? currentCar;
 
+  int? _vehicleValue;
+  int? get vehicleValue => _vehicleValue;
+
   int? currentTotalSpent = 0;
   int currentSetBudget = 0;
   int? currentBudgetIndex = 0;
@@ -40,6 +43,8 @@ class BudgetingService {
     resetTotalCostingAndValue();
 
     currentBudgetIndex = index;
+    currentCar = budgetingModel!.budget![index!].carId;
+    _vehicleValue = currentCar != null ? currentCar!.amountBought : 0;
 
     for (var element in budgetingModel!.budget![index!].fueling!) {
       totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0

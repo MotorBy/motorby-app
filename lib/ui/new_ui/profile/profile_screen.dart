@@ -71,7 +71,7 @@ class NewProfileScreen extends StatelessWidget {
                 ),
               ],
               onSelected: (val) {
-                navigate(context, const EditProfileScreen());
+                navigate(context, EditProfileScreen(model: model));
               },
             ),
           ]

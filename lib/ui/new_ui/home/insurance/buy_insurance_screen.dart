@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/kyc_verification_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/kyc_verification_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -89,32 +87,32 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
             context: context,
             appBarTitle: 'Buy Insurance',
             actions: [
-              ContainerWidget(
-                onTap: () {
-
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20)),
-                    ),
-                    builder: (context) =>
-                    const InsuranceQuoteBottomSheet(),
-                  );
-
-                },
-                borderColor: XColors.primaryColor2(),
-                hasBorder: true,
-                borderThickness: 2,
-                borderRadius: BorderRadius.circular(21),
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: const NormalText(
-                  text: 'Request quote',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              // ContainerWidget(
+              //   onTap: () {
+              //
+              //     showModalBottomSheet(
+              //       context: context,
+              //       isScrollControlled: true,
+              //       shape: const RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.vertical(
+              //             top: Radius.circular(20)),
+              //       ),
+              //       builder: (context) =>
+              //       const InsuranceQuoteBottomSheet(),
+              //     );
+              //
+              //   },
+              //   borderColor: XColors.primaryColor2(),
+              //   hasBorder: true,
+              //   borderThickness: 2,
+              //   borderRadius: BorderRadius.circular(21),
+              //   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              //   child: const NormalText(
+              //     text: 'Request quote',
+              //     fontSize: 14,
+              //     fontWeight: FontWeight.w600,
+              //   ),
+              // ),
               const XMargin(10)
             ]
           ),
@@ -194,6 +192,7 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                   const YMargin(10),
+                  ////insurance product amount display section
                   if(model.insuranceProductDetails?.payload?.variant == 1) ... [
 
                     NormalText(
@@ -211,6 +210,11 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                     ),
 
                   ],
+                  const NormalText(
+                    text: '+ ₦${800} processing fee',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                   const YMargin(30),
                   if (model.hasKycVerification == false) ... [
                     ContainerWidget(
@@ -241,7 +245,7 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                           const YMargin(16),
                           ContainerWidget(
                             onTap: () {
-                              navigate(context, KYCVerificationScreen(viewModel: model,));
+                              navigate(context, const KYCVerificationScreen());
                             },
                             backgroundColor: XColors.primaryColor2(),
                             borderRadius: BorderRadius.circular(8),
@@ -332,7 +336,7 @@ class PaymentMethod extends StatelessWidget {
                     child: Container(
                   height: 4,
                   width: 40,
-                  color: Color(0xFFD0D5DD),
+                  color: const Color(0xFFD0D5DD),
                 )),
                const YMargin(30),
             const    Row(

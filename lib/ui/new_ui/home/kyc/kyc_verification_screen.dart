@@ -13,12 +13,12 @@ import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_view_model.dart';
 
 class KYCVerificationScreen extends StatefulWidget {
   const KYCVerificationScreen({super.key, this.viewModel});
 
-  final InsuranceViewModel? viewModel;
+  final KYCViewModel? viewModel;
 
   @override
   State<KYCVerificationScreen> createState() => _KYCVerificationScreenState();
@@ -30,6 +30,7 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _pobController = TextEditingController();
   final TextEditingController _nationalityController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _ninController = TextEditingController();
   String _selectedGender = 'Male';
@@ -51,11 +52,6 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
   @override
   void initState() {
     super.initState();
-    widget.viewModel?.prefillUserData(
-      nameController: _nameController,
-      nationalityController: _nationalityController,
-      stateController: _stateController,
-    );
   }
 
   @override
@@ -65,13 +61,30 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
     _pobController.dispose();
     _nationalityController.dispose();
     _ninController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<InsuranceViewModel>.reactive(
-        viewModelBuilder: () => widget.viewModel ?? InsuranceViewModel(),
+    return ViewModelBuilder<KYCViewModel>.reactive(
+        viewModelBuilder: () => widget.viewModel ?? KYCViewModel(),
+        onViewModelReady: (model) {
+          model.prefillUserData(
+            nameController: _nameController,
+            nationalityController: _nationalityController,
+            stateController: _stateController,
+            dobController: _dobController,
+            pobController: _pobController,
+            addressController: _addressController,
+            ninController: _ninController,
+            onGenderSelected: (gender) {
+              // setState(() {
+              //   _selectedGender = gender;
+              // });
+            },
+          );
+        },
         disposeViewModel: false,
         builder: (context, model, child) {
         return Scaffold(
@@ -140,7 +153,9 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                           title: "Select Gender",
                           listString: ["Male", "Female"],
                           selected: (value) {
-
+                            setState(() {
+                              _selectedGender = value!;
+                            });
                           }
                       );
                     },
@@ -154,10 +169,10 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                         children: [
                           Icon(Icons.account_circle_outlined, color: XColors.primaryColor()),
                           const SizedBox(width: 12),
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              'Select Gender',
-                              style: TextStyle(fontSize: 16),
+                              _selectedGender,
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ),
                         ],
@@ -186,6 +201,17 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                       return null;
                     },
                   ),
+                  const YMargin(16),
+                  MainInputField(
+                    controller: _addressController,
+                    label: 'Home Address',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your home address';
+                      }
+                      return null;
+                    },
+                  ),
                   const YMargin(32),
                   const NormalText(
                     text: 'Document Information',
@@ -209,9 +235,7 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                       Expanded(
                         child: ContainerWidget(
                           onTap: () async {
-
                             model.pickDocument(front: true, onComplete: () {});
-
                           },
                           hasBorder: true,
                           borderColor: XColors.primaryColor2().withOpacity(0.4),
@@ -268,9 +292,7 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                   const YMargin(32),
                   XButton(
                     onPressed: () {
-
                       if (_formKey.currentState!.validate() && model.filePickerResultMain != null) {
-
                         model.updateKycData(
                           fullName: _nameController.text,
                           dateOfBirth: _dobController.text,
@@ -279,15 +301,14 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                           nationality: _nationalityController.text,
                           nationalIdNumber: _ninController.text,
                           state: _stateController.text,
+                          address: _addressController.text,
                           onCallBack: () {
-
                             FloatingSnackBar.show(
                                 context,
                                 "Successfully submitted your KYC",
                                 isError: false
                             );
                             Navigator.pop(context, true);
-
                           },
                           onError: (e) {
                             FloatingSnackBar.show(
@@ -297,7 +318,6 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                             );
                           },
                         );
-
                       } else {
                         FloatingSnackBar.show(
                             context,
@@ -305,7 +325,6 @@ class _KYCVerificationScreenState extends State<KYCVerificationScreen> {
                             isError: true
                         );
                       }
-
                     },
                     text: 'Submit',
                     height: 56,

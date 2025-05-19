@@ -93,7 +93,8 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                                   fontWeight: FontWeight.w600,
                                 ),
                                 const YMargin(10),
-                                ...List.generate(model.plansModel!.payload!.subscriptionOptions!.getFeaturesByTier(ind)!.length,
+                                ...List.generate(
+                                  model.plansModel!.payload!.subscriptionOptions!.getFeaturesByTier(ind)!.length,
                                   (index) => ListTile(
                                     title: NormalText(
                                       text: model.plansModel?.payload?.subscriptionOptions?.getFeaturesByTier(ind)?.elementAt(index).simpleDescription ?? '',

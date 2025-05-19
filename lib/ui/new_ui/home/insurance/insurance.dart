@@ -284,7 +284,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                               ),
                               const XMargin(16),
                               const NormalText(
-                                text: 'Exceptos Licensed Insurance Partner',
+                                text: 'Licensed Insurance Partner',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 textColor: Colors.black87,
@@ -544,7 +544,8 @@ class InsuranceQuoteBottomSheet extends StatelessWidget {
               ],
             ),
           );
-        });
+        },
+    );
   }
 }
 
@@ -715,11 +716,13 @@ class ModelListBottomSheet extends StatelessWidget {
                       },
                       separatorBuilder: (context, index) =>
                           const DividerWidget(),
-                    )),
+                    ),
+                ),
               ],
             ),
           );
-        });
+        },
+    );
   }
 }
 
