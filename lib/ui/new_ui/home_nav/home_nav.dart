@@ -42,8 +42,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             body: PageView(
               controller: _pageController,
               onPageChanged: (index) {
-                model.changeTabIndex(index);
+                if (index >= 2) {
+                  model.changeTabIndex(index + 1);
+                } else {
+                  model.changeTabIndex(index);
+                }
               },
+              physics: const PageScrollPhysics(),
               children: const [
                 NewHomeScreen(),
                 ReportScreen(),
@@ -133,7 +138,12 @@ class BottomNavbar extends StatelessWidget {
           icon: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(model.currentIndex == 0 ? 0 : 2),
-            child: const GetSvgImage(image: 'assets/images/home.svg', height: 30, width: 30,),
+            child: GetSvgImage(
+              image: 'assets/images/nav_icons/home.svg',
+              height: 24,
+              width: 24,
+              color: model.currentIndex == 0 ? XColors.primaryColor() : null,
+            ),
           ),
           backgroundColor: XColors.background(),
         ),
@@ -142,7 +152,12 @@ class BottomNavbar extends StatelessWidget {
           icon: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(model.currentIndex == 1 ? 0 : 2),
-            child: const GetSvgImage(image: 'assets/images/report.svg', height: 30, width: 30,),
+            child: GetSvgImage(
+              image: 'assets/images/nav_icons/report.svg',
+              height: 24,
+              width: 24,
+              color: model.currentIndex == 1 ? XColors.primaryColor() : null,
+            ),
           ),
           backgroundColor: XColors.background(),
         ),
@@ -155,7 +170,12 @@ class BottomNavbar extends StatelessWidget {
           icon: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(model.currentIndex == 3 ? 0 : 2),
-            child: const GetSvgImage(image: 'assets/images/reminder.svg', height: 30, width: 30,),
+            child: GetSvgImage(
+              image: 'assets/images/nav_icons/reminder.svg',
+              height: 24,
+              width: 24,
+              color: model.currentIndex == 3 ? XColors.primaryColor() : null,
+            ),
           ),
           backgroundColor: XColors.background(),
         ),
@@ -164,7 +184,12 @@ class BottomNavbar extends StatelessWidget {
           icon: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(model.currentIndex == 4 ? 0 : 2),
-            child: const GetSvgImage(image: 'assets/images/map.svg', height: 30, width: 30,),
+            child: GetSvgImage(
+              image: 'assets/images/nav_icons/map.svg',
+              height: 24,
+              width: 24,
+              color: model.currentIndex == 4 ? XColors.primaryColor() : null,
+            ),
           ),
           backgroundColor: XColors.background(),
         ),

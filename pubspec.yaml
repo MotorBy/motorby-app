@@ -54,6 +54,7 @@ flutter:
     - assets/images/auto/
     - assets/images/icons/
     - assets/images/
+    - assets/images/nav_icons/
 
   fonts:
     - family: Montserrat
