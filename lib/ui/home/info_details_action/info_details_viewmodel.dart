@@ -154,6 +154,14 @@ class InfoDetailsViewModel extends BaseViewModel {
         if (value == false) {
           PermissionUtil.requestPermission(Permission.location);
         }
+
+        Geolocator.getLastKnownPosition().then((Position? position) async {
+          currentPosition = position;
+          if(currentPosition != null) {
+            weatherSetup();
+          }
+        });
+
         weatherSetup();
       });
 

@@ -8,12 +8,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
+import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/checklist_service.dart';
+import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
@@ -34,6 +37,8 @@ class HomeViewModel extends BaseViewModel {
   final paymentService =  serviceLocator<AppPaymentService>();
   final salesService = serviceLocator<SalesService>();
   final checklistService = serviceLocator<ChecklistService>();
+  final reminderService =  serviceLocator<ReminderService>();
+  final insuranceService = serviceLocator<InsuranceService>();
 
   final _navigatorKey = GlobalKey<NavigatorState>();
   late AppLinks _appLinks;
@@ -44,6 +49,7 @@ class HomeViewModel extends BaseViewModel {
   BudgetingModel? budgetingModel;
   CarId? currentCar;
   ChecklistDataModel? checkListDataModel;
+  ReminderListModel? reminderListModel;
   UserModel? userModel;
   List<File> addImagesList = [];
 
@@ -72,7 +78,7 @@ class HomeViewModel extends BaseViewModel {
     'breakdowns.png'
   ];
 
-  final List<CheckList> checkList =[
+  final List<CheckList> checkList = [
     CheckList(title: 'Fluids (oil and coolant)',isChecked: false),
     CheckList(title: 'Brakes',isChecked: false),
     CheckList(title: 'Lights',isChecked: false),
@@ -80,7 +86,6 @@ class HomeViewModel extends BaseViewModel {
     CheckList(title: 'Horn',isChecked: false),
     CheckList(title: 'Tyres',isChecked: false),
     CheckList(title: 'Documents and licenses',isChecked: false),
-
   ];
 
   void toggleItem(int index) {
@@ -154,26 +159,18 @@ class HomeViewModel extends BaseViewModel {
 
       await budgetingService.getBudgets();
       await paymentService.getPlans();
+      await reminderService.getReminders();
       await userService.getCurrentFuelPrice(
           country: userService.userModel!.payload!.user!.country,
           state: userService.userModel!.payload!.user!.state,
       );
 
       userModel = userService.userModel;
+      reminderListModel = reminderService.reminderListModel;
 
       getBudgetData();
 
-      if(onPermissionCallBack != null) {
-        onPermissionCallBack();
-
-        Geolocator.getLastKnownPosition().then((Position? position) async {
-          currentPosition = position;
-          if(currentPosition != null) {
-            weatherSetup();
-          }
-        });
-
-      }
+      onPermissionCallBack?.call();
 
       if(fuelData != null) {
         currentFuelPrice = fuelData!.payload!.toInt().toString();
@@ -218,6 +215,17 @@ class HomeViewModel extends BaseViewModel {
 
     }
 
+  }
+
+  List<ReminderPayload> getReminderLists() {
+    if(reminderListModel != null) {
+      if(reminderListModel!.data.isNotEmpty && reminderListModel!.data.length > 5) {
+        return reminderListModel!.data.sublist(0, 5);
+      }
+      return reminderListModel!.data;
+    } else {
+      return [];
+    }
   }
 
   void weatherSetup() {
@@ -433,6 +441,17 @@ class HomeViewModel extends BaseViewModel {
       onErrorCallBack!('No image on current car for sale');
 
     }
+
+  }
+
+  void getLocationUpdate() {
+
+    Geolocator.getLastKnownPosition().then((Position? position) async {
+      currentPosition = position;
+      if(currentPosition != null) {
+        weatherSetup();
+      }
+    });
 
   }
 

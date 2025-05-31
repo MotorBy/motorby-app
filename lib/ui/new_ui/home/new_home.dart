@@ -8,6 +8,7 @@ import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
@@ -46,16 +47,18 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
             },
             onPermissionCallBack: () {
 
-              if(model.currentPosition == null &&
-                  model.locationDeclined == false) {
+              if(model.currentPosition == null && model.locationDeclined == false) {
 
                 modalBottomSheetMenu(
                   color: Colors.white,
                   isDismissible: false,
                   context: context,
                   height: 450,
-                  child: const InfoDetailsView(
+                  child: InfoDetailsView(
                     infoType: InfoType.locationSetup,
+                    onPermissionAction: () {
+                      model.getLocationUpdate();
+                    },
                   ),
                 );
 
@@ -96,46 +99,15 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    if(viewModel.currentCar != null) ... [
-
-                      // Vehicle Selection Card
-                      CarSelectorView(
-                          cars: viewModel.budgetingModel!.budget!,
-                          currentCar: viewModel.currentCar != null ? '${viewModel.currentCar!.carMake} ${viewModel.currentCar!.carModel} ${viewModel.currentCar!.carYear}' : null,
-                          allowStyling: false,
-                          onCarSelected: ({Budget? budget, int? index}) {
-                            viewModel.onBudgetViewUpdated(index);
-                          }
-                      )
-
-                    ] else ... [
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        visualDensity: const VisualDensity(horizontal: -4),
-                        title: Row(
-                          children: [
-                            // Image.asset('assets/images/toyota-logo.png',
-                            //     height: 24),
-                            const SizedBox(width: 2),
-                            const NormalText(
-                              text: 'Add a car',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                            const XMargin(10),
-                            Icon(
-                              Icons.expand_less_rounded,
-                              color: XColors.black(),
-                              size: 30,
-                            )
-                          ],
-                        ),
-                        onTap: () {
-                          navigate(context, const AddCarsScreen());
-                        },
-                      ),
-                    ],
+                    // Vehicle Selection Card
+                    CarSelectorView(
+                        cars: viewModel.budgetingModel?.budget != null ? viewModel.budgetingModel!.budget! : [],
+                        currentCar: viewModel.currentCar != null ? '${viewModel.currentCar!.carMake} ${viewModel.currentCar!.carModel} ${viewModel.currentCar!.carYear}' : null,
+                        allowStyling: false,
+                        onCarSelected: ({Budget? budget, int? index}) {
+                          viewModel.onBudgetViewUpdated(index);
+                        }
+                    ),
 
                     const YMargin(14),
                     // Fuel Price Card
@@ -187,11 +159,15 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                     // Insurance Card
                     Stack(
                       children: [
-                        const GetPngImage(
-                            image: 'assets/images/motorby_toyo.png'),
+                        GetPngImage(
+                            image: 'assets/images/motorby_toyo.png',
+                          width: MediaQuery.of(context).size.width,
+                        ),
                         Positioned(
-                          top: 35,
+                          top: 45,
+                          bottom: 25,
                           left: 14,
+                          right: 14,
                           child: GestureDetector(
                             onTap: () {
                               navigate(context, const InsuranceScreen());
@@ -204,7 +180,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                                     'Car Insurance',
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 24,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -239,20 +215,21 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                     // Reminder Card
                     ContainerWidget(
                       elevation: 0.2,
-                      height: 200,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 16),
+                      height: viewModel.getReminderLists().isNotEmpty ? null : 150,
                       borderRadius: BorderRadius.circular(16),
                       backgroundColor: XColors.white(),
                       width: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          NormalText(
-                            text: 'Reminders',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            textColor: XColors.black(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                            child: NormalText(
+                              text: 'Reminders',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              textColor: XColors.black(),
+                            ),
                           ),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: 12),
@@ -260,49 +237,9 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                             width: double.infinity,
                             color: const Color(0xFFD0D5DD),
                           ),
-                          Expanded(
-                            child: ListView.separated(
-                                physics: const BouncingScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    onTap: () {},
-                                    leading: const GetSvgImage(
-                                        image:
-                                        'assets/images/water-drop.svg'),
-                                    dense: true,
-                                    visualDensity:
-                                    const VisualDensity(horizontal: -1),
-                                    title: NormalText(
-                                      text: 'Oil change',
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      textColor: XColors.black(),
-                                    ),
-                                    trailing: const Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.end,
-                                      children: [
-                                        NormalText(
-                                          text: '3:00PM',
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        NormalText(
-                                          text: '23/04/2024',
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                separatorBuilder: (context, index) =>
-                                const DividerWidget(),
-                                itemCount: 4),
-                          )
+                          ReminderListView(
+                            reminders: viewModel.getReminderLists(),
+                          ),
                         ],
                       ),
                     ),

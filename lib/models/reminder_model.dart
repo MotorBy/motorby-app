@@ -52,7 +52,7 @@ class ReminderPayload {
   String? title;
   String? description;
   DateTime? dueDate;
-  DateTime? dueTime;
+  String? dueTime;
   String? frequency;
   String? category;
   NotificationPreferences? notificationPreferences;
@@ -81,7 +81,7 @@ class ReminderPayload {
     title: json["title"],
     description: json["description"],
     dueDate: json["due_date"] == null ? null : DateTime.parse(json["due_date"]),
-    dueTime: json["due_time"] == null ? null : DateTime.parse(json["due_time"]),
+    dueTime: json["due_time"],
     frequency: json["frequency"],
     category: json["category"],
     metadata: Metadata.fromJson(json["metadata"]),
@@ -99,7 +99,7 @@ class ReminderPayload {
     "metadata": metadata!.toJson(),
     "description": description,
     "due_date": dueDate?.toIso8601String(),
-    "due_time": dueTime?.toIso8601String(),
+    "due_time": dueTime,
     "frequency": frequency,
     "category": category,
     "notification_preferences": notificationPreferences?.toJson(),

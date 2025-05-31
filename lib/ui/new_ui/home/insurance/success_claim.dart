@@ -54,7 +54,7 @@ class SuccessClaim extends StatelessWidget {
                       children: [
                         ContainerWidget(
                           onTap: () {
-                            navigate(context, const ClaimScreen());
+                            navigate(context, const InsuranceHistoryScreen());
                           },
                           backgroundColor: XColors.white(),
                           borderColor: XColors.highlightColor(),

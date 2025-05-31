@@ -3,27 +3,25 @@ import 'dart:collection';
 import 'package:stacked/stacked.dart';
 
 class DashboardViewModel extends BaseViewModel {
-      int currentindex = 0;
+  int currentIndex = 0;
   ListQueue<int> navigationQueue = ListQueue();
 
-
   void changeTabIndex(int index) {
-  if (currentindex != index) { // Update only if index changes
-    currentindex = index;
-    notifyListeners();
+    if (currentIndex != index) {
+      // Update only if index changes
+      currentIndex = index;
+      notifyListeners();
 
-    navigationQueue.clear();
-    navigationQueue.addLast(index);
-    notifyListeners();
+      navigationQueue.clear();
+      navigationQueue.addLast(index);
+      notifyListeners();
 
-    print('the index: $index');
+      print('the index: $index');
+    }
+    checkdata();
   }
-      checkdata();
-}
-
 
   void checkdata() {
-    // ignore: avoid_function_literals_in_foreach_calls
-    navigationQueue.forEach((element) {});
+    for (var element in navigationQueue) {}
   }
 }

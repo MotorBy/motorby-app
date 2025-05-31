@@ -27,13 +27,15 @@ class InfoDetailsView extends StatelessWidget {
     this.infoDetailsViewModel,
     this.currentIndex,
     this.onHistoryNav,
-    this.onBudgetAction
+    this.onBudgetAction,
+    this.onPermissionAction
   });
 
   final InfoType? infoType;
   final int? currentIndex;
   final Function? onHistoryNav;
   final Function? onBudgetAction;
+  final Function? onPermissionAction;
 
   final InfoDetailsViewModel? infoDetailsViewModel;
 
@@ -99,6 +101,7 @@ class InfoDetailsView extends StatelessWidget {
 
                 PermissionLocationGuide(
                   infoDetailsViewModel: viewModel,
+                  onPermissionAction: onPermissionAction,
                 ),
 
               ] else if(infoType == InfoType.budgeting) ... [
@@ -1386,9 +1389,11 @@ class PermissionLocationGuide extends ViewModelWidget<InfoDetailsViewModel> {
   const PermissionLocationGuide({
     super.key,
     this.infoDetailsViewModel,
+    this.onPermissionAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
+  final Function? onPermissionAction;
 
   @override
   Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
@@ -1450,6 +1455,7 @@ class PermissionLocationGuide extends ViewModelWidget<InfoDetailsViewModel> {
           onPressed: () {
             popView(context);
             viewModel.promoteLocationPermission();
+            onPermissionAction?.call();
           },
           text: "Continue",
           height: 56,

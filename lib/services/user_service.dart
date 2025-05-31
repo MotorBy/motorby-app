@@ -32,8 +32,6 @@ class UserService {
     var response = await http.get(Uri.parse(APIService.getUser(id: persistService.getUserID)),
         headers: APIHelper().requestHeadersWithToken());
 
-    print(APIHelper().requestHeadersWithToken());
-
     final json = JSON.jsonDecode(response.body);
 
     print(json.toString());

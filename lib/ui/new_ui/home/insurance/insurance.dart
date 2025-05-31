@@ -38,7 +38,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
             actions: [
               ContainerWidget(
                 onTap: (){
-                  navigate(context, const ClaimScreen());
+                  navigate(context, InsuranceHistoryScreen(viewModel: model,));
                 },
                 borderColor: XColors.primaryColor2(),
                 hasBorder: true,

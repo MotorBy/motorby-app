@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -8,6 +9,7 @@ import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -266,6 +268,56 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                   XButton(
                     onPressed: () {
 
+                      if(model.hasKycVerification == false) {
+
+                        FloatingSnackBar.show(
+                            context,
+                            'Make sure to complete your KYC first to easily purchase an auto insurance',
+                            isError: true
+                        );
+
+                      } else {
+
+                        model.makePayment(
+                            onInitialisedError: (e) {
+                              FloatingSnackBar.show(
+                                  context,
+                                  e.toString(),
+                                  isError: true
+                              );
+                            },
+                            onShowPayModal: (initTrans) async {
+
+                              await PaymentService.showPaymentModal(
+                                context,
+                                transaction: initTrans!,
+                              ).then((value) async {
+
+                                await model.verifyPayment(
+                                    onCallBack: (){
+
+                                      FloatingSnackBar.show(
+                                          context,
+                                          'Successfully bought an insurance',
+                                          isError: false
+                                      );
+
+                                      Navigator.pop(context, true);
+
+                                    },
+                                    onErrorCallBack: (){
+                                      FloatingSnackBar.show(
+                                          context,
+                                          'Error with buying an insurance',
+                                          isError: true
+                                      );
+                                    }
+                                );
+                              });
+
+                            }
+                        );
+                      }
                     },
                     text: 'Buy now',
                     isLoading: model.isBusy,

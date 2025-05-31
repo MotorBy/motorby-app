@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
+import 'package:mobile_auto_drive/ui/onboarding/onboarding_screen.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -21,10 +22,11 @@ class SplashScreen extends StatelessWidget {
         viewModelBuilder: () => SplashViewModel(),
         onViewModelReady: (model) => model.initialise(
             authNewState: isAuthed,
-            onNewCallBack: (){
-              navigateReplace(context, SignInScreen());
+            onNewCallBack: () {
+              //navigateReplace(context, SignInScreen());
+              navigateReplace(context, const OnboardingScreen());
             },
-            onLoggedCallBack: (){
+            onLoggedCallBack: () {
               navigateReplace(context, const DashBoardScreen());
             }
         ),

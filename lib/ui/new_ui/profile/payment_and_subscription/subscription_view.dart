@@ -123,13 +123,11 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
 
                                       model.makePayment(
                                           onInitialisedError: (e) {
-
                                             FloatingSnackBar.show(
                                                 context,
                                                 e.toString(),
                                                 isError: true
                                             );
-
                                           },
                                           onShowPayModal: (initTrans) async {
                                             if(initTrans != null) {
@@ -190,8 +188,6 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                                           }
                                       );
 
-                                      //navigate(context, PaymentMethodView(amount: amount, name: name));
-
                                     } else {
 
                                       FloatingSnackBar.show(
@@ -218,7 +214,8 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
                               ],
                             ),
                           );
-                        }),
+                        },
+                    ),
                   )
                 ],
               ),

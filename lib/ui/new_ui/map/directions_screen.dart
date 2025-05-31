@@ -4,6 +4,9 @@ import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/size_config.dart';
+import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -109,26 +112,29 @@ class DirectionsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildInfoItem(
-                          Icons.access_time,
-                          viewModel.routeDirectionsModel?.payload?.routes?.first.duration?.text ?? 'N/A',
-                          'Estimated Time'
-                        ),
+                            Icons.access_time,
+                            viewModel.routeDirectionsModel?.payload?.routes
+                                    ?.first.duration?.text ??
+                                'N/A',
+                            'Estimated Time'),
                         _buildInfoItem(
-                          Icons.speed,
-                          viewModel.routeDirectionsModel?.payload?.routes?.first.distance?.text ?? 'N/A',
-                          'Distance'
-                        ),
+                            Icons.speed,
+                            viewModel.routeDirectionsModel?.payload?.routes
+                                    ?.first.distance?.text ??
+                                'N/A',
+                            'Distance'),
                         _buildInfoItem(
-                          Icons.directions_car,
-                          _calculateArrivalTime(viewModel.routeDirectionsModel?.payload?.routes?.first.duration?.value ?? 0),
-                          'Arrival Time'
-                        ),
+                            Icons.directions_car,
+                            _calculateArrivalTime(viewModel.routeDirectionsModel
+                                    ?.payload?.routes?.first.duration?.value ??
+                                0),
+                            'Arrival Time'),
                       ],
                     ),
                   ],
                 ),
               ),
-              
+
               // Map with route
               Expanded(
                 flex: 2,
@@ -150,25 +156,24 @@ class DirectionsScreen extends StatelessWidget {
                         },
                       ),
               ),
-
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
               modalBottomSheetMenu(
-                  context: context,
-                  radius: 20,
-                  color: Colors.white,
-                  child: Container(
-                    height: 450,
-                    child: ListView.builder(
-                      itemCount: viewModel.directions.length,
-                      itemBuilder: (context, index) {
-                        final step = viewModel.directions[index];
-                        return _buildDirectionStep(step, index, context: context);
-                      },
-                    ),
+                context: context,
+                radius: 20,
+                color: Colors.white,
+                child: Container(
+                  height: 450,
+                  child: ListView.builder(
+                    itemCount: viewModel.directions.length,
+                    itemBuilder: (context, index) {
+                      final step = viewModel.directions[index];
+                      return _buildDirectionStep(step, index, context: context);
+                    },
                   ),
+                ),
               );
             },
             backgroundColor: XColors.primaryColor(),
@@ -177,11 +182,16 @@ class DirectionsScreen extends StatelessWidget {
             ),
             label: const Text(
               'Start Navigation',
-              style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+              style:
+                  TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
             ),
-            icon: const Icon(Icons.navigation, color: Colors.white,),
+            icon: const Icon(
+              Icons.navigation,
+              color: Colors.white,
+            ),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
         );
       },
     );
@@ -214,8 +224,8 @@ class DirectionsScreen extends StatelessWidget {
     return '${arrivalTime.hour.toString().padLeft(2, '0')}:${arrivalTime.minute.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildDirectionStep(String instruction, int index, {BuildContext? context}) {
-
+  Widget _buildDirectionStep(String instruction, int index,
+      {BuildContext? context}) {
     IconData getManeuverIcon(String maneuver) {
       switch (maneuver.toUpperCase()) {
         case 'TURN_RIGHT':
@@ -252,9 +262,12 @@ class DirectionsScreen extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        if (viewModel!.routeDirectionsModel?.payload?.routes?.isNotEmpty ?? false) {
-          final step = viewModel!.routeDirectionsModel!.payload!.routes![0].steps![index];
-          final points = viewModel!.decodePolyline(step.polyline!.encodedPolyline!);
+        if (viewModel!.routeDirectionsModel?.payload?.routes?.isNotEmpty ??
+            false) {
+          final step = viewModel!
+              .routeDirectionsModel!.payload!.routes![0].steps![index];
+          final points =
+              viewModel!.decodePolyline(step.polyline!.encodedPolyline!);
           if (points.isNotEmpty) {
             // Calculate the center point of the step's path
             final bounds = viewModel!.boundsFromLatLngList(points);
@@ -262,11 +275,11 @@ class DirectionsScreen extends StatelessWidget {
               (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
               (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
             );
-            
+
             // Animate camera to center on this step
             viewModel!.getMapController().animateCamera(
-              CameraUpdate.newLatLngZoom(center, 16),
-            );
+                  CameraUpdate.newLatLngZoom(center, 16),
+                );
             popView(context!);
           }
         }
@@ -306,37 +319,54 @@ class DirectionsScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   // Show dialog to save the current direction
   void _showSaveDirectionDialog(BuildContext context, MapViewModel viewModel) {
     final TextEditingController nameController = TextEditingController();
-    
-    showDialog(
+
+    modalBottomSheetMenu(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Save Direction'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Save this route for future reference'),
-              const SizedBox(height: 16),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'e.g. Home to Work',
-                  border: OutlineInputBorder(),
+      radius: 20,
+      color: Colors.white,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const NormalText(
+                  text: 'Save Direction',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
             ),
-            TextButton(
+            const YMargin(16),
+            NormalText(
+              text: 'Save this route for future reference',
+              fontSize: 16,
+              textColor: Colors.grey[600],
+            ),
+            const YMargin(20),
+            MainInputField(
+              controller: nameController,
+              label: 'Name',
+              hint: 'e.g. Home to Work',
+              isEnabled: true,
+              onChanged: (s) {
+
+              },
+            ),
+            const YMargin(44),
+            XButton(
+              text: 'Save Direction',
               onPressed: () {
                 if (nameController.text.isNotEmpty) {
                   viewModel.saveDirection(
@@ -347,19 +377,29 @@ class DirectionsScreen extends StatelessWidget {
                   );
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Direction saved successfully')),
+                    const SnackBar(
+                        content: Text('Direction saved successfully')),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a name for this direction')),
+                    const SnackBar(
+                        content:
+                            Text('Please enter a name for this direction')),
                   );
                 }
               },
-              child: const Text('Save'),
+              height: 56,
+              textColor: Colors.white,
+              buttonColor: XColors.primaryColor(),
+              progressColor: Colors.white,
+              isLoading: viewModel.isBusy,
+              radius: 26,
+              width: SizeConfig().sw(400) as double?,
             ),
+            const YMargin(16),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

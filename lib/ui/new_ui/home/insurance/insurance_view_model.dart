@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/get_insurance_product_model.dart';
+import 'package:mobile_auto_drive/models/insurance_bought_model.dart';
 import 'package:mobile_auto_drive/models/insurance_product_details.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
@@ -35,6 +36,7 @@ class InsuranceViewModel extends BaseViewModel {
   FilePickerResult? filePickerResultBack;
 
   GetInsuranceModel? insuranceProduct;
+  InsuranceBoughtModel? insuranceBought;
   GetInsuranceProduct? insuranceProductDetails;
   List<InsuranceList> insuranceList = [];
 
@@ -70,6 +72,7 @@ class InsuranceViewModel extends BaseViewModel {
   final manufacture = TextEditingController();
   final vehicleType = TextEditingController();
   final registrationNumber = TextEditingController();
+
   //New Claim screen
   final dateOfIncident = TextEditingController();
   final timeOfIncident = TextEditingController();
@@ -84,17 +87,21 @@ class InsuranceViewModel extends BaseViewModel {
     if (insuranceService.insuranceProduct != null) {
       insuranceProduct = insuranceService.insuranceProduct;
       insuranceList = insuranceProduct?.payload ?? [];
+      insuranceBought = insuranceService.insuranceBoughtModel;
     } else {
       setBusy(true);
 
       await insuranceService.getInsuranceList();
-      setBusy(false);
+      await insuranceService.getBoughtInsurance();
 
       insuranceProduct = insuranceService.insuranceProduct;
+      insuranceBought = insuranceService.insuranceBoughtModel;
       insuranceList = insuranceProduct?.payload ?? [];
+      setBusy(false);
     }
     notifyListeners();
-    print('the list of product: ${insuranceList.first.company}');
+    print('the list of product: ${insuranceList.length}');
+    print('the list of bought product: ${insuranceBought?.payload}');
   }
 
   double? purchaseAmount = 0.0;
@@ -162,7 +169,7 @@ class InsuranceViewModel extends BaseViewModel {
 
   }
 
-  Future verifyPayment() async {
+  Future verifyPayment({Function? onCallBack, Function? onErrorCallBack}) async {
     try {
       setBusy(true);
       
@@ -194,9 +201,9 @@ class InsuranceViewModel extends BaseViewModel {
         "car": {
           "make": currentCar.carMake,
           "model": currentCar.carModel,
-          //"registration_number": currentCar.registrationNumber,
-          //"engine_number": currentCar.engineNumber,
-          //"chassis_number": currentCar.chassisNumber,
+          "registration_number": currentCar.registrationNumber,
+          "engine_number": currentCar.engineNumber,
+          "chassis_number": currentCar.chassisNumber,
           "type": "Car"
         },
         "user": {
@@ -207,17 +214,21 @@ class InsuranceViewModel extends BaseViewModel {
           "dob": user.kycData?.dateOfBirth.toString(),
           "id_type": user.kycData?.documents?[0].type,
           "id_url": user.kycData?.documents?[0].url,
-          //"address": user.address,
+          "address": user.kycData?.homeAddress,
           "state": user.state,
           "country": user.country
         }
       };
 
-      //await insuranceService.purchaseInsurance(purchaseData);
+      await insuranceService.purchaseInsurance(purchaseData);
       setBusy(false);
+
+      onCallBack?.call();
       
-    } catch (e) {
+    } catch (e, s) {
       setBusy(false);
+      print(s);
+      onErrorCallBack?.call();
       rethrow;
     }
   }

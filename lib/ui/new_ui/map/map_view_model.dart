@@ -355,7 +355,14 @@ class MapViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> getRouteDirection({String? destinationAddress, LatLng? destination, Function? onCallBack, Function? onErrorCallBack, bool? isNearby = false}) async {
+  Future<void> getRouteDirection({
+    String? destinationAddress,
+    LatLng? destination,
+    Function? onCallBack,
+    Function? onErrorCallBack,
+    bool? isNearby = false
+  }) async {
+
     try {
 
       destinationAddressName = destinationAddress;
@@ -396,7 +403,12 @@ class MapViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> saveDirection(String name, String destinationName, String destinationAddress, LatLng destination) async {
+  Future<void> saveDirection(
+      String name,
+      String destinationName,
+      String destinationAddress,
+      LatLng destination) async {
+
     try {
       // Create direction details
       final Map<String, dynamic> directionDetails = {

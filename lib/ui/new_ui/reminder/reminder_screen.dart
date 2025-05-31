@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_auto_drive/models/reminder_model.dart';
+import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_viewmodel.dart';
@@ -23,30 +25,6 @@ class ReminderScreen extends StatefulWidget {
 }
 
 class _ReminderScreenState extends State<ReminderScreen> {
-  IconData _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'maintenance':
-        return Icons.build;
-      case 'changes':
-        return Icons.swap_horiz;
-      case 'repairs':
-        return Icons.build_circle;
-      case 'budget':
-        return Icons.account_balance_wallet;
-      case 'trips':
-        return Icons.directions_car;
-      case 'breakdown':
-        return Icons.car_repair;
-      case 'fueling':
-        return Icons.local_gas_station;
-      case 'service':
-        return Icons.miscellaneous_services;
-      case 'insurance':
-        return Icons.security;
-      default:
-        return Icons.more_horiz;
-    }
-  }
 
   @override
   void initState() {
@@ -166,76 +144,102 @@ class _ReminderScreenState extends State<ReminderScreen> {
               const XMargin(10),
             ]
           ),
-          body: ContainerWidget(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            borderRadius: BorderRadius.circular(16),
-            backgroundColor: XColors.white(),
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  ...List.generate(model.reminders.length, (index) {
-                    final reminder = model.reminders[index];
-                    return Column(
-                      children: [
-                        ListTile(
-                          onTap: () {},
-                          leading: Icon(
-                            _getCategoryIcon(reminder.metadata?.category ?? ''),
-                            color: XColors.primaryColor(),
-                            size: 20,
-                          ),
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          visualDensity: const VisualDensity(horizontal: -4),
-                          title: NormalText(
-                            text: reminder.title ?? '',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            textColor: XColors.black(),
-                          ),
-                          subtitle: NormalText(
-                            text: reminder.description ?? '',
-                            fontSize: 13,
-                            textColor: XColors.textColor().withOpacity(0.6),
-                          ),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              NormalText(
-                                text: reminder.dueTime != null
-                                    ? DateFormat('h:mm a').format(reminder.dueTime!)
-                                    : '--:--',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              NormalText(
-                                text: reminder.dueDate != null
-                                    ? DateFormat('dd/MM/yyyy').format(reminder.dueDate!)
-                                    : '--/--/----',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ],
-                          ),
-                        ),
-                        if(model.reminders.length - 1 != index) ... [
-                          const DividerWidget(),
-                          const YMargin(16),
-                        ]
-                      ],
-                    );
-                  }),
-                ],
-              ),
-            ),
-          ),
+          body: ReminderListView(reminders: model.reminders,),
           );
       }
     );
   }
+}
+
+class ReminderListView extends StatelessWidget {
+  ReminderListView({super.key, this.reminders});
+
+  List<ReminderPayload>? reminders = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return ContainerWidget(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      borderRadius: BorderRadius.circular(16),
+      backgroundColor: XColors.white(),
+      width: double.infinity,
+      //height: MediaQuery.of(context).size.height,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            if(reminders!.isNotEmpty) ... [
+
+              ...List.generate(reminders!.length, (index) {
+                final reminder = reminders![index];
+                return Column(
+                  children: [
+                    ListTile(
+                      onTap: () {},
+                      leading: Icon(
+                        getReminderCategoryIcon(reminder.metadata?.category ?? ''),
+                        color: XColors.primaryColor(),
+                        size: 20,
+                      ),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: const VisualDensity(horizontal: -4),
+                      title: NormalText(
+                        text: reminder.title ?? '',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        textColor: XColors.black(),
+                      ),
+                      subtitle: NormalText(
+                        text: reminder.description ?? '',
+                        fontSize: 13,
+                        textColor: XColors.textColor().withOpacity(0.6),
+                      ),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          NormalText(
+                            text: reminder.dueTime != null
+                                ? reminder.dueTime!
+                                : '--:--',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          NormalText(
+                            text: reminder.dueDate != null
+                                ? DateFormat('dd/MM/yyyy').format(reminder.dueDate!)
+                                : '--/--/----',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if(reminders!.length - 1 != index) ... [
+                      const DividerWidget(),
+                      const YMargin(16),
+                    ]
+                  ],
+                );
+              }),
+
+            ] else  ... [
+
+              Center(child: NormalText(
+                text: 'No reminders set here',
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                textColor: XColors.black(),
+              ))
+
+            ],
+
+          ],
+        ),
+      ),
+    );
+  }
+
 }

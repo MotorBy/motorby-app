@@ -1,9 +1,35 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
 
 import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
+
+IconData getReminderCategoryIcon(String category) {
+  switch (category.toLowerCase()) {
+    case 'maintenance':
+      return Icons.build;
+    case 'changes':
+      return Icons.swap_horiz;
+    case 'repairs':
+      return Icons.build_circle;
+    case 'budget':
+      return Icons.account_balance_wallet;
+    case 'trips':
+      return Icons.directions_car;
+    case 'breakdown':
+      return Icons.car_repair;
+    case 'fueling':
+      return Icons.local_gas_station;
+    case 'service':
+      return Icons.miscellaneous_services;
+    case 'insurance':
+      return Icons.security;
+    default:
+      return Icons.more_horiz;
+  }
+}
 
 class ReminderService {
 

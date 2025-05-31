@@ -1,6 +1,8 @@
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/places_services.dart';
+import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
@@ -8,13 +10,16 @@ import 'package:stacked/stacked.dart';
 class QuickActionsViewModel extends BaseViewModel {
   final _budgetingService = serviceLocator<BudgetingService>();
   final _placesService = serviceLocator<PlacesService>();
+  final _reminderService = serviceLocator<ReminderService>();
   
   BudgetingModel? _budgetingModel;
   Budget? currentBudget;
   CarId? _currentCar;
+  final List<ReminderPayload> _reminders = [];
 
   BudgetingModel? get budgetingModel => _budgetingModel;
   CarId? get currentCar => _currentCar;
+  List<ReminderPayload> get reminders => _reminders;
   String get currentCarName => _currentCar != null ? '${_currentCar!.carMake}' : 'Toyota';
   
   // Spending statistics - calculated dynamically from budget data
@@ -64,6 +69,14 @@ class QuickActionsViewModel extends BaseViewModel {
     }
     
     return '₦${amtFormatter(total)} spent';
+  }
+
+  String get totalReminderSet {
+    if(_reminderService.reminderListModel != null) {
+      return _reminderService.reminderListModel!.data.length.toString();
+    } else {
+      return '0';
+    }
   }
 
   // Location and car counts - calculated dynamically

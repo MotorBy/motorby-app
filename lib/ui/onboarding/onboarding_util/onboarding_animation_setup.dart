@@ -25,7 +25,7 @@ class OnboardingAnimationSetup {
 
   static List<double> changingLogoAnimation = [0.0, 30.0];
   static List<double> changingTextAnimation = [110, 300];
-  static List<double> changingChipsAnimation = [5, 520];
+  static List<double> changingChipsAnimation = [5, 580];
 
   static void init({TickerProvider? vsync}) {
     _instance ??= OnboardingAnimationSetup._();
@@ -33,7 +33,7 @@ class OnboardingAnimationSetup {
 
     _instance!.animationProgressCtrl1 = AnimationController(
       vsync: vsync!,
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 2000),
     );
     _instance!.curvedAnimation1 = CurvedAnimation(parent: _instance!.animationProgressCtrl1, curve: Curves.linear);
     _instance!.animationProgressValue1 = Tween<double>(

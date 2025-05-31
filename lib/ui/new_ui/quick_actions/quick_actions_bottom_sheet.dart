@@ -152,7 +152,7 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           iconColor: Colors.white,
                           iconBgColor: const Color(0xFF004D1F),
                           label: 'Reminder',
-                          value: model.activeRemindersCount,
+                          value: '${model.totalReminderSet} reminder(s)',
                           onTap: () {
                             navigate(context, const ReminderScreen());
                           },

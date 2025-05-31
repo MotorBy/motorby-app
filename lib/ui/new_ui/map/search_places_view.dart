@@ -22,6 +22,7 @@ class SearchMapPlace extends StatefulWidget {
     this.radius,
     this.strictBounds = false,
     this.placeType,
+    this.isEnabled,
     this.darkMode = false,
     this.key,
   })  : assert((location == null && radius == null) || (location != null && radius != null)),
@@ -38,6 +39,7 @@ class SearchMapPlace extends StatefulWidget {
   final bool strictBounds;
   final PlaceType? placeType;
   final IconData icon;
+  final bool? isEnabled;
   final bool hasClearButton;
   final IconData clearIcon;
   final Color iconColor;
@@ -163,7 +165,8 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
               autofocus: false,
               focusNode: _fn,
               style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.04,
+                //fontSize: MediaQuery.of(context).size.width * 0.06,
+                fontSize: 16,
                 color: widget.darkMode ? Colors.grey[100] : Colors.grey[850],
               ),
             ),
@@ -224,7 +227,6 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
     return InputDecoration(
       hintText: "Enter destination or any address",
       border: InputBorder.none,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
       hintStyle: TextStyle(
         color: widget.darkMode ? Colors.grey[100] : Colors.grey[850], fontWeight: FontWeight.w400
       ),
@@ -276,8 +278,7 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
 
   /// API request function. Returns the Predictions
   Future<dynamic> makeRequest(input) async {
-    String url =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=${widget.apiKey}&language=${widget.language}";
+    String url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=${widget.apiKey}&language=${widget.language}";
     if (widget.location != null && widget.radius != null) {
       url += "&location=${widget.location!.latitude},${widget.location!.longitude}&country=NG&radius=${widget.radius}";
       if (widget.strictBounds) {

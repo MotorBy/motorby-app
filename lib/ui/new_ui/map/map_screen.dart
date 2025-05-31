@@ -171,7 +171,7 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
   modalBottomSheetMenu(
     context: context,
     radius: 20,
-    height: 670,
+    height: 720,
     color: XColors.background(),
     child: ViewModelBuilder<MapViewModel>.reactive(
         viewModelBuilder: () => model,
@@ -180,149 +180,176 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
           model.init();
         },
         builder: (context, viewModel, child) {
-          return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle bar at top
-              Center(
-                child: Container(
-                  height: 4,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
+          return SingleChildScrollView(
+            child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle bar at top
+                Center(
+                  child: Container(
+                    height: 4,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-              const YMargin(20),
+                const YMargin(20),
 
-              // Search place field
-              SearchMapPlace(
-                apiKey: APIKey.googleAPIKey,
-                location: viewModel.currentPosition == null
-                    ? const LatLng(7.3219678, 5.147076)
-                    : LatLng(viewModel.currentPosition!.latitude,
-                    viewModel.currentPosition!.longitude),
-                radius: 5000,
-                onSelected: (place) async {
-                  final geolocation = await place.geolocation;
+                // Search place field
+                SearchMapPlace(
+                  apiKey: APIKey.googleAPIKey,
+                  location: viewModel.currentPosition == null
+                      ? const LatLng(7.3219678, 5.147076)
+                      : LatLng(viewModel.currentPosition!.latitude,
+                      viewModel.currentPosition!.longitude),
+                  radius: 5000,
+                  onSelected: (place) async {
+                    final geolocation = await place.geolocation;
 
-                  final lat = geolocation!.coordinates.latitude;
-                  final lng = geolocation.coordinates.longitude;
-                  viewModel.searchedPlaceAddress = place.description;
+                    final lat = geolocation!.coordinates.latitude;
+                    final lng = geolocation.coordinates.longitude;
+                    viewModel.searchedPlaceAddress = place.description;
 
-                  Map<String, dynamic> pickedAddressFromMap = {
-                    "lat": lat.toString(),
-                    "lng": lng.toString(),
-                    "address": viewModel.searchedPlaceAddress
-                  };
+                    Map<String, dynamic> pickedAddressFromMap = {
+                      "lat": lat.toString(),
+                      "lng": lng.toString(),
+                      "address": viewModel.searchedPlaceAddress
+                    };
 
-                  Navigator.pop(context, pickedAddressFromMap);
+                    print(pickedAddressFromMap);
+                    //Navigator.pop(context, pickedAddressFromMap);
 
-                },
-              ),
+                    viewModel.getRouteDirection(
+                        destinationAddress: pickedAddressFromMap['address'],
+                        destination: LatLng(
+                          double.parse(pickedAddressFromMap['lat']),
+                          double.parse(pickedAddressFromMap['lng']),
+                        ),
+                        onCallBack: () {
 
-              const YMargin(20),
+                          navigate(context, DirectionsScreen(
+                            destination: LatLng(
+                              double.parse(pickedAddressFromMap['lat']),
+                              double.parse(pickedAddressFromMap['lng']),
+                            ),
+                            destinationName: "You are going to",
+                            viewModel: viewModel,
+                            destinationAddress: pickedAddressFromMap['address'],
+                          ));
 
-              CarSelectorView(
-                  cars: model.getBudgetData(),
-                  currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
-                  onCarSelected: ({Budget? budget, int? index}){
+                        },
+                        onErrorCallBack: (e) {
 
+                        }
+                    );
+
+                  },
+                ),
+
+                const YMargin(20),
+
+                CarSelectorView(
+                    cars: model.getBudgetData(),
+                    currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
+                    onCarSelected: ({Budget? budget, int? index}){
+
+                    }
+                ),
+
+                const YMargin(20),
+
+                // Nearby locations section
+                const NormalText(
+                  text: 'Nearby',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                const YMargin(12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildNearbyOption(
+                        title: 'Repair Shop',
+                        iconPath: 'assets/images/icons/repairing.png',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NearbyPlacesScreen(
+                                viewModel: viewModel,
+                                placeType: 'car_repair',
+                                title: 'Nearest Repair Shops',
+                              ),
+                            ),
+                          );
+                        },
+                        description: 'View nearby repair shops',
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildNearbyOption(
+                        title: 'Gas Station',
+                        iconPath: 'assets/images/icons/gas-station.png',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NearbyPlacesScreen(
+                                viewModel: viewModel,
+                                placeType: 'gas_station',
+                                title: 'Nearest Gas Stations',
+                              ),
+                            ),
+                          );
+                        },
+                        description: 'View nearby gas stations',
+                      ),
+                    ),
+                  ],
+                ),
+                const YMargin(20),
+
+                // Saved locations section
+                const NormalText(
+                  text: 'Saved Places',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                const YMargin(12),
+                _buildSavedLocationItem(
+                  'Home',
+                  viewModel.homeAddress != null && viewModel.homeAddress!.isNotEmpty
+                      ? viewModel.homeAddress!['address'] ?? 'Add home address'
+                      : 'Add home address',
+                  Icons.home_outlined,
+                  () {
+                    navigate(context, SavedAddressesScreen(viewModel: viewModel));
                   }
-              ),
-
-              const YMargin(20),
-
-              // Nearby locations section
-              const NormalText(
-                text: 'Nearby',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-              const YMargin(12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildNearbyOption(
-                      title: 'Repair Shop',
-                      iconPath: 'assets/images/icons/repairing.png',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NearbyPlacesScreen(
-                              viewModel: viewModel,
-                              placeType: 'car_repair',
-                              title: 'Nearest Repair Shops',
-                            ),
-                          ),
-                        );
-                      },
-                      description: 'View nearby repair shops',
+                ),
+                const Divider(),
+                _buildSavedLocationItem(
+                  'Work',
+                  viewModel.workAddress != null && viewModel.workAddress!.isNotEmpty
+                      ? viewModel.workAddress!['address'] ?? 'Add work address'
+                      : 'Add work address',
+                  Icons.work_outline,
+                  () {
+                    navigate(context, SavedAddressesScreen(viewModel: viewModel));
+                  }
+                ),
+                const Divider(),
+                _buildSavedLocationItem('Past', 'View past destinations', Icons.history, () {
+                  navigate(context, const PastDestinationsScreen());
+                }),
+              ],
+            ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildNearbyOption(
-                      title: 'Gas Station',
-                      iconPath: 'assets/images/icons/gas-station.png',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NearbyPlacesScreen(
-                              viewModel: viewModel,
-                              placeType: 'gas_station',
-                              title: 'Nearest Gas Stations',
-                            ),
-                          ),
-                        );
-                      },
-                      description: 'View nearby gas stations',
-                    ),
-                  ),
-                ],
-              ),
-              const YMargin(20),
-
-              // Saved locations section
-              const NormalText(
-                text: 'Saved Places',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-              const YMargin(12),
-              _buildSavedLocationItem(
-                'Home',
-                viewModel.homeAddress != null && viewModel.homeAddress!.isNotEmpty
-                    ? viewModel.homeAddress!['address'] ?? 'Add home address'
-                    : 'Add home address',
-                Icons.home_outlined,
-                () {
-                  navigate(context, SavedAddressesScreen(viewModel: viewModel));
-                }
-              ),
-              const Divider(),
-              _buildSavedLocationItem(
-                'Work',
-                viewModel.workAddress != null && viewModel.workAddress!.isNotEmpty
-                    ? viewModel.workAddress!['address'] ?? 'Add work address'
-                    : 'Add work address',
-                Icons.work_outline,
-                () {
-                  navigate(context, SavedAddressesScreen(viewModel: viewModel));
-                }
-              ),
-              const Divider(),
-              _buildSavedLocationItem('Past', 'View past destinations', Icons.history, () {
-                navigate(context, const PastDestinationsScreen());
-              }),
-            ],
-          ),
-        );
+          );
       }
     ),
   );

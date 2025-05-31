@@ -1,4 +1,5 @@
 import 'package:mobile_auto_drive/models/get_insurance_product_model.dart';
+import 'package:mobile_auto_drive/models/insurance_bought_model.dart';
 import 'package:mobile_auto_drive/models/insurance_product_details.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
@@ -11,20 +12,20 @@ class InsuranceService {
 
  GetInsuranceModel? insuranceProduct;
  GetInsuranceProduct? insuranceProductDetails;
+ InsuranceBoughtModel? insuranceBoughtModel;
  String? currentInsuranceId = '';
 
   Future getInsuranceList() async {
 
     var response = await http.get(Uri.parse(APIService.getInsuranceProducts),
         headers: APIHelper().requestHeadersWithToken());
-    final json = JSON.jsonDecode(response.body);
+      final json = JSON.jsonDecode(response.body);
 
-    print(json.toString());
-    print(APIHelper().requestHeaders());
+      print(json.toString());
 
-    if (json["statusCode"] == 200 || json["statusCode"] == 201) {
+      if (json["statusCode"] == 200 || json["statusCode"] == 201) {
 
-   insuranceProduct=GetInsuranceModel.fromJson(json);
+      insuranceProduct = GetInsuranceModel.fromJson(json);
   
       return insuranceProduct;
 
@@ -42,7 +43,6 @@ class InsuranceService {
     final json = JSON.jsonDecode(response.body);
 
     print(json.toString());
-    print(APIHelper().requestHeaders());
 
     if (json["statusCode"] == 200 || json["statusCode"] == 201) {
 
@@ -55,6 +55,52 @@ class InsuranceService {
       throw Exception(error);
 
     }
+  }
+
+  Future getBoughtInsurance() async {
+
+    var response = await http.get(Uri.parse(APIService.getBoughtInsuranceProducts),
+        headers: APIHelper().requestHeadersWithToken());
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if (json["statusCode"] == 200 || json["statusCode"] == 201) {
+
+      insuranceBoughtModel = InsuranceBoughtModel.fromJson(json);
+      return insuranceBoughtModel;
+
+    } else {
+
+      var error = json["message"];
+      throw Exception(error);
+
+    }
+  }
+
+  Future purchaseInsurance(Map<String, dynamic> purchaseData) async {
+
+    print(purchaseData.toString());
+
+    var response = await http.post(Uri.parse(APIService.getBuyInsuranceProducts),
+        headers: APIHelper().requestHeadersWithToken(),
+        body: JSON.jsonEncode(purchaseData));
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if (json["statusCode"] == 200 || json["statusCode"] == 201) {
+
+      return json;
+
+    } else {
+
+      var error = json["message"];
+      throw Exception(error);
+
+    }
+
   }
 
 }

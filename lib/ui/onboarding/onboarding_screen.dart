@@ -82,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                     children: [
                       const YMargin(15),
                       NormalText(
-                        text:'All-in-one\nplace for you',
+                        text:'Your Auto\ncompanion\nall-in-one place\nfor you',
                         textColor: XColors.white(),
                         fontSize: 40,
                         fontWeight: FontWeight.w900,
@@ -109,7 +109,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
           ),
 
           Positioned(
-            bottom: 20,
+            bottom: 50,
             left: 15,
             right: 15,
             child: XButton(
