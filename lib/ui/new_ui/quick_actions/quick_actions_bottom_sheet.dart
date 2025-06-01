@@ -132,7 +132,7 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           label: 'Map',
                           value: model.savedLocationsCount,
                           onTap: () {
-                            navigate(context, const MapScreen());
+                            navigate(context, const MapScreen(isFromQuickActions: true,));
                           },
                         ),
                         _buildActionItem(
@@ -154,7 +154,7 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           label: 'Reminder',
                           value: '${model.totalReminderSet} reminder(s)',
                           onTap: () {
-                            navigate(context, const ReminderScreen());
+                            navigate(context, const ReminderScreen(isFromQuickActions: true,));
                           },
                         ),
                       ],

@@ -4,6 +4,7 @@ import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -12,7 +13,9 @@ import 'expenditure_report_view.dart';
 import 'mileage_report_view.dart';
 
 class ReportScreen extends StatelessWidget {
-  const ReportScreen({Key? key}) : super(key: key);
+  const ReportScreen({Key? key, this.isFromQuickActions = false}) : super(key: key);
+
+  final bool? isFromQuickActions;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,10 @@ class ReportScreen extends StatelessWidget {
       builder: (context, model, child) => Scaffold(
         backgroundColor: XColors.background(),
         appBar: appBarHeader(
-          hasOnBack: false,
+          hasOnBack: isFromQuickActions,
+          onCloseAction: (){
+            popView(context);
+          },
           context: context,
           appBarTitle: 'Report',
         ),

@@ -18,7 +18,9 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class ReminderScreen extends StatefulWidget {
-  const ReminderScreen({super.key});
+  const ReminderScreen({super.key, this.isFromQuickActions = false});
+
+  final bool? isFromQuickActions;
 
   @override
   State<ReminderScreen> createState() => _ReminderScreenState();
@@ -50,10 +52,13 @@ class _ReminderScreenState extends State<ReminderScreen> {
             return Scaffold(
               backgroundColor: XColors.background(),
                 appBar: appBarHeader(
-                    hasOnBack: false,
+                    hasOnBack: widget.isFromQuickActions,
                     context: context,
+                    onCloseAction: (){
+                      popView(context);
+                    },
                     appBarTitle: 'Reminder',
-                    centerTitle: false,
+                    centerTitle: widget.isFromQuickActions == false ? true : false,
                     actions: [
 
                       GestureDetector(
@@ -101,8 +106,11 @@ class _ReminderScreenState extends State<ReminderScreen> {
           return Scaffold(
             backgroundColor: XColors.background(),
             appBar: appBarHeader(
-            hasOnBack: false,
+            hasOnBack: widget.isFromQuickActions,
             context: context,
+            onCloseAction: (){
+              popView(context);
+            },
             appBarTitle: 'Reminder',
             centerTitle: false,
             actions: [

@@ -20,7 +20,9 @@ import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:stacked/stacked.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  const MapScreen({super.key, this.isFromQuickActions = false});
+
+  final bool isFromQuickActions;
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -35,6 +37,7 @@ class _MapScreenState extends State<MapScreen> {
           model.init();
         },
         builder: (context, viewModel, child) {
+          print(widget.isFromQuickActions);
           return Scaffold(
             body: Stack(
               children: [
@@ -51,6 +54,29 @@ class _MapScreenState extends State<MapScreen> {
                     viewModel.setMapController(controller);
                   },
                 ),
+                if(widget.isFromQuickActions == true) ... [
+                  Positioned(
+                    top: 50,
+                    left: 16,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                            )
+                          ]
+                        ),
+                        child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 20)
+                      ),
+                    ),
+                  )
+                ],
                 Positioned(
                   bottom: 20,
                   left: 0,

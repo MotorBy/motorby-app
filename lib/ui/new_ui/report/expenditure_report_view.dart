@@ -69,7 +69,7 @@ class ExpenditureReportView extends StatelessWidget {
               height: 300,
               child: GridView.builder(
                   itemCount: budgetIcon.length,
-                  physics: const AlwaysScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: 300,
                       childAspectRatio: 3 / 2,

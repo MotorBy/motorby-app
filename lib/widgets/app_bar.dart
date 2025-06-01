@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
@@ -29,9 +30,12 @@ AppBar appBarHeader({
         }
 
       },
-      child: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Icon(Icons.arrow_back_ios, size: 22, color: XColors.textColor()),
+      child: Row(
+        children: [
+          const XMargin(18),
+          Icon(Icons.arrow_back_ios, size: 22, color: XColors.textColor()),
+          const XMargin(15),
+        ],
       ),
     ) : null,
     centerTitle: centerTitle,

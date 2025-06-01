@@ -9,6 +9,7 @@ import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.da
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/report/report_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
@@ -84,10 +85,10 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
             ),
             centerTitle: false,
             actions: const [
-              Padding(
-                padding: EdgeInsets.only(right: 16.0),
-                child: GetSvgImage(image: 'assets/images/motorby_bell.svg'),
-              )
+              // Padding(
+              //   padding: EdgeInsets.only(right: 16.0),
+              //   child: GetSvgImage(image: 'assets/images/motorby_bell.svg'),
+              // )
             ],
           ),
           backgroundColor: XColors.background(),
@@ -512,6 +513,9 @@ class InfoBox extends StatelessWidget {
                         ),
                         const YMargin(21),
                         ContainerWidget(
+                          onTap: (){
+                            navigate(context, const ReportScreen(isFromQuickActions: true,));
+                          },
                           elevation: 0.2,
                           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                           borderRadius: const BorderRadius.all(Radius.circular(16)),
