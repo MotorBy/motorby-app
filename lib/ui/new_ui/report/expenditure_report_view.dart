@@ -25,10 +25,10 @@ class ExpenditureReportView extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final List<String> budgetIcon = [
-      'assets/images/fuel_guage.png',
-      'assets/images/servicng-icon.png',
-      'assets/images/repaair-icon.png',
-      'assets/images/expenses.png'
+      'assets/images/budget_icons/fuel.png',
+      'assets/images/budget_icons/service.png',
+      'assets/images/budget_icons/repairs.png',
+      'assets/images/budget_icons/wallet.png'
     ];
 
     final List<String> budgetTopic = [
@@ -66,7 +66,7 @@ class ExpenditureReportView extends StatelessWidget {
             ),
             const YMargin(14),
             SizedBox(
-              height: 300,
+              height: 350,
               child: GridView.builder(
                   itemCount: budgetIcon.length,
                   physics: const NeverScrollableScrollPhysics(),
@@ -75,14 +75,13 @@ class ExpenditureReportView extends StatelessWidget {
                       childAspectRatio: 3 / 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 18,
-                      mainAxisExtent: 118,
+                      mainAxisExtent: 150,
                   ),
                   itemBuilder: (context, index) {
                     return ContainerWidget(
                       backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                       borderRadius: BorderRadius.circular(16),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                       onTap: () {
 
                         InfoType? infoType;
@@ -122,7 +121,13 @@ class ExpenditureReportView extends StatelessWidget {
                         children: [
                           Align(
                             alignment: Alignment.centerRight,
-                            child: GetPngImage(image: budgetIcon[index]),
+                            child: GetPngImage(
+                              allowSolid: true,
+                              allowPadding: true,
+                              image: budgetIcon[index],
+                              height: 24,
+                              width: 24,
+                            ),
                           ),
                           Center(
                             child: NormalText(

@@ -351,7 +351,6 @@ class MapViewModel extends BaseViewModel {
       debugPrint('Error getting directions: $e');
     } finally {
       setBusy(false);
-      notifyListeners();
     }
   }
 

@@ -307,25 +307,22 @@ class _InsuranceHistoryScreenState extends State<InsuranceHistoryScreen>
                                 _buildInfoItem('Payment Status',
                                     insurance.paymentStatus ?? 'N/A'),
                                 const YMargin(24),
-                                if (insurance.active == true)
-                                  ContainerWidget(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      navigate(context, const NewClaimScreen());
-                                    },
-                                    backgroundColor: XColors.primaryColor2(),
-                                    borderRadius: BorderRadius.circular(8),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    child: const Center(
-                                      child: NormalText(
-                                        text: 'File a Claim',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        textColor: Colors.white,
-                                      ),
-                                    ),
-                                  ),
+
+                                const YMargin(24),
+
+                                XButton(
+                                  onPressed: () {
+
+                                    Navigator.pop(context);
+                                    navigate(context, const NewClaimScreen());
+
+                                  },
+                                  text: 'Make Claim',
+                                  isLoading: false,
+                                  width: MediaQuery.of(context).size.width,
+                                  buttonColor: XColors.primaryColor(),
+                                ),
+
                               ],
                             ),
                           ),
@@ -476,32 +473,19 @@ class _InsuranceHistoryScreenState extends State<InsuranceHistoryScreen>
                                         'N/A'),
                                 const YMargin(16),
                                 _buildInfoItem(
-                                    'Policy Number', insurance.id ?? 'N/A'),
+                                    'Insurance id', insurance.id ?? 'N/A'),
                                 const YMargin(16),
                                 _buildInfoItem('Coverage Amount',
                                     '${insurance.insuranceType?.cost?.toString() ?? 'N/A'} NGN'),
                                 const YMargin(16),
-                                _buildInfoItem('Start Date',
+                                _buildInfoItem('Date initiated',
                                     _formatDate(insurance.createdAt)),
-                                const YMargin(16),
-                                _buildInfoItem('End Date', 'N/A'),
                                 const YMargin(16),
                                 _buildInfoItem('Status',
                                     insurance.insuranceStatus ?? 'Pending'),
                                 const YMargin(16),
                                 _buildInfoItem('Payment Status',
                                     insurance.paymentStatus ?? 'N/A'),
-                                const YMargin(24),
-
-                                XButton(
-                                  onPressed: () {
-
-                                  },
-                                  text: 'Complete Payment',
-                                  isLoading: false,
-                                  width: MediaQuery.of(context).size.width,
-                                  buttonColor: XColors.primaryColor(),
-                                ),
 
                               ],
                             ),

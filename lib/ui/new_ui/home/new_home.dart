@@ -161,8 +161,9 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                     Stack(
                       children: [
                         GetPngImage(
-                            image: 'assets/images/motorby_toyo.png',
+                          image: 'assets/images/motorby_toyo.png',
                           width: MediaQuery.of(context).size.width,
+                          height: 150,
                         ),
                         Positioned(
                           top: 45,

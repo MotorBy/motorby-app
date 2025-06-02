@@ -14,6 +14,8 @@ import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
+import 'payment_and_subscription/subscription_view.dart';
+
 class NewProfileScreen extends StatelessWidget {
   const NewProfileScreen({Key? key}) : super(key: key);
 
@@ -81,7 +83,7 @@ class NewProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(26.0),
             child: Column(
               children: [
-                _buildProfileHeader(model),
+                _buildProfileHeader(model, context: context),
                 const SizedBox(height: 44),
                 _buildCarsCard(model, context: context),
                 const SizedBox(height: 44),
@@ -94,7 +96,7 @@ class NewProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(ProfileViewModel model) {
+  Widget _buildProfileHeader(ProfileViewModel model, {BuildContext? context}) {
     return Column(
       children: [
         // Stack(
@@ -137,9 +139,18 @@ class NewProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        if (!model.isPremium)
+        if (!model.isPro)
           OutlinedButton(
-            onPressed: (){},
+            onPressed: (){
+              navigateWithCallBack(
+                  context!, const SubscriptionView(),
+                  onCallBack: (value) {
+                    if (value != null) {
+                      model.init();
+                    }
+                  },
+              );
+            },
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32),

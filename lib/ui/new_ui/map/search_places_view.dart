@@ -162,12 +162,13 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
               controller: _textEditingController,
               onSubmitted: (_) => _selectPlace(),
               onEditingComplete: _selectPlace,
+              enabled: widget.isEnabled,
               autofocus: false,
               focusNode: _fn,
               style: TextStyle(
                 //fontSize: MediaQuery.of(context).size.width * 0.06,
                 fontSize: 16,
-                color: widget.darkMode ? Colors.grey[100] : Colors.grey[850],
+                color: widget.isEnabled == false ? Colors.black38 : widget.darkMode ? Colors.grey[100] : Colors.grey[850],
               ),
             ),
           ),
@@ -228,7 +229,7 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
       hintText: "Enter destination or any address",
       border: InputBorder.none,
       hintStyle: TextStyle(
-        color: widget.darkMode ? Colors.grey[100] : Colors.grey[850], fontWeight: FontWeight.w400
+        color: widget.isEnabled == false ? Colors.black38 : widget.darkMode ? Colors.grey[100] : Colors.grey[850], fontWeight: FontWeight.w400
       ),
     );
   }

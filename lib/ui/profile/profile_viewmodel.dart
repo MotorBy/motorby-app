@@ -20,13 +20,12 @@ class ProfileViewModel extends BaseViewModel {
 
   final String profileImage = 'assets/images/profile.jpg';
   final bool isOnline = true;
-  final bool isPremium = false;
+  bool isPro = false;
 
   String? profileImagePath;
 
   Future<void> updateProfileImage(String imagePath) async {
     profileImagePath = imagePath;
-    // TODO: Implement API call to upload profile image
     notifyListeners();
   }
 
@@ -74,6 +73,10 @@ class ProfileViewModel extends BaseViewModel {
     if(userModel!.payload!.user!.businessDetails != null) {
       if(userModel!.payload!.user!.businessDetails!.businessName != null) {
         hasBusiness = true;
+      }
+
+      if(userModel!.payload!.user!.subscription!.tier == "pro") {
+        isPro = true;
       }
     }
 

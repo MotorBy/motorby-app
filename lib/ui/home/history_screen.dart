@@ -3,6 +3,7 @@ import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
+import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
@@ -14,20 +15,50 @@ import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HistoryScreen extends StatelessWidget {
-  IconData _getHistoryTypeIcon() {
+  Widget _getHistoryTypeIcon() {
     switch (budgetHistoryType) {
       case 'Fueling':
-        return Icons.local_gas_station;
+        return const GetPngImage(
+          allowSolid: true,
+          allowPadding: true,
+          image: "assets/images/budget_icons/fuel.png",
+          height: 24,
+          width: 24,
+        );
       case 'Servicing':
-        return Icons.build;
+        return const GetPngImage(
+          allowSolid: true,
+          allowPadding: true,
+          image: "assets/images/budget_icons/service.png",
+          height: 24,
+          width: 24,
+        );
       case 'Repairing':
-        return Icons.handyman;
+        return const GetPngImage(
+          allowSolid: true,
+          allowPadding: true,
+          image: "assets/images/budget_icons/repairs.png",
+          height: 24,
+          width: 24,
+        );
       case 'Breakdown':
-        return Icons.car_repair;
+        return Icon(
+          Icons.car_repair,
+          color: XColors.primaryColor(),
+          size: 24,
+        );
       case 'Mileage':
-        return Icons.speed;
+        return Icon(
+          Icons.speed,
+          color: XColors.primaryColor(),
+          size: 24,
+        );
       default:
-        return Icons.history;
+        return Icon(
+          Icons.history,
+          color: XColors.primaryColor(),
+          size: 24,
+        );
     }
   }
 
@@ -122,8 +153,8 @@ class HistoryScreen extends StatelessWidget {
                                   NormalText(
                                     text: budgetHistoryType ?? '',
                                     textColor: XColors.primaryColor(),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                   const YMargin(4),
                                   NormalText(
@@ -134,11 +165,7 @@ class HistoryScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              Icon(
-                                _getHistoryTypeIcon(),
-                                color: XColors.primaryColor(),
-                                size: 24,
-                              ),
+                              _getHistoryTypeIcon(),
                             ],
                           ),
                           const YMargin(20),

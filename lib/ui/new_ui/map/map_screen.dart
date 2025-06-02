@@ -228,6 +228,7 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
                 // Search place field
                 SearchMapPlace(
                   apiKey: APIKey.googleAPIKey,
+                  isEnabled: !model.isBusy,
                   location: viewModel.currentPosition == null
                       ? const LatLng(7.3219678, 5.147076)
                       : LatLng(viewModel.currentPosition!.latitude,
