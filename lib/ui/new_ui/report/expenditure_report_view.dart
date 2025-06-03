@@ -52,10 +52,8 @@ class ExpenditureReportView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildBudgetHeader(
-                currentSpending: model.budgetingModel != null ?
-                amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].currentSpending!) : "0",
-                totalBudget: model.budgetingModel != null ?
-                amtFormatter(model.budgetingModel!.budget![model.currentCarBudgetIndex].budget!) : "0"
+                currentSpending: model.budgetingModel != null && model.budgetingModel!.budget!.isNotEmpty ? amtFormatter(model.budgetingModel!.budget?[model.currentCarBudgetIndex].currentSpending!) : "0",
+                totalBudget: model.budgetingModel != null && model.budgetingModel!.budget!.isNotEmpty ? amtFormatter(model.budgetingModel!.budget?[model.currentCarBudgetIndex].budget!) : "0"
             ),
             const YMargin(24),
             NormalText(
@@ -83,6 +81,15 @@ class ExpenditureReportView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                       onTap: () {
+
+                        if(model.budgetingModel != null && model.budgetingModel!.budget!.isEmpty) {
+                          FloatingSnackBar.show(
+                              ctxt!,
+                              'Add a new car to continue with budget activities',
+                              isError: true
+                          );
+                          return;
+                        }
 
                         InfoType? infoType;
 
@@ -261,22 +268,34 @@ class ExpenditureReportView extends StatelessWidget {
               GestureDetector(
                 onTap: () {
 
-                  modalBottomSheetMenu(
-                    color: Colors.white,
-                    context: ctxt!,
-                    child: InfoDetailsView(
-                      infoType: InfoType.budgeting,
-                      onBudgetAction: () {
-                        model.setBudgetData();
-                        FloatingSnackBar.show(
-                            ctxt!,
-                            'Car budget successfully updated',
-                            isError: false
-                        );
-                      },
-                      currentIndex: 0,
-                    ),
-                  );
+                  if(model.budgetingModel != null && model.budgetingModel!.budget!.isEmpty) {
+
+                    FloatingSnackBar.show(
+                        ctxt!,
+                        'Add a new car to continue with budget activities',
+                        isError: true
+                    );
+
+                  } else {
+
+                    modalBottomSheetMenu(
+                      color: Colors.white,
+                      context: ctxt!,
+                      child: InfoDetailsView(
+                        infoType: InfoType.budgeting,
+                        onBudgetAction: () {
+                          model.setBudgetData();
+                          FloatingSnackBar.show(
+                              ctxt!,
+                              'Car budget successfully updated',
+                              isError: false
+                          );
+                        },
+                        currentIndex: 0,
+                      ),
+                    );
+
+                  }
 
                 },
                 child: NormalText(

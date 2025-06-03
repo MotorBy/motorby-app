@@ -43,34 +43,39 @@ class BudgetingService {
     resetTotalCostingAndValue();
 
     currentBudgetIndex = index;
-    currentCar = budgetingModel!.budget![index!].carId;
-    _vehicleValue = currentCar != null ? currentCar!.amountBought : 0;
 
-    for (var element in budgetingModel!.budget![index!].fueling!) {
-      totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
-    }
+    if(budgetingModel!.budget!.isNotEmpty) {
 
-    if(budgetingModel!.budget![index].servicing != null) {
+      currentCar = budgetingModel!.budget?[index!].carId;
+      _vehicleValue = currentCar != null ? currentCar!.amountBought : 0;
 
-      for (var element in budgetingModel!.budget![index].servicing!) {
-        totalCostingAndValue![1] = totalCostingAndValue![1] + element.price!;  ///for servicing budget will have index 1
+      for (var element in budgetingModel!.budget![index!].fueling!) {
+        totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
       }
 
-    }
+      if(budgetingModel!.budget![index].servicing != null) {
 
-    if(budgetingModel!.budget![index].repairing != null) {
+        for (var element in budgetingModel!.budget![index].servicing!) {
+          totalCostingAndValue![1] = totalCostingAndValue![1] + element.price!;  ///for servicing budget will have index 1
+        }
 
-      for (var element in budgetingModel!.budget![index].repairing!) {
-        totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
       }
 
+      if(budgetingModel!.budget![index].repairing != null) {
+
+        for (var element in budgetingModel!.budget![index].repairing!) {
+          totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
+        }
+
+      }
+
+      totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
+      totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 4
+
+      currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;
+      currentSetBudget = budgetingModel!.budget![index].budget ?? 0;
+
     }
-
-    totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
-    totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 4
-
-    currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;
-    currentSetBudget = budgetingModel!.budget![index].budget ?? 0;
 
   }
 

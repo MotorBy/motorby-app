@@ -96,9 +96,20 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           label: 'Repairs',
                           value: model.repairsSpent,
                           onTap: () {
+
+                            if(model.getCurrentCar() == null) {
+                              FloatingSnackBar.show(
+                                  context,
+                                  "Add a new car to continue",
+                                  isError: true
+                              );
+                              return;
+                            }
+
                             navigate(context, const HistoryScreen(
                               budgetHistoryType: "Repairing",
                             ));
+
                           },
                         ),
                         _buildActionItem(
@@ -109,6 +120,16 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           label: 'Fueling',
                           value: model.fuelingSpent,
                           onTap: () {
+
+                            if(model.getCurrentCar() == null) {
+                              FloatingSnackBar.show(
+                                  context,
+                                  "Add a new car to continue",
+                                  isError: true
+                              );
+                              return;
+                            }
+
                             navigate(context, const HistoryScreen(
                               budgetHistoryType: "Fueling",
                             ));
@@ -120,9 +141,19 @@ class QuickActionsBottomSheet extends StatelessWidget {
                             iconBgColor: const Color(0xFFE8F0D5),
                             label: 'Servicing',
                             value: model.servicingSpent, onTap: () {
-                          navigate(context, const HistoryScreen(
-                            budgetHistoryType: "Servicing",
-                          ));
+
+                              if(model.getCurrentCar() == null) {
+                                FloatingSnackBar.show(
+                                    context,
+                                    "Add a new car to continue",
+                                    isError: true
+                                );
+                                return;
+                              }
+
+                              navigate(context, const HistoryScreen(
+                                budgetHistoryType: "Servicing",
+                              ));
                         }),
                         _buildActionItem(
                           context,
@@ -154,6 +185,7 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           label: 'Reminder',
                           value: '${model.totalReminderSet} reminder(s)',
                           onTap: () {
+
                             navigate(context, const ReminderScreen(isFromQuickActions: true,));
                           },
                         ),

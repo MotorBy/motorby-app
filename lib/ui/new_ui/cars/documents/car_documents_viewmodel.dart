@@ -29,8 +29,8 @@ class CarDocumentsViewModel extends BaseViewModel {
         _documents = budgetingService.budgetingModel!.budget!.where((b) => b.carId!.sId == carId).toList()[0].carId!.carDocuments!;
         currentCarDoc = budgetingService.budgetingModel!.budget!.where((b) => b.carId!.sId == carId).toList()[0].carId!;
       } else {
-        _documents = budgetingService.budgetingModel!.budget!.first.carId!.carDocuments!;
-        currentCarDoc = budgetingService.budgetingModel!.budget!.first.carId!;
+        _documents = budgetingService.budgetingModel!.budget!.isNotEmpty ? budgetingService.budgetingModel!.budget!.first.carId!.carDocuments! : [];
+        currentCarDoc = budgetingService.budgetingModel!.budget!.isNotEmpty ? budgetingService.budgetingModel!.budget!.first.carId! : null;
       }
 
     }
