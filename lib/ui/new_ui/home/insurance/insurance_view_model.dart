@@ -81,8 +81,9 @@ class InsuranceViewModel extends BaseViewModel {
 
   Future getInsuranceProducts() async {
 
-    print(userService.userModel!.payload!.user!.kycData.toString());
-    hasKycVerification = userService.userModel!.payload!.user!.kycData != null;
+    if(userService.userModel != null) {
+      hasKycVerification = userService.userModel!.payload!.user!.kycData != null;
+    }
 
     if (insuranceService.insuranceProduct != null) {
       insuranceProduct = insuranceService.insuranceProduct;

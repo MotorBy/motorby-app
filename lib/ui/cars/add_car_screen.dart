@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
@@ -17,9 +18,10 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class AddCarsScreen extends StatefulWidget {
-  const AddCarsScreen({super.key, this.action = 'add'});
+  const AddCarsScreen({super.key, this.action = 'add', this.currentCar});
 
   final String? action;
+  final CarId? currentCar;
 
   @override
   State<AddCarsScreen> createState() => _AddCarsScreenState();
@@ -85,18 +87,71 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.action == 'edit' && widget.currentCar != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _prefillCarData(widget.currentCar!);
+      });
+    }
+  }
+
+  void _prefillCarData(CarId car) {
+    _carMakeController.text = car.carMake ?? '';
+    _carModelController.text = car.carModel ?? '';
+    _carYearController.text = car.carYear?.toString() ?? '';
+    _caTypeController.text = car.type ?? '';
+    _carAmtBoughtController.text = car.amountBought?.toString() ?? '';
+    _mileageController.text = car.details?.mileage?.toString() ?? '';
+    _vinController.text = car.vinNumber ?? '';
+    _chassisNumberController.text = car.chassisNumber ?? '';
+    _engineNumberController.text = car.engineNumber ?? '';
+    _registrationNumberController.text = car.registrationNumber ?? '';
+    
+    // if (car.chassisNumber != null || car.engineNumber != null || car.registrationNumber != null) {
+    //
+    // }
+
+    setState(() {
+      _showAdvancedFields = true;
+    });
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<AddCarViewModel>.reactive(
         viewModelBuilder: () => AddCarViewModel(),
         disposeViewModel: false,
-        onViewModelReady: (model) => model.init(initAction: widget.action, dataSetup: (){}),
+        onViewModelReady:(model) => model.init(
+          initAction: widget.action,
+          dataSetup: () {
+            if (widget.action == 'edit' && widget.currentCar != null) {
+              model.updateSetCarData(data: widget.currentCar!.carMake ?? '', dataType: 'make');
+              model.updateSetCarData(data: widget.currentCar!.carModel ?? '', dataType: 'model');
+              model.updateSetCarData(data: widget.currentCar!.carYear?.toString() ?? '', dataType: 'year');
+              model.updateSetCarData(data: widget.currentCar!.type ?? '', dataType: 'grade');
+              model.updateSetCarData(data: widget.currentCar!.amountBought?.toString() ?? '', dataType: 'amount');
+              model.updateSetCarData(data: widget.currentCar!.details?.mileage?.toString() ?? '', dataType: 'mileage');
+              model.updateSetCarData(data: widget.currentCar!.vinNumber ?? '', dataType: 'vin_number');
+              model.updateSetCarData(data: widget.currentCar!.chassisNumber ?? '', dataType: 'chassis_number');
+              model.updateSetCarData(data: widget.currentCar!.engineNumber ?? '', dataType: 'engine_number');
+              model.updateSetCarData(data: widget.currentCar!.registrationNumber ?? '', dataType: 'registration_number');
+              model.updateSetCarData(data: widget.currentCar!.details?.gear ?? '', dataType: 'gear');
+              model.updateSetCarData(data: widget.currentCar!.details?.seats?.toString() ?? '', dataType: 'seats');
+              model.updateSetCarData(data: widget.currentCar!.details?.airBag?.toString() ?? '', dataType: 'air_bag');
+              model.updateSetCarData(data: widget.currentCar!.details?.airConditioner ?? '', dataType: 'air_conditioner');
+              model.updateSetCarData(data: widget.currentCar!.details?.speakers?.toString() ?? '', dataType: 'speakers');
+            }
+          }
+        ),
         builder: (context, model, child) {
         return Scaffold(
           backgroundColor: XColors.background(),
           appBar: appBarHeader(
             hasOnBack: true,
             context: context,
-            appBarTitle: 'New car',
+            appBarTitle: widget.action == 'edit' ? 'Edit Car' : 'New Car',
           ),
           body: Form(
             key: _formKey,

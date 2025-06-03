@@ -95,70 +95,86 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                   borderRadius: BorderRadius.circular(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
+                  child: model.insuranceBought?.payload != null && model.insuranceBought!.payload!.isNotEmpty
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const NormalText(
-                            text: 'Current Purchased ',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const YMargin(18),
-                          const NormalText(
-                            text: 'Comprehensive Party Insurance',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          const YMargin(7),
-                          Row(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              NormalText(
-                                text: 'By ',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                textColor: XColors.black(),
-                              ),
-                              NormalText(
-                                text: 'Leadway Insurance Ltd.',
-                                fontSize: 14,
+                              const NormalText(
+                                text: 'Current Purchased',
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                textColor: XColors.black(),
+                              ),
+                              const YMargin(18),
+                              NormalText(
+                                text: model.insuranceBought!.payload!.first.insuranceType?.type?.replaceAll('-', ' ').replaceAll('buy ', '') ?? 'Insurance Policy',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              const YMargin(7),
+                              Row(
+                                children: [
+                                  NormalText(
+                                    text: 'By ',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    textColor: XColors.black(),
+                                  ),
+                                  NormalText(
+                                    text: model.insuranceBought!.payload!.first.insuranceType?.provider ?? 'Insurance Provider',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    textColor: XColors.black(),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
+                          GestureDetector(
+                            onTap: () {
+
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                                builder: (context) => buildInsuranceProductInfo(
+                                    insurance: model.insuranceBought!.payload!.first,
+                                    context: context
+                                ),
+                              );
+
+                            },
+                            child: NormalText(
+                              text: 'View Details ',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              textColor: XColors.primaryColor2(),
+                            ),
+                          ),
                         ],
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              barrierColor: Colors.black.withOpacity(0.2),
-                              builder: (context) {
-                                return const ViewDetailsDialogue();
-                              });
-                        },
-                        child: NormalText(
-                          text: 'View Details ',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          textColor: XColors.primaryColor2(),
+                      )
+                    : const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: NormalText(
+                            text: 'No active insurance policy',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
                 ),
                 const YMargin(32),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
                       child: NormalText(
-                        text: 'Available Insurance ',
+                        text: 'Available Insurance (${model.insuranceList.isNotEmpty ? model.insuranceList.length : '0'})',
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
@@ -293,7 +309,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                           ),
                           const YMargin(8),
                           const NormalText(
-                            text: 'myCovergenius is a licensed insurance broker partnered with Exceptos to provide comprehensive vehicle insurance solutions through the Motorby app.',
+                            text: 'Exceptos is partnered with myCovergenius to easily provide lists of vehicle insurance solutions through the Motorby app.',
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             textColor: Colors.black54,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -32,6 +33,7 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
         disposeViewModel: false,
         onViewModelReady:(model) async {
           await model.getInsuranceProductDetails();
+          model.getCurrentCar();
         },
         builder: (context, model, child) {
 
@@ -119,6 +121,78 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
             ]
           ),
           backgroundColor: XColors.background(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: Container(
+            width: MediaQuery.of(context).size.width - 70,
+            child: XButton(
+            onPressed: () {
+              if (model.getCurrentCar() == null) {
+                FloatingSnackBar.show(
+                    context,
+                    'Please select a vehicle to proceed with insurance purchase',
+                    isError: true
+                );
+                return;
+              }
+
+              if (model.getCurrentCar()?.vinNumber == null || model.getCurrentCar()?.engineNumber == null) {
+                FloatingSnackBar.show(
+                    context,
+                    'Please update your vehicle details to proceed with insurance purchase',
+                    isError: true
+                );
+                return;
+              }
+
+              if(model.hasKycVerification == false) {
+                FloatingSnackBar.show(
+                    context,
+                    'Make sure to complete your KYC first to easily purchase an auto insurance',
+                    isError: true
+                );
+              } else {
+                model.makePayment(
+                    onInitialisedError: (e) {
+                      FloatingSnackBar.show(
+                          context,
+                          e.toString(),
+                          isError: true
+                      );
+                    },
+                    onShowPayModal: (initTrans) async {
+                      await PaymentService.showPaymentModal(
+                        context,
+                        transaction: initTrans!,
+                      ).then((value) async {
+                        await model.verifyPayment(
+                            onCallBack: (){
+                              FloatingSnackBar.show(
+                                  context,
+                                  'Successfully bought an insurance',
+                                  isError: false
+                              );
+                              Navigator.pop(context, true);
+                            },
+                            onErrorCallBack: (){
+                              FloatingSnackBar.show(
+                                  context,
+                                  'Error with buying an insurance',
+                                  isError: true
+                              );
+                            }
+                        );
+                      });
+                    }
+                );
+              }
+            },
+            text: 'Buy now',
+            isLoading: model.isBusy,
+            buttonColor: model.hasKycVerification && model.getCurrentCar() != null && model.getCurrentCar()?.vinNumber != null && model.getCurrentCar()?.engineNumber != null
+                ? XColors.primaryColor()
+                : XColors.borderColor(),
+            ),
+          ),
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -218,11 +292,129 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                   const YMargin(30),
+                  const YMargin(32),
+                  const NormalText(
+                    text: 'Vehicle Details',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  const YMargin(10),
+                  ContainerWidget(
+                    backgroundColor: XColors.white(),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (model.getCurrentCar() != null) ... [
+                          NormalText(
+                            text: '${model.getCurrentCar()?.carMake ?? ''} ${model.getCurrentCar()?.carModel ?? ''} ${model.getCurrentCar()?.carYear ?? ''}',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          const YMargin(8),
+                          if (model.getCurrentCar()?.vinNumber == null || model.getCurrentCar()?.engineNumber == null) ... [
+                            ContainerWidget(
+                              backgroundColor: const Color(0xFFFEF3F2),
+                              borderRadius: BorderRadius.circular(8),
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.warning_amber_rounded, color: XColors.red()),
+                                      const XMargin(8),
+                                      NormalText(
+                                        text: 'Missing Vehicle Details',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        textColor: XColors.red(),
+                                      ),
+                                    ],
+                                  ),
+                                  const YMargin(8),
+                                  const NormalText(
+                                    text: 'Please complete your vehicle details to proceed with insurance purchase.',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  const YMargin(16),
+                                  ContainerWidget(
+                                    onTap: () {
+
+                                      navigate(
+                                          context,
+                                          AddCarsScreen(
+                                            action: 'edit',
+                                            currentCar: model.getCurrentCar(),
+                                          ),
+                                          onCallback: (){
+                                            //model.init();
+                                          },
+                                      );
+
+                                    },
+                                    backgroundColor: XColors.primaryColor2(),
+                                    borderRadius: BorderRadius.circular(8),
+                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                                    child: NormalText(
+                                      text: 'Update Vehicle Details',
+                                      textColor: XColors.white(),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ] else ... [
+                            Row(
+                              children: [
+                                const NormalText(
+                                  text: 'VIN: ',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                NormalText(
+                                  text: model.getCurrentCar()!.vinNumber ?? '',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ],
+                            ),
+                            const YMargin(4),
+                            Row(
+                              children: [
+                                const NormalText(
+                                  text: 'Engine Number: ',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                NormalText(
+                                  text: model.getCurrentCar()!.engineNumber ?? '',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ] else ... [
+                          const Center(
+                            child: NormalText(
+                              text: 'No vehicle selected',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const YMargin(30),
                   if (model.hasKycVerification == false) ... [
                     ContainerWidget(
                       backgroundColor: const Color(0xFFFEF3F2),
                       borderRadius: BorderRadius.circular(8),
-                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -240,7 +432,7 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                           ),
                           const YMargin(8),
                           const NormalText(
-                            text: 'Please complete your KYC verification to proceed with insurance purchase.',
+                            text: 'Complete your KYC verification to proceed with insurance purchase.',
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                           ),
@@ -264,67 +456,7 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                     ),
                     const YMargin(30),
                   ],
-                  const YMargin(30),
-                  XButton(
-                    onPressed: () {
-
-                      if(model.hasKycVerification == false) {
-
-                        FloatingSnackBar.show(
-                            context,
-                            'Make sure to complete your KYC first to easily purchase an auto insurance',
-                            isError: true
-                        );
-
-                      } else {
-
-                        model.makePayment(
-                            onInitialisedError: (e) {
-                              FloatingSnackBar.show(
-                                  context,
-                                  e.toString(),
-                                  isError: true
-                              );
-                            },
-                            onShowPayModal: (initTrans) async {
-
-                              await PaymentService.showPaymentModal(
-                                context,
-                                transaction: initTrans!,
-                              ).then((value) async {
-
-                                await model.verifyPayment(
-                                    onCallBack: (){
-
-                                      FloatingSnackBar.show(
-                                          context,
-                                          'Successfully bought an insurance',
-                                          isError: false
-                                      );
-
-                                      Navigator.pop(context, true);
-
-                                    },
-                                    onErrorCallBack: (){
-                                      FloatingSnackBar.show(
-                                          context,
-                                          'Error with buying an insurance',
-                                          isError: true
-                                      );
-                                    }
-                                );
-                              });
-
-                            }
-                        );
-                      }
-                    },
-                    text: 'Buy now',
-                    isLoading: model.isBusy,
-                    width: MediaQuery.of(context).size.width,
-                    buttonColor: model.hasKycVerification ? XColors.primaryColor() : XColors.primaryColor().withOpacity(0.3),
-                  ),
-                  const YMargin(10),
+                  const YMargin(80),
                 ],
               ),
             ),

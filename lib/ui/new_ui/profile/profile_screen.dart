@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/services/device_info.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
@@ -12,7 +13,9 @@ import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stacked/stacked.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'payment_and_subscription/subscription_view.dart';
 
@@ -215,6 +218,23 @@ class NewProfileScreen extends StatelessWidget {
   }
 
   Widget _buildMenuItems(ProfileViewModel model, {BuildContext? context}) {
+
+    PackageInfo? packageInfo;
+
+    ValueNotifier<String> packageInfoValueState = ValueNotifier("");
+    ValueNotifier<String> deviceCate = ValueNotifier("");
+
+    DeviceService().getPackageData().then((_packageInfo) {
+      packageInfo = _packageInfo;
+      packageInfoValueState.value = packageInfo!.version;
+    });
+
+    DeviceService().getDeviceData().then((d) {
+      if(d['deviceCategory'] != null) {
+        deviceCate.value = d['deviceCategory'];
+      }
+    });
+
     return Column(
       children: [
         _buildMenuItem(
@@ -244,7 +264,93 @@ class NewProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: 'assets/images/auto/about_icon.svg',
           title: 'About app',
-          onTap: (){},
+          onTap: () {
+            showModalBottomSheet(
+              context: context!,
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              builder: (context) => Container(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const NormalText(
+                      text: 'MotorBy',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 8),
+                   ValueListenableBuilder<String>(
+                      valueListenable: packageInfoValueState,
+                     builder: (context, value, c) {
+                       return NormalText(
+                          text: 'Version ${value ?? "1.0.0"}',
+                          fontSize: 16,
+                          textColor: Colors.grey,
+                        );
+                     }
+                   ),
+                    const SizedBox(height: 24),
+                    const NormalText(
+                      text: 'Connect with us',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildSocialLink(
+                          icon: Icons.language,
+                          label: 'Website',
+                          onTap: () async {
+
+                            canLaunch('https://motorby.co').then((value) async {
+                              if (deviceCate.value != 'IOS' ? !value : value) {
+                                await launch(
+                                  'https://motorby.co',
+                                  universalLinksOnly: true,
+                                );
+                              }
+                            });
+
+                          },
+                        ),
+                        // _buildSocialLink(
+                        //   icon: Icons.facebook,
+                        //   label: 'Facebook',
+                        //   onTap: () async {
+                        //     final Uri url = Uri.parse('https://facebook.com/motorby');
+                        //     // if (await canLaunchUrl(url)) {
+                        //     //   await launchUrl(url);
+                        //     // }
+                        //   },
+                        // ),
+                        // _buildSocialLink(
+                        //   icon: Icons.messenger,
+                        //   label: 'Twitter',
+                        //   onTap: () async {
+                        //     final Uri url = Uri.parse('https://twitter.com/motorby');
+                        //     // if (await canLaunchUrl(url)) {
+                        //     //   await launchUrl(url);
+                        //     // }
+                        //   },
+                        // ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    const NormalText(
+                      text: '© 2024 MotorBy. All rights reserved.',
+                      fontSize: 14,
+                      textColor: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
         const DividerWidget(),
       ],
@@ -267,4 +373,32 @@ class NewProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildSocialLink({
+  required IconData icon,
+  required String label,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 24),
+        ),
+        const SizedBox(height: 8),
+        NormalText(
+          text: label,
+          fontSize: 12,
+          textColor: Colors.grey[700]!,
+        ),
+      ],
+    ),
+  );
 }
