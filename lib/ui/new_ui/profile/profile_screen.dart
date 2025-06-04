@@ -49,14 +49,14 @@ class NewProfileScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const PopupMenuItem<int>(
-                  value: 0,
-                  child: NormalText(
-                    text: 'Settings',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                // const PopupMenuItem<int>(
+                //   value: 0,
+                //   child: NormalText(
+                //     text: 'Settings',
+                //     fontSize: 12,
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
                 PopupMenuItem<int>(
                   value: 1,
                   onTap: () {

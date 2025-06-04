@@ -122,7 +122,7 @@ class CarsListScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const YMargin(19),
+                                const YMargin(10),
                                 if(viewModel.currentCar!.images!.isEmpty) ... [
 
                                   const YMargin(20),
@@ -179,9 +179,11 @@ class CarsListScreen extends StatelessWidget {
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         ...List.generate(viewModel.currentCar!.images!.length, (index) => Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.all(3.0),
                                           child: Container(
                                             width: 90,
                                             height: 70,
@@ -209,10 +211,8 @@ class CarsListScreen extends StatelessWidget {
                         ),
                       ),
                     )
-
                   ],
-
-                          ],),
+                ],),
             ),
         )
     );
@@ -238,35 +238,35 @@ class MoreCarAction extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const YMargin(25),
-                    GestureDetector(
-                      onTap: (){
-                        navigate(context, const ShopsScreen());
-                      },
-                      child: NormalText(
-                        text:'Fix/service car',
-                        textColor: XColors.textColor(),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const YMargin(45),
-                    GestureDetector(
-                      onTap: (){
-                        modalBottomSheetMenu(
-                          color: Colors.white,
-                          context: context,
-                          child: SellAddedCar(
-                            homeViewModel: model,
-                          ),
-                        );
-                      },
-                      child: NormalText(
-                        text:'Sell car',
-                        textColor: XColors.textColor(),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: (){
+                    //     //navigate(context, const ShopsScreen());
+                    //   },
+                    //   child: NormalText(
+                    //     text:'Fix/service car',
+                    //     textColor: XColors.textColor(),
+                    //     fontSize: 14,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
+                    // const YMargin(45),
+                    // GestureDetector(
+                    //   onTap: (){
+                    //     modalBottomSheetMenu(
+                    //       color: Colors.white,
+                    //       context: context,
+                    //       child: SellAddedCar(
+                    //         homeViewModel: model,
+                    //       ),
+                    //     );
+                    //   },
+                    //   child: NormalText(
+                    //     text:'Sell car',
+                    //     textColor: XColors.textColor(),
+                    //     fontSize: 14,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
                     const YMargin(45),
                     GestureDetector(
                       onTap: () {
@@ -288,6 +288,23 @@ class MoreCarAction extends StatelessWidget {
                       },
                       child: NormalText(
                         text: 'Update car image',
+                        textColor: XColors.textColor(),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const YMargin(45),
+                    GestureDetector(
+                      onTap: () {
+                        navigate(context,
+                            AddCarsScreen(
+                              action: "edit",
+                              currentCar: model.currentCar,
+                            )
+                        );
+                      },
+                      child: NormalText(
+                        text: 'Edit car',
                         textColor: XColors.textColor(),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

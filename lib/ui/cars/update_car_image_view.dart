@@ -12,6 +12,7 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class UpdateCarImage extends StatelessWidget {
+
   UpdateCarImage({super.key,
     this.setImages,
     this.onCompleteImageUpload,
@@ -35,12 +36,20 @@ class UpdateCarImage extends StatelessWidget {
             children: [
 
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   NormalText(
                     text: 'Update your car images here',
                     textColor: XColors.black(),
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
+                  ),
+                  const XMargin(45),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(Icons.close_rounded, size: 31,),
                   ),
                 ],
               ),
@@ -196,7 +205,7 @@ class ImageDisplay extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.cancel_rounded,
-                      color: XColors.primaryColor(),
+                      color: XColors.red(),
                       size: 32,
                     )
                   ],

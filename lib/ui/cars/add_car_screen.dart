@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
@@ -14,6 +15,7 @@ import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/list_selector.dart';
+import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -168,7 +170,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 8),
-                    _buildImageUploader(model),
+                    _buildImageUploader(model, action: widget.action),
                     const YMargin(15),
                     MainInputField(
                       controller: _carMakeController,
@@ -568,9 +570,8 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
     );
   }
 
-  Widget _buildImageUploader(AddCarViewModel model) {
-    final PageController _pageController =
-    PageController(viewportFraction: 0.8);
+  Widget _buildImageUploader(AddCarViewModel model, {String? action = 'add'}) {
+    final PageController _pageController = PageController(viewportFraction: 0.8);
 
     if (model.addImagesList.isNotEmpty) {
       return SizedBox(
@@ -621,6 +622,56 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
         ),
       );
     }
+
+    if(action == 'edit') {
+      return Container(
+        width: double.infinity,
+        height: 140,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF4EFFB),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const GetSvgImage(image: 'assets/images/file_uploadfile.svg'),
+            const YMargin(10),
+            GestureDetector(
+              onTap: (){
+
+                modalBottomSheetMenu(
+                  color: Colors.white,
+                  context: context,
+                  height: 680,
+                  child: UpdateCarImage(
+                    setImages: widget.currentCar!.images,
+                    onCompleteImageUpload: (v) async {
+                      if(v) {
+                        popView(context);
+                      }
+                    },
+                  ),
+                );
+
+              },
+              child: const NormalText(
+                text: 'Click to update car images',
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const NormalText(
+              text: 'PNG, JPG (max. 800×400px)',
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
         width: double.infinity,
         height: 250,
