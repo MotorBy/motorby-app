@@ -23,9 +23,9 @@ class OnboardingAnimationSetup {
   late Animation<double> animationProgressValue3;
   late CurvedAnimation curvedAnimation3;
 
-  static List<double> changingLogoAnimation = [0.0, 30.0];
-  static List<double> changingTextAnimation = [110, 300];
-  static List<double> changingChipsAnimation = [5, 580];
+  static List<double> changingLogoAnimation = [0.0, 120.0];
+  static List<double> changingTextAnimation = [110, 270];
+  static List<double> changingChipsAnimation = [5, 550];
 
   static void init({TickerProvider? vsync}) {
     _instance ??= OnboardingAnimationSetup._();

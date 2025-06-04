@@ -42,12 +42,13 @@ class AddCarViewModel extends BaseViewModel {
   String? speakers;
   String? vinNumber = '';
 
-  Map<String, dynamic> setCarData = { };
+  Map<String, dynamic> setCarData = {
+    "details" : {},
+    "car_details" : {},
+    "sales_details" : {}
+  };
 
-  void init({
-    bool? forSale = false,
-    String? initAction,
-    Function? dataSetup}) {
+  void init({bool? forSale = false, String? initAction, Function? dataSetup}) {
 
     if(initAction != 'sell') {
       isBusinessOrForSale = false;
@@ -59,17 +60,6 @@ class AddCarViewModel extends BaseViewModel {
 
     action = initAction;
     notifyListeners();
-
-    if(action == 'sell') {
-      setCarData = {
-        "car_details" : {},
-        "sales_details" : {}
-      };
-    } else if(action == 'add') {
-      setCarData = {
-        "details" : {},
-      };
-    }
 
     if(dataSetup != null) {
       dataSetup();
@@ -125,93 +115,33 @@ class AddCarViewModel extends BaseViewModel {
 
   }
 
-  void updateSetCarData({dynamic data, String? dataType}) {
+  void updateSetCarData({required Map<String, dynamic> data}) {
     setBusy(false);
 
-    Map<String, dynamic> updateData = {};
-    
-    if (action == "sell") {
-      final carDetails = <String, dynamic>{
-        if (dataType == 'make') 'car_make': data,
-        if (dataType == 'year') 'car_year': data,
-        if (dataType == 'model') 'car_model': data,
-        if (dataType == 'grade') 'condition': data,
-        if (dataType == 'mileage') 'mileage': int.parse(data!),
-        if (dataType == 'vin') 'vin_number': data,
-        if (dataType == 'color') 'color': data,
-        if (dataType == 'seats') 'seats': int.parse(data!),
-        if (dataType == 'speakers') 'speakers': int.parse(data!),
-        if (dataType == 'gear') 'gear': data,
-        if (dataType == 'breaks') 'breaks': data,
-        if (dataType == 'air_bag') 'air_bag': data,
-        if (dataType == 'air_conditioner') 'air_conditioner': data,
-      };
+    if (action == 'add' || action == 'edit') {
 
-      final salesDetails = <String, dynamic>{
-        if (dataType == 'selling price') 'amount_for_sale': int.parse(data!),
-        if (dataType == 'units') 'units_left': int.parse(data!),
-      };
-
-      if (carDetails.isNotEmpty) {
-        updateData['car_details'] = carDetails;
-      }
-      if (salesDetails.isNotEmpty) {
-        updateData['sales_details'] = salesDetails;
+      if (data.containsKey('details')) {
+        setCarData['details']?.addAll(data['details']);
       }
 
-      setCarData.addAll(updateData);
+      data.forEach((key, value) {
+        if (key != 'details') {
+          setCarData[key] = value;
+        }
+      });
 
-      if (dataType == 'make') {
-        salesService.currentCarMake = data;
+      // Update local state variables
+      if(setCarData['details'] != null) {
+        seats = setCarData['details']['seats'];
+        speakers = setCarData['details']['speakers'];
+        gear = setCarData['details']['gear'];
+        airBag = setCarData['details']['air_bag'];
+        airConditioner = setCarData['details']['air_conditioner'];
       }
 
-    } else if (action == 'add') {
-      final details = <String, dynamic>{
-        if (dataType == 'grade') 'condition': data,
-        if (dataType == 'mileage') 'mileage': int.parse(data!),
-        if (dataType == 'speakers') 'speakers': data,
-        if (dataType == 'gear') 'gear': data,
-        if (dataType == 'seats') 'seats': data,
-        if (dataType == 'breaks') 'breaks': data,
-        if (dataType == 'air_bag') 'air_bag': data,
-        if (dataType == 'air_conditioner') 'air_conditioner': data,
-        if (dataType == 'color') 'color': data,
-      };
-
-      final mainData = <String, dynamic>{
-        if (dataType == 'make') 'car_make': data,
-        if (dataType == 'year') 'car_year': data,
-        if (dataType == 'model') 'car_model': data,
-        if (dataType == 'amount') 'amount_bought': int.parse(data!),
-        if (dataType == 'vin') 'vin_number': data,
-        if (dataType == 'chassis_number') 'chassis_number': data,
-        if (dataType == 'engine_number') 'engine_number': data,
-        if (dataType == 'registration_number') 'registration_number': data,
-      };
-
-      if (details.isNotEmpty) {
-        updateData['details'] = details;
+      if (data['car_make'] != null) {
+        salesService.currentCarMake = data['car_make'];
       }
-      if (mainData.isNotEmpty) {
-        updateData.addAll(mainData);
-      }
-
-      setCarData.addAll(updateData);
-
-      if (dataType == 'make') {
-        salesService.currentCarMake = data;
-      }
-    }
-
-    // Update local state variables
-    if (dataType == 'seats') seats = data;
-    if (dataType == 'speakers') speakers = data;
-    if (dataType == 'gear') gear = data;
-    if (dataType == 'air_bag') airBag = data;
-    if (dataType == 'air_conditioner') airConditioner = data;
-
-    if (action == "sell") {
-      salesModel = SalesModel.fromJson(JSON.json.decode(JSON.json.encode(setCarData)));
     }
 
     print(setCarData.toString());
@@ -227,7 +157,6 @@ class AddCarViewModel extends BaseViewModel {
         notifyListeners();
       }
     } catch (e) {
-      // TODO: Handle error
       print('Error picking images: $e');
     }
   }
@@ -239,41 +168,57 @@ class AddCarViewModel extends BaseViewModel {
 
   Future uploadCar({Function? onCallBack, Function? onErrorCallBack}) async {
 
-    await uploadFilesToCloud();
+    await uploadFilesToCloud().then((v) async {
 
-    setCarData['images'] = addedImagesUrlList;
-    setCarData['by'] = persistService.getUserID;
-    setCarData['user_id'] = persistService.getUserID;
+      setCarData['images'] = addedImagesUrlList;
+      setCarData['by'] = persistService.getUserID;
+      setCarData['user_id'] = persistService.getUserID;
 
-    setBusy(true);
-    if(action == 'sell') {
+      setBusy(true);
+      if(action == 'sell') {
 
-      var saleData = {
-        'user_id' : persistService.getUserID,
-        'data': setCarData,
-      };
+        var saleData = {
+          'user_id' : persistService.getUserID,
+          'data': setCarData,
+        };
 
-      await salesService.makeSales(salesData: saleData).then((value) {
-        setBusy(false);
-        onCallBack!();
-      }).onError((error, stackTrace) {
-        setBusy(false);
-        print(stackTrace.toString());
-        onErrorCallBack!();
-      });
+        await salesService.makeSales(salesData: saleData).then((value) {
+          setBusy(false);
+          onCallBack!();
+        }).onError((error, stackTrace) {
 
-    } else {
+          setBusy(false);
+          print(stackTrace.toString());
+          onErrorCallBack!();
 
-      await userService.addACar(carData: setCarData).then((value) {
-        setBusy(false);
-        onCallBack!();
-      }).onError((error, stackTrace) {
-        setBusy(false);
-        print(stackTrace.toString());
-        onErrorCallBack!();
-      });
+        });
 
-    }
+      } else if (action == 'edit') {
+
+        await userService.updateCar(
+            data: setCarData,
+            carId: salesService.currentCar!.sId
+        ).then((value) {
+          setBusy(false);
+          onCallBack!();
+        }).onError((error, stackTrace) {});
+
+      } else {
+
+        await userService.addACar(carData: setCarData).then((value) {
+          setBusy(false);
+          onCallBack!();
+        }).onError((error, stackTrace) {
+
+          setBusy(false);
+          print(stackTrace.toString());
+          onErrorCallBack!();
+
+        });
+
+      }
+
+    });
 
   }
 
@@ -310,7 +255,7 @@ class AddCarViewModel extends BaseViewModel {
 
   }
 
-  void updateVinNumber(String? s){
+  void updateVinNumber(String? s) {
     vinNumber = s;
     notifyListeners();
   }
@@ -329,6 +274,5 @@ class AddCarViewModel extends BaseViewModel {
       setBusy(false);
     });
   }
-
 
 }

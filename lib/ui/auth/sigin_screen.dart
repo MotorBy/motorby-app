@@ -43,29 +43,29 @@ class _SignInScreenState extends State<SignInScreen> {
             surfaceTintColor: XColors.white(),
             automaticallyImplyLeading: false,
               actions: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        navigate(context, const MarketPlace());
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: NormalText(
-                          text: 'Marketplace',
-                          textColor: XColors.textColor(),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.shopping_basket,
-                      size: 18,
-                      color: XColors.primaryColor(),
-                    ),
-                    const XMargin(10)
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     GestureDetector(
+                //       onTap: () {
+                //         navigate(context, const MarketPlace());
+                //       },
+                //       child: Padding(
+                //         padding: const EdgeInsets.all(8.0),
+                //         child: NormalText(
+                //           text: 'Marketplace',
+                //           textColor: XColors.textColor(),
+                //           fontSize: 13,
+                //         ),
+                //       ),
+                //     ),
+                //     Icon(
+                //       Icons.shopping_basket,
+                //       size: 18,
+                //       color: XColors.primaryColor(),
+                //     ),
+                //     const XMargin(10)
+                //   ],
+                // ),
                 Row(
                   children: [
                     GestureDetector(

@@ -84,7 +84,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                       NormalText(
                         text:'Your Auto\ncompanion\nall-in-one place\nfor you',
                         textColor: XColors.white(),
-                        fontSize: 40,
+                        fontSize: 35,
                         fontWeight: FontWeight.w900,
                       ),
                     ],

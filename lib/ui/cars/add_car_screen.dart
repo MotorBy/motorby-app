@@ -107,10 +107,6 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
     _chassisNumberController.text = car.chassisNumber ?? '';
     _engineNumberController.text = car.engineNumber ?? '';
     _registrationNumberController.text = car.registrationNumber ?? '';
-    
-    // if (car.chassisNumber != null || car.engineNumber != null || car.registrationNumber != null) {
-    //
-    // }
 
     setState(() {
       _showAdvancedFields = true;
@@ -127,21 +123,32 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
           initAction: widget.action,
           dataSetup: () {
             if (widget.action == 'edit' && widget.currentCar != null) {
-              model.updateSetCarData(data: widget.currentCar!.carMake ?? '', dataType: 'make');
-              model.updateSetCarData(data: widget.currentCar!.carModel ?? '', dataType: 'model');
-              model.updateSetCarData(data: widget.currentCar!.carYear?.toString() ?? '', dataType: 'year');
-              model.updateSetCarData(data: widget.currentCar!.type ?? '', dataType: 'grade');
-              model.updateSetCarData(data: widget.currentCar!.amountBought?.toString() ?? '', dataType: 'amount');
-              model.updateSetCarData(data: widget.currentCar!.details?.mileage?.toString() ?? '', dataType: 'mileage');
-              model.updateSetCarData(data: widget.currentCar!.vinNumber ?? '', dataType: 'vin_number');
-              model.updateSetCarData(data: widget.currentCar!.chassisNumber ?? '', dataType: 'chassis_number');
-              model.updateSetCarData(data: widget.currentCar!.engineNumber ?? '', dataType: 'engine_number');
-              model.updateSetCarData(data: widget.currentCar!.registrationNumber ?? '', dataType: 'registration_number');
-              model.updateSetCarData(data: widget.currentCar!.details?.gear ?? '', dataType: 'gear');
-              model.updateSetCarData(data: widget.currentCar!.details?.seats?.toString() ?? '', dataType: 'seats');
-              model.updateSetCarData(data: widget.currentCar!.details?.airBag?.toString() ?? '', dataType: 'air_bag');
-              model.updateSetCarData(data: widget.currentCar!.details?.airConditioner ?? '', dataType: 'air_conditioner');
-              model.updateSetCarData(data: widget.currentCar!.details?.speakers?.toString() ?? '', dataType: 'speakers');
+
+              var data = {
+                "car_make" : widget.currentCar!.carMake,
+                "car_model" : widget.currentCar!.carModel,
+                "car_year" : widget.currentCar!.carYear,
+                "condition" : widget.currentCar!.type,
+                "vin_number" : widget.currentCar!.vinNumber,
+                "amount_bought" : widget.currentCar!.amountBought,
+                "chassis_number" : widget.currentCar!.chassisNumber,
+                "engine_number" : widget.currentCar!.engineNumber,
+                "registration_number" : widget.currentCar!.registrationNumber,
+                "details" : {
+                  "mileage" : widget.currentCar!.details?.mileage,
+                  "color" : widget.currentCar!.color,
+                  "seats" : widget.currentCar!.details?.seats,
+                  "speakers" : widget.currentCar!.details?.speakers,
+                  "gear" : widget.currentCar!.details?.gear,
+                  "breaks" : widget.currentCar!.details!.breaks,
+                  "air_bag" : widget.currentCar!.details!.airBag,
+                  "air_conditioner" : widget.currentCar!.details!.airConditioner,
+                  "vin_number" : widget.currentCar!.vinNumber,
+                }
+              };
+
+              model.updateSetCarData(data: data);
+
             }
           }
         ),
@@ -179,7 +186,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                             listString: carMakeDataList!,
                             selected: (s) {
                               _carMakeController.text = s!;
-                              model.updateSetCarData(data: s, dataType: 'make');
+                              model.updateSetCarData(data: {'car_make': s});
                             },
                           );
                         },
@@ -195,7 +202,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       },
                       isEnabled: true,
                       onChanged: (s){
-                        model.updateSetCarData(data: s, dataType: 'model');
+                        model.updateSetCarData(data: {'car_model': s});
                       },
                     ),
                     const YMargin(15),
@@ -242,7 +249,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                               "1998"],
                             selected: (s) {
                               _carYearController.text = s!;
-                              model.updateSetCarData(data: s, dataType: 'year');
+                              model.updateSetCarData(data: {'car_year': s});
                             },
                           );
                         },
@@ -266,7 +273,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                               "Foreign Used",],
                             selected: (s) {
                               _caTypeController.text = s!;
-                              model.updateSetCarData(data: s, dataType: 'grade');
+                              model.updateSetCarData(data: {'condition': s});
                             },
                           );
                         },
@@ -283,7 +290,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       },
                       isEnabled: true,
                       onChanged: (s){
-                        model.updateSetCarData(data: s, dataType: 'amount');
+                        model.updateSetCarData(data: {'amount_bought': int.parse(s)});
                       },
                     ),
                     const YMargin(15),
@@ -292,7 +299,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       isEnabled: true,
                       keyboard: TextInputType.text,
                       onChanged: (s){
-                        model.updateSetCarData(data: s, dataType: 'color');
+                        model.updateSetCarData(data: {'details': {'color': s}});
                       },
                     ),
                     ///cars details section
@@ -325,7 +332,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                                       title: 'Transmission Type',
                                       listString: ["Automatic", "Manual"],
                                       selected: (s) {
-                                        model.updateSetCarData(data: s, dataType: 'gear');
+                                        model.updateSetCarData(data: {'details': {'gear': s}});
                                       },
                                     );
                                   },
@@ -342,7 +349,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                                       title: 'Number of Seats',
                                       listString: ["1", "2", "3", "4", "5"],
                                       selected: (s) {
-                                        model.updateSetCarData(data: s, dataType: 'seats');
+                                        model.updateSetCarData(data: {'details': {'seats': s}});
                                       },
                                     );
                                   },
@@ -359,7 +366,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                                       title: 'Number of Airbags',
                                       listString: ["1", "2"],
                                       selected: (s) {
-                                        model.updateSetCarData(data: s, dataType: 'air_bag');
+                                        model.updateSetCarData(data: {'details': {'air_bag': s}});
                                       },
                                     );
                                   },
@@ -382,7 +389,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                                       title: 'Air Conditioning Status',
                                       listString: ["Ok", "None"],
                                       selected: (s) {
-                                        model.updateSetCarData(data: s, dataType: 'air_conditioner');
+                                        model.updateSetCarData(data: {'details': {'air_conditioner': s}});
                                       },
                                     );
                                   },
@@ -399,7 +406,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                                       title: 'Number of Working Speakers',
                                       listString: ["5", "6", "11", "15", "21"],
                                       selected: (s) {
-                                        model.updateSetCarData(data: s, dataType: 'speakers');
+                                        model.updateSetCarData(data: {'details': {'speakers': s}});
                                       },
                                     );
                                   },
@@ -420,7 +427,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       },
                       keyboard: TextInputType.number,
                       onChanged: (s){
-                        model.updateSetCarData(data: s, dataType: 'mileage');
+                        model.updateSetCarData(data: {'details': {'mileage': s}});
                       },
                     ),
                     if(model.isBusinessOrForSale) ... [
@@ -430,7 +437,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         label: "VIN number",
                         isEnabled: true,
                         onChanged: (s){
-                          model.updateSetCarData(data: s, dataType: 'vin_number');
+                          model.updateSetCarData(data: {'details': {'vin_number': s}});
                         },
                       ),
                       const YMargin(15),
@@ -443,7 +450,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                           return AnyInputValidator.emptyValidate(s, inputName: 'Selling price');
                         },
                         onChanged: (s){
-                          model.updateSetCarData(data: s, dataType: 'selling price');
+                          model.updateSetCarData(data: {'selling price': s});
                         },
                       ),
                       const YMargin(15),
@@ -456,7 +463,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                               isEnabled: true,
                               keyboard: TextInputType.number,
                               onChanged: (s){
-                                model.updateSetCarData(data: s, dataType: 'units');
+                                model.updateSetCarData(data: {'units': s});
                               },
                             ),
                           ),
@@ -495,7 +502,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         label: "Chassis Number",
                         isEnabled: true,
                         onChanged: (s){
-                          model.updateSetCarData(data: s, dataType: 'chassis_number');
+                          model.updateSetCarData(data: {'chassis_number': s});
                         },
                       ),
                       const YMargin(15),
@@ -504,7 +511,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         label: "Engine Number",
                         isEnabled: true,
                         onChanged: (s){
-                          model.updateSetCarData(data: s, dataType: 'engine_number');
+                          model.updateSetCarData(data: {'engine_number': s});
                         },
                       ),
                       const YMargin(15),
@@ -513,7 +520,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         label: "Registration Number",
                         isEnabled: true,
                         onChanged: (s){
-                          model.updateSetCarData(data: s, dataType: 'registration_number');
+                          model.updateSetCarData(data: {'registration_number': s});
                         },
                       ),
                       const YMargin(15),
@@ -522,7 +529,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         label: "Vin number",
                         isEnabled: true,
                         onChanged: (s){
-                          model.updateSetCarData(data: s, dataType: 'vin_number');
+                          model.updateSetCarData(data: {'details': {'vin_number': s}});
                         },
                       ),
                     ],
