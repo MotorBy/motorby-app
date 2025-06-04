@@ -5,10 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/signup_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
-import 'package:mobile_auto_drive/ui/home/home_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
@@ -105,7 +103,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         email: emailTextController.text,
                         password: passwordTextController.text,
                         onCallBack: (){
-                          //navigateReplace(context, const HomeScreen());
                           navigateReplace(context, const DashBoardScreen());
                         },
                         onErrorBack: (e){

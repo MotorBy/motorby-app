@@ -113,7 +113,7 @@ class CarSelectorView extends StatelessWidget {
             ] else ... [
 
               const NormalText(
-                text: 'You currently have to car added to manage, Add a car to start',
+                text: 'You currently have no car added to manage, Add a car to start',
                 fontSize: 13,
                 textColor: Colors.black,
                 fontWeight: FontWeight.w500,
