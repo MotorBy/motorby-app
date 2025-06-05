@@ -41,9 +41,12 @@ class NewProfileScreen extends StatelessWidget {
               surfaceTintColor: Colors.white,
               icon: const Icon(Icons.more_vert),
               itemBuilder: (context) => [
-                const PopupMenuItem<int>(
+                PopupMenuItem<int>(
                   value: 0,
-                  child: NormalText(
+                  onTap: (){
+                    navigate(context, EditProfileScreen(model: model));
+                  },
+                  child: const NormalText(
                     text: 'Edit Profile',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -76,7 +79,7 @@ class NewProfileScreen extends StatelessWidget {
                 ),
               ],
               onSelected: (val) {
-                navigate(context, EditProfileScreen(model: model));
+
               },
             ),
           ]

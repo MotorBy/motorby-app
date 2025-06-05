@@ -21,8 +21,6 @@ class ChecklistViewModel extends BaseViewModel {
   Future<void> initializeChecklist(String? carId) async {
     try {
 
-      print(carId);
-
       if(carId != null) {
 
         setBusy(true);

@@ -54,11 +54,11 @@ class _ReminderScreenState extends State<ReminderScreen> {
                 appBar: appBarHeader(
                     hasOnBack: widget.isFromQuickActions,
                     context: context,
-                    onCloseAction: (){
+                    onCloseAction: () {
                       popView(context);
                     },
                     appBarTitle: 'Reminder',
-                    centerTitle: widget.isFromQuickActions == false ? true : false,
+                    centerTitle: false,
                     actions: [
 
                       GestureDetector(
