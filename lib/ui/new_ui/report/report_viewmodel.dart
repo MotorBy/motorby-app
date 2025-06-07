@@ -73,6 +73,8 @@ class ReportViewModel extends BaseViewModel {
       } else {
         _lastTripDistance = 0;
       }
+    } else {
+      resetReport();
     }
 
     // Calculate fuel efficiency and get last refuel date
@@ -94,6 +96,8 @@ class ReportViewModel extends BaseViewModel {
           _fuelEfficiency = totalDistance / totalLiters; // km/L
         }
       }
+    } else {
+      resetReport();
     }
   }
 
@@ -113,6 +117,22 @@ class ReportViewModel extends BaseViewModel {
 
     _calculateMileageStats();
 
+    notifyListeners();
+  }
+
+  void resetReport() {
+    _selectedTimeFrame = 'This week';
+    _selectedDate = null;
+    _selectedTime = null;
+    _odometerReading = '';
+    _fuelAdded = '';
+    _location = '';
+    _lastTripDate = '-----';
+    _lastTripDistance = 0;
+    _totalMileage = 0;
+    _fuelEfficiency = 0.0;
+    _lastRefuelDate = '';
+    _lastRefuelAmount = '';
     notifyListeners();
   }
 
