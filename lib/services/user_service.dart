@@ -89,6 +89,7 @@ class UserService {
 
     if (json["statusCode"] == 200 || json["statusCode"] == 201) {
       await budgetService.getBudgets();
+      budgetService.getCurrentTotalValue(index: 0);
     } else {
       var error = json["message"];
       throw Exception(error);

@@ -3,7 +3,7 @@ import 'package:mobile_auto_drive/models/LatLngAddressModel.dart';
 class BudgetingModel {
   int? statusCode;
   String? message;
-  List<Budget>? budget;
+  List<Budget>? budget = [];
 
   BudgetingModel({this.statusCode, this.message, this.budget});
 

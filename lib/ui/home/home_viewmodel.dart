@@ -247,14 +247,20 @@ class HomeViewModel extends BaseViewModel {
     currentTotalSpent = budgetingService.currentTotalSpent;
     notifyListeners();
 
-    currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
-    salesService.currentCar = currentCar;
-    salesService.currentCarMake = currentCar!.carMake!;
-    currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
-    budgetingService.currentCar = currentCar;
-    notifyListeners();
+    if(budgetingModel!.budget!.isNotEmpty) {
+      hasAddedCar = true;
 
-    getChecklistDataModel();
+      currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
+      salesService.currentCar = currentCar;
+      salesService.currentCarMake = currentCar!.carMake!;
+      currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
+      budgetingService.currentCar = currentCar;
+      notifyListeners();
+
+      getChecklistDataModel();
+
+    }
+
     notifyListeners();
 
   }

@@ -466,7 +466,7 @@ class InfoBox extends StatelessWidget {
                         ),
                         const YMargin(12),
                         NormalText(
-                          text: '${model.budgetingModel?.budget?[model.currentBudgetViewIndex!].mileage ?? "0"}',
+                          text: model.hasAddedCar ? '${model.budgetingModel?.budget![model.currentBudgetViewIndex!].mileage ?? "0"}' : "0",
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
                         ),
@@ -508,7 +508,7 @@ class InfoBox extends StatelessWidget {
                         ),
                         const YMargin(12),
                         NormalText(
-                          text: '₦ ${numberFormat(number: (model.budgetingModel?.budget?[model.currentBudgetViewIndex!].currentSpending ?? 0).toDouble())}',
+                          text: model.hasAddedCar ? '₦ ${numberFormat(number: (model.budgetingModel?.budget?[model.currentBudgetViewIndex!].currentSpending ?? 0).toDouble())}' : '₦ 0',
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
                         ),
