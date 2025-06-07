@@ -1,7 +1,7 @@
 class ChecklistDataModel {
   int? status;
   String? message;
-  Payload? payload;
+  ChecklistData? payload;
 
   ChecklistDataModel({
     this.status,
@@ -12,7 +12,7 @@ class ChecklistDataModel {
   factory ChecklistDataModel.fromJson(Map<String, dynamic> json) => ChecklistDataModel(
     status: json["status"],
     message: json["message"],
-    payload: json["payload"] == null ? null : Payload.fromJson(json["payload"]),
+    payload: json["payload"] == null ? null : ChecklistData.fromJson(json["payload"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -22,7 +22,7 @@ class ChecklistDataModel {
   };
 }
 
-class Payload {
+class ChecklistData {
   Frequency? frequency;
   String? id;
   String? carId;
@@ -31,7 +31,7 @@ class Payload {
   DateTime? updatedAt;
   int? v;
 
-  Payload({
+  ChecklistData({
     this.frequency,
     this.id,
     this.carId,
@@ -41,7 +41,7 @@ class Payload {
     this.v,
   });
 
-  factory Payload.fromJson(Map<String, dynamic> json) => Payload(
+  factory ChecklistData.fromJson(Map<String, dynamic> json) => ChecklistData(
     frequency: json["frequency"] == null ? null : Frequency.fromJson(json["frequency"]),
     id: json["_id"],
     carId: json["car_id"],

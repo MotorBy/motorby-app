@@ -48,8 +48,11 @@ class HomeViewModel extends BaseViewModel {
 
   BudgetingModel? budgetingModel;
   CarId? currentCar;
+  Budget? currentBudget;
+
   ChecklistDataModel? checkListDataModel;
   ReminderListModel? reminderListModel;
+
   UserModel? userModel;
   List<File> addImagesList = [];
 
@@ -243,6 +246,8 @@ class HomeViewModel extends BaseViewModel {
     fuelData = userService.fuelData;
 
     budgetingService.getCurrentTotalValue(index: v);
+    currentBudget = budgetingService.currentBudget;
+
     totalCostingAndValue = budgetingService.totalCostingAndValue;
     currentTotalSpent = budgetingService.currentTotalSpent;
     notifyListeners();

@@ -1,4 +1,5 @@
 import 'package:mobile_auto_drive/models/LatLngAddressModel.dart';
+import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 
 class BudgetingModel {
   int? statusCode;
@@ -33,6 +34,7 @@ class Budget {
   bool? isActive;
   String? sId;
   CarId? carId;
+  ChecklistData? checklistData;
   String? userId;
   String? carName;
   int? mileage;
@@ -53,6 +55,7 @@ class Budget {
         this.carId,
         this.userId,
         this.carName,
+        this.checklistData,
         this.mileage,
         this.currentSpending,
         this.fueling,
@@ -72,6 +75,7 @@ class Budget {
     carName = json['car_name'];
     mileage = json['mileage'];
     budget = json['budget_amount'];
+    checklistData = json["checklist_id"] == null ? null : ChecklistData.fromJson(json["checklist_id"]);
     currentSpending = json['current_spending'];
     if (json['fueling'] != null) {
       fueling = <Fueling>[];
@@ -120,6 +124,9 @@ class Budget {
     data['mileage'] = mileage;
     data['budget_amount'] = budget;
     data['current_spending'] = currentSpending;
+    if (checklistData != null) {
+      data["checklist_id"] = checklistData!.toJson();
+    }
     if (fueling != null) {
       data['fueling'] = fueling!.map((v) => v.toJson()).toList();
     }

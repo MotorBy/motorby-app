@@ -430,8 +430,8 @@ class InfoBox extends StatelessWidget {
                             ),
                             const YMargin(12),
                             NormalText(
-                              text: homeViewModel!.checkListDataModel != null
-                                  ? '${homeViewModel!.checkListDataModel!.payload!.items!.where((item) => item.isChecked == true).length}/${homeViewModel!.checkListDataModel!.payload!.items!.length}'
+                              text: homeViewModel!.hasAddedCar
+                                  ? '${homeViewModel!.currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${homeViewModel!.currentBudget!.checklistData!.items!.length}'
                                   : '0/0',
                               fontSize: 18,
                               fontWeight: FontWeight.w700,

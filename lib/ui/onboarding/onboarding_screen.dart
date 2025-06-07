@@ -24,15 +24,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
 
   @override
   void initState() {
-
     OnboardingAnimationSetup.init(vsync: this);
-
-    // OnboardingAnimationSetup().animationProgressCtrl1.addStatusListener((status) {
-    //   if (status == AnimationStatus.completed) {
-    //
-    //   }
-    // });
-
     super.initState();
   }
 
@@ -76,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                     children: [
                       const YMargin(15),
                       NormalText(
-                        text:'Your Auto\ncompanion\nall-in-one place\nfor you',
+                        text:'Your auto car\ncompanion\nat your finger tips',
                         textColor: XColors.white(),
                         fontSize: 35,
                         fontWeight: FontWeight.w900,
