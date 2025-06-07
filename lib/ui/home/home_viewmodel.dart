@@ -105,7 +105,6 @@ class HomeViewModel extends BaseViewModel {
   String? date = '';
 
   int? currentTotalSpent = 0;
-  int? totalCarsAdded = 0;
   int? currentBudgetViewIndex = 0;
   int? currentBudgetTypeIndex = 0;
 
@@ -136,7 +135,6 @@ class HomeViewModel extends BaseViewModel {
     setBusyForObject('home-loading', true);
 
     await userService.getUsers().onError((error, stackTrace) {
-      print(stackTrace.toString());
       setError(error.toString());
     });
 
@@ -155,8 +153,6 @@ class HomeViewModel extends BaseViewModel {
 
     } else {
 
-      resetBudgetListTotalCost();
-
       await budgetingService.getBudgets();
       await paymentService.getPlans();
       await reminderService.getReminders();
@@ -167,8 +163,7 @@ class HomeViewModel extends BaseViewModel {
 
       userModel = userService.userModel;
       reminderListModel = reminderService.reminderListModel;
-
-      getBudgetData();
+      fuelData = userService.fuelData;
 
       onPermissionCallBack?.call();
 
@@ -176,45 +171,12 @@ class HomeViewModel extends BaseViewModel {
         currentFuelPrice = fuelData!.payload!.toInt().toString();
       }
 
+      onBudgetViewUpdated(0);
       setBusyForObject('home-loading', false);
 
     }
 
-    print('has user in app: $hasUserSetup');
     notifyListeners();
-  }
-
-  void getBudgetData() {
-
-    budgetingModel = budgetingService.budgetingModel;
-    fuelData = userService.fuelData;
-
-    if(budgetingModel != null) {
-
-      if(budgetingModel!.budget!.isNotEmpty) {
-
-        currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
-        budgetingService.currentCar = currentCar;
-
-        hasAddedCar = true;
-        totalCarsAdded = budgetingModel!.budget!.length;
-
-        salesService.currentCar = currentCar;
-        salesService.currentCarMake = currentCar!.carMake!;
-
-        budgetingService.getCurrentTotalValue(index: currentBudgetViewIndex);
-        totalCostingAndValue = budgetingService.totalCostingAndValue;
-        currentTotalSpent = budgetingService.currentTotalSpent;
-        currentSetBudget = budgetingService.currentSetBudget;
-
-        onBudgetViewUpdated(currentBudgetViewIndex);
-
-        getChecklistDataModel();
-
-      }
-
-    }
-
   }
 
   List<ReminderPayload> getReminderLists() {
@@ -274,21 +236,27 @@ class HomeViewModel extends BaseViewModel {
   }
 
   void onBudgetViewUpdated(int? v) {
-    resetBudgetListTotalCost();
 
+    budgetingModel = budgetingService.budgetingModel;
     currentBudgetViewIndex = v;
+
+    fuelData = userService.fuelData;
 
     budgetingService.getCurrentTotalValue(index: v);
     totalCostingAndValue = budgetingService.totalCostingAndValue;
     currentTotalSpent = budgetingService.currentTotalSpent;
+    notifyListeners();
 
     currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
     salesService.currentCar = currentCar;
     salesService.currentCarMake = currentCar!.carMake!;
     currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
     budgetingService.currentCar = currentCar;
-
     notifyListeners();
+
+    getChecklistDataModel();
+    notifyListeners();
+
   }
 
   Future<void> getChecklistDataModel() async {
@@ -304,17 +272,6 @@ class HomeViewModel extends BaseViewModel {
     repairing = budgetingModel!.budget![currentBudgetViewIndex!].repairing!.reversed.toList();
     breakdowns = budgetingModel!.budget![currentBudgetViewIndex!].breakdowns!.reversed.toList();
 
-    notifyListeners();
-  }
-
-  void resetBudgetListTotalCost() {
-    totalCostingAndValue = [
-      0,
-      0,
-      0,
-      0,
-      0
-    ];
     notifyListeners();
   }
 
@@ -356,7 +313,6 @@ class HomeViewModel extends BaseViewModel {
 
       if(onCallBack != null) {
 
-        resetBudgetListTotalCost();
         resetUpdateBudgetData();
 
         await budgetingService.getBudgets();

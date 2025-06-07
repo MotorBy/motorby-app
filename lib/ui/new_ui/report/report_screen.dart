@@ -13,15 +13,20 @@ import 'expenditure_report_view.dart';
 import 'mileage_report_view.dart';
 
 class ReportScreen extends StatelessWidget {
-  const ReportScreen({Key? key, this.isFromQuickActions = false}) : super(key: key);
+  const ReportScreen({
+    Key? key,
+    this.isFromQuickActions = false,
+    this.currentIndex = 0
+  }) : super(key: key);
 
   final bool? isFromQuickActions;
+  final int? currentIndex;
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ReportViewModel>.reactive(
       viewModelBuilder: () => ReportViewModel(),
-      onViewModelReady: (model) => model.setBudgetData(),
+      onViewModelReady: (model) => model.setBudgetData(currentIndex: currentIndex!),
       builder: (context, model, child) => Scaffold(
         backgroundColor: XColors.background(),
         appBar: appBarHeader(

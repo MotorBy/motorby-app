@@ -27,7 +27,7 @@ class CarsListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.reactive(
         viewModelBuilder: () => HomeViewModel(),
-        onViewModelReady: (model) => model.getBudgetData(),
+        onViewModelReady: (model) => model.onBudgetViewUpdated(0),
         builder: (context, viewModel, child) => Scaffold(
             backgroundColor: const Color(0xFFFFFFFF),
           appBar: appBarHeader(
@@ -59,14 +59,14 @@ class CarsListScreen extends StatelessWidget {
                 child: Column(
                   children: [
 
-                    if(viewModel.hasAddedCar == false) ... [
+                    if(viewModel.budgetingModel?.budget?.isNotEmpty == false) ... [
 
                       const NormalText(text: "No cars added")
 
                     ] else ... [
 
                       ...List.generate(
-                        viewModel.totalCarsAdded!,
+                        viewModel.budgetingModel?.budget?.length ?? 0,
                             (index) => Padding(
                           padding: const EdgeInsets.all(5.0),
                           child: Container(

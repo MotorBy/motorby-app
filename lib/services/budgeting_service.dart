@@ -41,7 +41,6 @@ class BudgetingService {
 
   void getCurrentTotalValue({int? index}) {
     resetTotalCostingAndValue();
-
     currentBudgetIndex = index;
 
     if(budgetingModel!.budget!.isNotEmpty) {
