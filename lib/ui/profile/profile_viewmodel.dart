@@ -330,6 +330,7 @@ class ProfileViewModel extends BaseViewModel {
   Future logOut() async {
     await _googleSignIn.signOut();
     await persistentService.deleteAll();
+    await serviceLocator.reset(dispose: false);
   }
 
 }

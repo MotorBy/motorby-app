@@ -52,23 +52,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
             ),
           ),
 
-          AnimatedBuilder(
-              animation: OnboardingAnimationSetup().animationProgressCtrl1,
-              builder: (BuildContext context, Widget? child) {
-
-                return Positioned(
-                top: OnboardingAnimationSetup().animationProgressLogoValue,
-                left: 10,
-                right: 10,
-                child: SvgPicture.asset(
-                  'assets/images/motorby_m.svg',
-                  colorFilter: ColorFilter.mode(XColors.white(), BlendMode.srcIn),
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.fitHeight,
-                ),
-              );
-            }
+          Positioned(
+            top: 120,
+            left: 10,
+            right: 10,
+            child: SvgPicture.asset(
+              'assets/images/motorby_m.svg',
+              colorFilter: ColorFilter.mode(XColors.white(), BlendMode.srcIn),
+              width: 150,
+              height: 150,
+              fit: BoxFit.fitHeight,
+            ),
           ),
 
           AnimatedBuilder(

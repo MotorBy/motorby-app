@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/main.dart';
 import 'package:mobile_auto_drive/services/device_info.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
@@ -66,7 +67,10 @@ class NewProfileScreen extends StatelessWidget {
 
                     model.logOut().then((value) {
                       popToFirst(context);
-                      navigateReplace(context, SignInScreen());
+                      navigateReplace(context, const MyApp(
+                        isAuthed: false,
+                        isOnboarded: false,
+                      ));
                     });
 
                   },
