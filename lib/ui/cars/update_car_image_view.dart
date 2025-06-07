@@ -16,12 +16,14 @@ class UpdateCarImage extends StatelessWidget {
   UpdateCarImage({super.key,
     this.setImages,
     this.onCompleteImageUpload,
+    this.carMake,
     this.fromSale = false
   });
 
   List<String>? setImages;
   Function(bool)? onCompleteImageUpload;
   bool? fromSale;
+  String? carMake;
 
   @override
   Widget build(BuildContext context) {

@@ -25,12 +25,13 @@ class ReportViewModel extends BaseViewModel {
   String _lastRefuelDate = '';
   String _lastRefuelAmount = '';
   int _currentMileage = 0;
-  String _lastTripDate = '';
+  String _lastTripDate = '-----';
   int _lastTripDistance = 0;
 
   int? currentTotalSpent = 0;
   int? currentSetBudget = 0;
   int currentCarBudgetIndex = 0;
+
   List<int>? totalCostingAndValue = [
     0,
     0,

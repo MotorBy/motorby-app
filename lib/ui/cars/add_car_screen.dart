@@ -139,8 +139,8 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                 "details" : {
                   "mileage" : widget.currentCar!.details?.mileage,
                   "color" : widget.currentCar!.color,
-                  "seats" : widget.currentCar!.details?.seats,
-                  "speakers" : widget.currentCar!.details?.speakers,
+                  "seats" : widget.currentCar!.details?.seats.toString(),
+                  "speakers" : widget.currentCar!.details?.speakers.toString(),
                   "gear" : widget.currentCar!.details?.gear,
                   "breaks" : widget.currentCar!.details!.breaks,
                   "air_bag" : widget.currentCar!.details!.airBag,

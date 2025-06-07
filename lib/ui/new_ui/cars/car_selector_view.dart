@@ -69,7 +69,7 @@ class CarSelectorView extends StatelessWidget {
             if(cars.isNotEmpty) ... [
 
               const NormalText(
-                text: 'Selecting any of your cars',
+                text: 'Select any of your cars',
                 fontSize: 13,
                 textColor: Colors.black,
                 fontWeight: FontWeight.w500,
@@ -87,9 +87,6 @@ class CarSelectorView extends StatelessWidget {
                       return ListTile(
                           contentPadding: EdgeInsets.zero,
                           visualDensity: const VisualDensity(vertical: -2),
-                          leading: const GetSvgImage(
-                              image: 'assets/images/auto/toyota_se.svg'
-                          ),
                           trailing: const Icon(Icons.circle_outlined),
                           title: NormalText(
                             text: cars[index].carName,

@@ -460,7 +460,7 @@ class InfoBox extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const NormalText(
-                          text: 'Mileage(mph)',
+                          text: 'Mileage(km)',
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),

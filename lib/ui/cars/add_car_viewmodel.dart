@@ -100,19 +100,26 @@ class AddCarViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future uploadFilesToCloud() async {
+  Future<List<String>> uploadFilesToCloud() async {
     setBusy(true);
 
     for (var element in addImagesList) {
+
+      var pathUri = element.path.split('/')[element.path.split('/').length - 1];
+      var storagePath = 'cars/${salesService.currentCarMake?.toLowerCase()}/${userService.userModel?.payload?.user?.userId}/$pathUri';
+
       await FirebaseService().uploadFileToStorage(
-          storagePath: 'cars/${salesService.currentCarMake!.toLowerCase()}/${element.path.split('/')[element.path.split('/').length - 1]}',
+          storagePath: storagePath,
           filePath: element.path,
-          onCallBack: (s){
-            addedImagesUrlList.add(s);
+          onCallBack: (s) {
+
           }
-      );
+      ).then((v) {
+        addedImagesUrlList.add(v);
+      });
     }
 
+    return addedImagesUrlList;
   }
 
   void updateSetCarData({required Map<String, dynamic> data}) {
@@ -132,11 +139,11 @@ class AddCarViewModel extends BaseViewModel {
 
       // Update local state variables
       if(setCarData['details'] != null) {
-        seats = setCarData['details']['seats'];
-        speakers = setCarData['details']['speakers'];
-        gear = setCarData['details']['gear'];
-        airBag = setCarData['details']['air_bag'];
-        airConditioner = setCarData['details']['air_conditioner'];
+        seats = setCarData['details']?['seats'];
+        speakers = setCarData['details']?['speakers'];
+        gear = setCarData['details']?['gear'];
+        airBag = setCarData['details']?['air_bag'];
+        airConditioner = setCarData['details']?['air_conditioner'];
       }
 
       if (data['car_make'] != null) {
@@ -169,6 +176,7 @@ class AddCarViewModel extends BaseViewModel {
   Future uploadCar({Function? onCallBack, Function? onErrorCallBack}) async {
 
     await uploadFilesToCloud().then((v) async {
+      print(addedImagesUrlList.length);
 
       setCarData['images'] = addedImagesUrlList;
       setCarData['by'] = persistService.getUserID;
