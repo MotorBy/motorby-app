@@ -34,6 +34,11 @@ class MapViewModel extends BaseViewModel {
   List<String> directions = [];
   List<String> stepManeuver = [];
 
+  String? currentDirection = "";
+  bool? openCurrentDirectionView = false;
+  bool? openDirectionMetricView = false;
+  int? currentDirectionStepIndex = 0;
+
   LatLng? SOURCE_LOCATION;
 
   String? sourceAddressName;
@@ -200,6 +205,46 @@ class MapViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  int getCurrentDirectionStepIndex({int? currentStep}) {
+
+    if(currentStep != null) {
+      currentDirectionStepIndex = currentStep;
+      print(currentStep);
+      return 0;
+    }
+
+    if (directions.isEmpty || currentPosition == null || routeDirectionsModel?.payload?.routes == null) {
+      return 0;
+    }
+
+    final currentLatLng = LatLng(currentPosition!.latitude, currentPosition!.longitude);
+    var minDistance = double.infinity;
+    var closestStepIndex = 0;
+
+    // Loop through each step to find the closest one to current location
+    for (var i = 0; i < routeDirectionsModel!.payload!.routes![0].steps!.length; i++) {
+      final step = routeDirectionsModel!.payload!.routes![0].steps![i];
+      final stepPoints = decodePolyline(step.polyline!.encodedPolyline!);
+
+      // Find the closest point in this step's polyline
+      for (final point in stepPoints) {
+        final distance = Geolocator.distanceBetween(
+            currentLatLng.latitude,
+            currentLatLng.longitude,
+            point.latitude,
+            point.longitude
+        );
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestStepIndex = i;
+        }
+      }
+    }
+
+    return closestStepIndex;
+  }
+
   Future<void> getCurrentLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -352,6 +397,21 @@ class MapViewModel extends BaseViewModel {
     } finally {
       setBusy(false);
     }
+  }
+
+  void setCurrentDirection({String? currentDir}) {
+    currentDirection = currentDir;
+    notifyListeners();
+  }
+
+  void setOpenCurrentDirectionsView({bool? shouldOpen}) {
+    openCurrentDirectionView = shouldOpen ?? false;
+    notifyListeners();
+  }
+
+  void setOpenDirectionMetricView({bool? shouldOpen}) {
+    openDirectionMetricView = !openDirectionMetricView!;
+    notifyListeners();
   }
 
   Future<void> getRouteDirection({

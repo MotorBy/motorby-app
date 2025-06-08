@@ -204,15 +204,17 @@ class InsuranceData {
 
 class InsuranceType {
   String? provider;
-  int? cost;
+  dynamic cost;
   String? insuranceId;
   String? type;
+  String? product;
 
   InsuranceType({
     this.provider,
     this.cost,
     this.insuranceId,
     this.type,
+    this.product
   });
 
   factory InsuranceType.fromJson(Map<String, dynamic> json) => InsuranceType(
@@ -220,6 +222,7 @@ class InsuranceType {
     cost: json["cost"],
     insuranceId: json["insurance_id"],
     type: json["type"],
+    product: json["product"]
   );
 
   Map<String, dynamic> toJson() => {
@@ -227,5 +230,6 @@ class InsuranceType {
     "cost": cost,
     "insurance_id": insuranceId,
     "type": type,
+    "product": product
   };
 }

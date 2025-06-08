@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/buy_insurance_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_history_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/buy_insurance_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance_history_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
@@ -63,7 +63,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: NormalText(
-                    text: 'Protect your car with comprehensive coverage',
+                    text: 'Protect your car with various list of insurance coverages available.',
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     textColor: XColors.black(),
@@ -82,7 +82,8 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                             cars: model.getBudgetData(),
                             currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
                             onCarSelected: ({Budget? budget, int? index}) {
-
+                              model.getCurrentCar();
+                              model.notifyListeners();
                             }
                         ),
                       ),
@@ -95,7 +96,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                   borderRadius: BorderRadius.circular(16),
-                  child: model.insuranceBought?.payload != null && model.insuranceBought!.payload!.isNotEmpty
+                  child: model.insuranceBought?.payload != null && model.getCurrentActiveInsurance() != null
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,13 +105,13 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const NormalText(
-                                text: 'Current Purchased',
+                                text: 'Current Active insurance',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
                               const YMargin(18),
                               NormalText(
-                                text: model.insuranceBought!.payload!.first.insuranceType?.type?.replaceAll('-', ' ').replaceAll('buy ', '') ?? 'Insurance Policy',
+                                text: model.getCurrentActiveInsurance(),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -124,7 +125,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                                     textColor: XColors.black(),
                                   ),
                                   NormalText(
-                                    text: model.insuranceBought!.payload!.first.insuranceType?.provider ?? 'Insurance Provider',
+                                    text: model.insuranceBought!.payload!.first.insuranceType?.insuranceId != null ? model.getActualInsuranceCompany(id: model.insuranceBought!.payload!.first.insuranceType?.insuranceId) : 'Insurance Provider',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     textColor: XColors.black(),
@@ -196,7 +197,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                             padding: const EdgeInsets.only(bottom: 16.0),
                             child: ContainerWidget(
                               onTap: () {
-                                model.setSelectedInsuranceProduct(id: insurance.productId);
+                                model.setSelectedInsuranceProduct(id: insurance.productId, ins: insurance);
                               },
                               backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                               borderRadius: BorderRadius.circular(16),
@@ -227,7 +228,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> {
                                       ),
                                       ContainerWidget(
                                         onTap: () {
-                                          model.setSelectedInsuranceProduct(id: insurance.productId);
+                                          model.setSelectedInsuranceProduct(id: insurance.productId, ins: insurance);
                                           navigate(context, BuyInsuranceScreen(insuranceViewModel: model));
                                         },
                                         backgroundColor: XColors.white(),

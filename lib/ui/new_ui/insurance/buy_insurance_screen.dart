@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
@@ -173,10 +173,10 @@ class _BuyInsuranceScreenState extends State<BuyInsuranceScreen> {
                               );
                               Navigator.pop(context, true);
                             },
-                            onErrorCallBack: (){
+                            onErrorCallBack: (e) {
                               FloatingSnackBar.show(
                                   context,
-                                  'Error with buying an insurance',
+                                  e!,
                                   isError: true
                               );
                             }

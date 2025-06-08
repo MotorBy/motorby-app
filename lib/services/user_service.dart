@@ -129,10 +129,11 @@ class UserService {
 
     final json = JSON.jsonDecode(response.body);
 
-    print(json.toString());
-
     if(response.statusCode == 200 || response.statusCode == 201) {
+
       //await getUsers();
+      await budgetService.getBudgets();
+
     } else {
       var error = json["message"];
       throw Exception(error);

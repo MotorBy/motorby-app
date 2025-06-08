@@ -39,6 +39,7 @@ class InsuranceViewModel extends BaseViewModel {
   InsuranceBoughtModel? insuranceBought;
   GetInsuranceProduct? insuranceProductDetails;
   List<InsuranceList> insuranceList = [];
+  InsuranceList? selectedInsuranceList;
 
   void updateIncidentChoice(String choice, int selectedIndex) {
     incidentType = choice;
@@ -103,6 +104,14 @@ class InsuranceViewModel extends BaseViewModel {
     notifyListeners();
     print('the list of product: ${insuranceList.length}');
     print('the list of bought product: ${insuranceBought?.payload}');
+  }
+
+  String? getActualInsuranceCompany({String? id}){
+    return insuranceList.where((it) => it.productId == id).toList()[0].company;
+  }
+
+  String? getCurrentActiveInsurance() {
+    return insuranceBought!.payload!.where((it) => it.active == true).toList().isNotEmpty ? insuranceBought?.payload?.where((it) => it.active == true).toList()[0].insuranceType?.product : null;
   }
 
   double? purchaseAmount = 0.0;
@@ -170,7 +179,7 @@ class InsuranceViewModel extends BaseViewModel {
 
   }
 
-  Future verifyPayment({Function? onCallBack, Function? onErrorCallBack}) async {
+  Future verifyPayment({Function? onCallBack, Function(String? e)? onErrorCallBack}) async {
     try {
       setBusy(true);
       
@@ -182,11 +191,13 @@ class InsuranceViewModel extends BaseViewModel {
       }
 
       final Map<String, dynamic> purchaseData = {
-        "name": insuranceProductDetails?.payload?.name,
+        "name": selectedInsuranceList?.name,
         "type": insuranceProduct!.payload!.where((it) => it.productId == insuranceService.currentInsuranceId).toList()[0].type,
         "product_id": insuranceService.currentInsuranceId,
-        "by": user.userId,
+        "by": userService.persistService.getUserID,
         "attached_car": currentCar.sId,
+        "state": user.state,
+        "country": user.country,
         "insurance_amount": purchaseAmount,
         "insurance_product": insuranceProductDetails?.payload?.name,
         "payment_provider": "Paystack",
@@ -197,11 +208,12 @@ class InsuranceViewModel extends BaseViewModel {
         "activation_date": "",
         "expiration_date": "",
         "delayedRoute": true,
-        "purchase_id": "STI-MC-${DateTime.now().millisecondsSinceEpoch}",
+        "purchase_id": "MOTORINS-${DateTime.now().millisecondsSinceEpoch}",
         "productId": insuranceService.currentInsuranceId,
         "car": {
           "make": currentCar.carMake,
           "model": currentCar.carModel,
+          "color": currentCar.color,
           "registration_number": currentCar.registrationNumber,
           "engine_number": currentCar.engineNumber,
           "chassis_number": currentCar.chassisNumber,
@@ -229,13 +241,14 @@ class InsuranceViewModel extends BaseViewModel {
     } catch (e, s) {
       setBusy(false);
       print(s);
-      onErrorCallBack?.call();
+      onErrorCallBack?.call(e.toString());
       rethrow;
     }
   }
 
-  void setSelectedInsuranceProduct({String? id}){
+  void setSelectedInsuranceProduct({String? id, InsuranceList? ins}){
     insuranceService.currentInsuranceId = id;
+    selectedInsuranceList = ins;
     notifyListeners();
   }
 

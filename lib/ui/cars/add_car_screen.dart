@@ -301,7 +301,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       isEnabled: true,
                       keyboard: TextInputType.text,
                       onChanged: (s){
-                        model.updateSetCarData(data: {'details': {'color': s}});
+                        model.updateSetCarData(data: {'color': s});
                       },
                     ),
                     ///cars details section
@@ -522,16 +522,16 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         label: "Registration Number",
                         isEnabled: true,
                         onChanged: (s){
-                          model.updateSetCarData(data: {'registration_number': s});
+                          model.updateSetCarData(data: {'vehicle_registration_number': s});
                         },
                       ),
                       const YMargin(15),
                       MainInputField(
-                        controller: _chassisNumberController,
+                        controller: _vinController,
                         label: "Vin number",
                         isEnabled: true,
-                        onChanged: (s){
-                          model.updateSetCarData(data: {'details': {'vin_number': s}});
+                        onChanged: (s) {
+                          model.updateSetCarData(data: {'vin_number': s});
                         },
                       ),
                     ],
@@ -551,7 +551,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                         }
 
                       },
-                      text: model.isBusinessOrForSale ? "Set for Sale" : "Add Vehicle",
+                      text: model.action == "edit" ? "Update car" : model.isBusinessOrForSale ? "Set for Sale" : "Add Vehicle",
                       height: 56,
                       textColor: Colors.white,
                       buttonColor: XColors.primaryColor(),

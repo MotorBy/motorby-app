@@ -1,6 +1,6 @@
 import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';

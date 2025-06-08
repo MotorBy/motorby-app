@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';

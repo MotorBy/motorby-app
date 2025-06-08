@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/insurance_bought_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/new_claim_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/view_claim_details.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/new_claim_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/view_claim_details.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
@@ -288,10 +288,7 @@ Widget buildPendingPoliciesList({InsuranceViewModel? viewModel}) {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 NormalText(
-                  text: insurance.insuranceType?.type
-                      ?.replaceAll('buy-', '')
-                      .replaceAll('-', ' ') ??
-                      'Insurance Policy',
+                  text: insurance.insuranceType?.product ?? 'Insurance Policy',
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -315,14 +312,15 @@ Widget buildPendingPoliciesList({InsuranceViewModel? viewModel}) {
             Row(
               children: [
                 _buildInfoItem(
-                    'Start Date', _formatDate(insurance.createdAt)),
+                    'Purchased Date',
+                    _formatDate(insurance.createdAt)
+                ),
                 const XMargin(24),
                 _buildInfoItem('End Date', "N/A"),
               ],
             ),
             const YMargin(12),
-            _buildInfoItem('Coverage Amount',
-                insurance.insuranceType?.cost?.toString() ?? 'N/A'),
+            _buildInfoItem('Coverage Amount', insurance.insuranceType?.cost != null ? "NGN${amtFormatter(int.parse(insurance.insuranceType?.cost))}" ?? 'N/A' : "N/A"),
             const YMargin(6),
             Row(
               children: [

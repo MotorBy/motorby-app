@@ -5,13 +5,17 @@ import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/direction_icon.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
+import 'dart:async';
 
-class DirectionsScreen extends StatelessWidget {
+class DirectionsScreen extends StatefulWidget {
   final LatLng destination;
   final String destinationName;
   final String destinationAddress;
@@ -26,26 +30,60 @@ class DirectionsScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<DirectionsScreen> createState() => _DirectionsScreenState();
+}
+
+class _DirectionsScreenState extends State<DirectionsScreen> with SingleTickerProviderStateMixin {
+
+  Timer? _locationTimer;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(duration: const Duration(milliseconds: 700), vsync: this);
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _locationTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<MapViewModel>.reactive(
-      viewModelBuilder: () => viewModel ?? MapViewModel(),
+      viewModelBuilder: () => widget.viewModel ?? MapViewModel(),
       disposeViewModel: false,
-      onViewModelReady: (viewModel) => viewModel.plotDirections(destination),
+      onViewModelReady: (viewModel) {
+        viewModel.plotDirections(widget.destination);
+
+        // _locationTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+        //   viewModel.getCurrentLocation();
+        // });
+
+      },
+      onDispose: (viewModel) {
+        //_locationTimer?.cancel();
+      },
       builder: (context, viewModel, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Directions'),
-            titleTextStyle: TextStyle(
-              color: XColors.textColor(),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            backgroundColor: XColors.highlightColor().withOpacity(0.1),
-            surfaceTintColor: Colors.transparent,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
+          appBar: appBarHeader(
+            hasOnBack: true,
+            onCloseAction: (){
+              popView(context);
+            },
+            context: context,
+            appBarTitle: 'Directions',
             actions: [
               IconButton(
                 icon: const Icon(Icons.bookmark_border),
@@ -56,8 +94,9 @@ class DirectionsScreen extends StatelessWidget {
           ),
           body: Column(
             children: [
-              // Destination info card
-              Container(
+              
+              // Destination info container
+              ContainerWidget(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -92,62 +131,152 @@ class DirectionsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               NormalText(
-                                text: destinationName,
+                                text: widget.destinationName,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                               const SizedBox(height: 4),
                               NormalText(
-                                text: destinationAddress,
+                                text: widget.destinationAddress,
                                 fontSize: 14,
                                 textColor: Colors.grey,
                               ),
                             ],
                           ),
                         ),
+                        GestureDetector(
+                          onTap: () {
+                            viewModel.setOpenDirectionMetricView();
+                            if (viewModel.openDirectionMetricView!) {
+                              _controller.forward();
+                            } else {
+                              _controller.reverse();
+                            }
+                          },
+                          child: Container(
+                            child: RotationTransition(
+                              turns: Tween(begin: 0.0, end: 0.5).animate(_animation),
+                              child: Icon(
+                                Icons.keyboard_arrow_down,
+                                color: XColors.primaryColor(),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    const YMargin(16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildInfoItem(
-                            Icons.access_time,
-                            viewModel.routeDirectionsModel?.payload?.routes
-                                    ?.first.duration?.text ??
-                                'N/A',
-                            'Estimated Time'),
-                        _buildInfoItem(
-                            Icons.speed,
-                            viewModel.routeDirectionsModel?.payload?.routes
-                                    ?.first.distance?.text ??
-                                'N/A',
-                            'Distance'),
-                        _buildInfoItem(
-                            Icons.directions_car,
-                            _calculateArrivalTime(viewModel.routeDirectionsModel
-                                    ?.payload?.routes?.first.duration?.value ??
-                                0),
-                            'Arrival Time'),
-                      ],
+
+                    SizeTransition(
+                      sizeFactor: _animation,
+                      child: Column(
+                        children: [
+                          const YMargin(16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildInfoItem(
+                                  Icons.access_time,
+                                  viewModel.routeDirectionsModel?.payload?.routes?.first.duration?.text ?? 'N/A',
+                                  'Estimated Time'),
+                              _buildInfoItem(
+                                  Icons.speed,
+                                  viewModel.routeDirectionsModel?.payload?.routes?.first.distance?.text ?? 'N/A',
+                                  'Distance'),
+                              _buildInfoItem(
+                                  Icons.directions_car,
+                                  _calculateArrivalTime(viewModel.routeDirectionsModel?.payload?.routes?.first.duration?.value ?? 0),
+                                  'Arrival Time'),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
 
-              // Map with route
+              ///TODO: to be revisited
+              // Current location info
+              if(viewModel.openCurrentDirectionView!) ... [
+                ContainerWidget(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: XColors.primaryColor().withOpacity(0.1),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          getManeuverIcon(viewModel.stepManeuver[viewModel.currentDirectionStepIndex ?? 0]),
+                          color: XColors.primaryColor(),
+                          size: 23,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            NormalText(
+                              text: 'current direction',
+                              fontSize: 14,
+                              textColor: Colors.grey[700],
+                            ),
+                            const SizedBox(height: 8),
+                            NormalText(
+                              text: viewModel.currentDirection!,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              textColor: XColors.primaryColor(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: () {
+                          viewModel.setOpenCurrentDirectionsView(shouldOpen: false);
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Icon(
+                            Icons.close_rounded,
+                            color: XColors.primaryColor(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
               Expanded(
                 flex: 2,
                 child: viewModel.isBusy
                     ? const Center(child: CircularProgressIndicator())
                     : GoogleMap(
                         initialCameraPosition: CameraPosition(
-                          target: destination,
+                          target: widget.destination,
                           zoom: 14.0,
                         ),
                         myLocationEnabled: true,
-                        myLocationButtonEnabled: true,
-                        zoomControlsEnabled: true,
+                        myLocationButtonEnabled: false,
+                        zoomControlsEnabled: false,
                         mapType: MapType.normal,
                         polylines: viewModel.polylines,
                         markers: viewModel.markers,
@@ -160,6 +289,7 @@ class DirectionsScreen extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
+
               modalBottomSheetMenu(
                 context: context,
                 radius: 20,
@@ -169,25 +299,37 @@ class DirectionsScreen extends StatelessWidget {
                   child: ListView.builder(
                     itemCount: viewModel.directions.length,
                     itemBuilder: (context, index) {
+
+                      // Get current direction step based on location
+                      //final currentStepIndex = viewModel.getCurrentDirectionStepIndex(currentStep: index);
                       final step = viewModel.directions[index];
                       return _buildDirectionStep(step, index, context: context);
+
                     },
                   ),
                 ),
               );
+
             },
             backgroundColor: XColors.primaryColor(),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
             label: const Text(
-              'Start Navigation',
-              style:
-                  TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+              'View Directions',
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  fontSize: 17
+              ),
             ),
-            icon: const Icon(
-              Icons.navigation,
-              color: Colors.white,
+            icon: Transform.rotate(
+              angle: 45 * 3.14 / 180,
+              child: const Icon(
+                Icons.navigation,
+                color: Colors.white,
+                size: 36,
+              ),
             ),
           ),
           floatingActionButtonLocation:
@@ -224,64 +366,33 @@ class DirectionsScreen extends StatelessWidget {
     return '${arrivalTime.hour.toString().padLeft(2, '0')}:${arrivalTime.minute.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildDirectionStep(String instruction, int index,
-      {BuildContext? context}) {
-    IconData getManeuverIcon(String maneuver) {
-      switch (maneuver.toUpperCase()) {
-        case 'TURN_RIGHT':
-          return Icons.turn_right;
-        case 'TURN_LEFT':
-          return Icons.turn_left;
-        case 'TURN_SLIGHT_RIGHT':
-          return Icons.turn_slight_right;
-        case 'TURN_SLIGHT_LEFT':
-          return Icons.turn_slight_left;
-        case 'TURN_SHARP_RIGHT':
-          return Icons.turn_sharp_right;
-        case 'TURN_SHARP_LEFT':
-          return Icons.turn_sharp_left;
-        case 'MERGE':
-          return Icons.merge;
-        case 'ROUNDABOUT_RIGHT':
-        case 'ROUNDABOUT_LEFT':
-          return Icons.roundabout_left;
-        case 'DEPART':
-          return Icons.departure_board;
-        case 'ARRIVE':
-          return Icons.location_on;
-        case 'KEEP_RIGHT':
-        case 'KEEP_LEFT':
-          return Icons.fork_right;
-        case 'UTURN_RIGHT':
-        case 'UTURN_LEFT':
-          return Icons.u_turn_left;
-        default:
-          return Icons.straight;
-      }
-    }
+  Widget _buildDirectionStep(String instruction, int index, {BuildContext? context}) {
 
     return InkWell(
       onTap: () {
-        if (viewModel!.routeDirectionsModel?.payload?.routes?.isNotEmpty ??
-            false) {
-          final step = viewModel!
-              .routeDirectionsModel!.payload!.routes![0].steps![index];
-          final points =
-              viewModel!.decodePolyline(step.polyline!.encodedPolyline!);
+        if (widget.viewModel!.routeDirectionsModel?.payload?.routes?.isNotEmpty ?? false) {
+
+          final step = widget.viewModel!.routeDirectionsModel!.payload!.routes![0].steps![index];
+          final points = widget.viewModel!.decodePolyline(step.polyline!.encodedPolyline!);
+
           if (points.isNotEmpty) {
             // Calculate the center point of the step's path
-            final bounds = viewModel!.boundsFromLatLngList(points);
+            final bounds = widget.viewModel!.boundsFromLatLngList(points);
             final center = LatLng(
               (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
               (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
             );
 
             // Animate camera to center on this step
-            viewModel!.getMapController().animateCamera(
-                  CameraUpdate.newLatLngZoom(center, 16),
-                );
+            widget.viewModel!.getMapController().animateCamera(CameraUpdate.newLatLngZoom(center, 16));
+
+            // Set all current needed directions data to viewmodel
+            widget.viewModel!.setOpenCurrentDirectionsView(shouldOpen: true);
+            widget.viewModel!.setCurrentDirection(currentDir: instruction);
+            widget.viewModel!.getCurrentDirectionStepIndex(currentStep: index);
             popView(context!);
           }
+
         }
       },
       child: Container(
@@ -301,7 +412,7 @@ class DirectionsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
-                getManeuverIcon(viewModel!.stepManeuver[index]),
+                getManeuverIcon(widget.viewModel!.stepManeuver[index]),
                 color: XColors.primaryColor(),
                 size: 23,
               ),
@@ -371,9 +482,9 @@ class DirectionsScreen extends StatelessWidget {
                 if (nameController.text.isNotEmpty) {
                   viewModel.saveDirection(
                     nameController.text,
-                    destinationName,
-                    destinationAddress,
-                    destination,
+                    widget.destinationName,
+                    widget.destinationAddress,
+                    widget.destination,
                   );
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(

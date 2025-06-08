@@ -5,7 +5,7 @@ import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance_view_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance_view_model.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';

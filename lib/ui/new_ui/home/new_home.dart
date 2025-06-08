@@ -6,7 +6,7 @@ import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/insurance/insurance.dart';
+import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_screen.dart';
