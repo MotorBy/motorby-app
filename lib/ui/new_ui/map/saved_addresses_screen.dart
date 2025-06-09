@@ -8,6 +8,7 @@ import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
+import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -310,16 +311,12 @@ class SavedAddressesScreen extends StatelessWidget {
                 const YMargin(16),
 
                 // Nickname field
-                TextField(
+                MainInputField(
                   controller: describeAddressController,
-                  decoration: InputDecoration(
-                    labelText: 'Describe address (Optional)',
-                    hintText: 'E.g. My ${addressType}',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.label_outline),
-                  ),
+                  label: 'Describe address (Optional)',
+                  keyboard: TextInputType.text,
+                  hint: 'E.g. My ${addressType}',
+                  isEnabled: true,
                 ),
 
                 const YMargin(24),
