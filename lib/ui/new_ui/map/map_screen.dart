@@ -283,7 +283,8 @@ void _showLocationSearchBottomSheet(BuildContext context, MapViewModel model) {
                     cars: model.getBudgetData(),
                     currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
                     onCarSelected: ({Budget? budget, int? index}){
-
+                      model.getCurrentCar(index: index);
+                      model.notifyListeners();
                     }
                 ),
 

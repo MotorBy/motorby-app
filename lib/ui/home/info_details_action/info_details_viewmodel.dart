@@ -73,6 +73,11 @@ class InfoDetailsViewModel extends BaseViewModel {
       notifyListeners();
     }
 
+    fuelData = userService.fuelData;
+    if(fuelData != null) {
+      currentFuelPrice = fuelData!.payload!.toInt().toString();
+    }
+
     weatherSetup();
 
   }

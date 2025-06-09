@@ -41,11 +41,37 @@ class _ReminderScreenState extends State<ReminderScreen> {
         builder: (context, model, child) {
 
           if (model.isBusy) {
-            return const Center(child: Loader());
+            return Scaffold(
+                appBar: appBarHeader(
+                  hasOnBack: widget.isFromQuickActions,
+                  context: context,
+                  onCloseAction: () {
+                    popView(context);
+                  },
+                  appBarTitle: 'Reminder',
+                  centerTitle: false,
+                ),
+                body: const Center(
+                    child: Loader()
+                )
+            );
           }
 
           if (model.hasError) {
-            return Center(child: Text(model.error.toString()));
+            return Scaffold(
+                appBar: appBarHeader(
+                    hasOnBack: widget.isFromQuickActions,
+                    context: context,
+                    onCloseAction: () {
+                      popView(context);
+                    },
+                    appBarTitle: 'Reminder',
+                    centerTitle: false,
+                ),
+                body: Center(
+                    child: Text(model.error.toString())
+                )
+            );
           }
 
           if (model.reminders.isEmpty) {

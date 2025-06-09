@@ -61,11 +61,14 @@ class MapViewModel extends BaseViewModel {
     await loadSavedAddresses();
   }
 
-  List<Budget> getBudgetData() {
+  List<Budget> getBudgetData({int? index}) {
     return budgetingService.budgetingModel?.budget ?? [];
   }
 
-  CarId? getCurrentCar() {
+  CarId? getCurrentCar({int? index}) {
+    if(index != null) {
+      budgetingService.currentCar = budgetingService.budgetingModel!.budget![index].carId;
+    }
     return budgetingService.currentCar;
   }
 

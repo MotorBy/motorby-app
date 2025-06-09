@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
-import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
@@ -372,7 +370,7 @@ class InfoBox extends StatelessWidget {
                               const YMargin(60),
                               ContainerWidget(
                                 onTap: () {
-                                  navigate(context, const MapScreen());
+                                  navigate(context, const MapScreen(isFromQuickActions: true,));
                                 },
                                 backgroundColor: const Color(0xFFF0E8F8),
                                 borderRadius: BorderRadius.circular(40),
