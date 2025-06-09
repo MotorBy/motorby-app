@@ -5,10 +5,12 @@ import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/pay
 import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
+import 'package:mobile_auto_drive/widgets/loader.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
@@ -29,6 +31,25 @@ class _SubscriptionScreenState extends State<SubscriptionView> {
           model.getCurrentUserPlan()
         },
         builder: (context, model, child) {
+
+          if(model.plansModel == null) {
+            return Scaffold(
+              backgroundColor: XColors.background(),
+              appBar: appBarHeader(
+                hasOnBack: true,
+                context: context,
+                onCloseAction: () {
+                  popView(context);
+                },
+                appBarTitle: 'Subscription',
+                centerTitle: false,
+              ),
+              body: const Center(
+                child: Loader(),
+              ),
+            );
+          }
+
           return Scaffold(
             appBar: appBarHeader(
               hasOnBack: true,

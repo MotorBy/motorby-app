@@ -22,6 +22,9 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController regAsController = TextEditingController();
   final TextEditingController businessController = TextEditingController();
   final TextEditingController countryController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -29,6 +32,10 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<AuthViewModel>.reactive(
         viewModelBuilder: () => AuthViewModel(),
+        onViewModelReady: (model){
+          regAsController.text = 'User';
+          countryController.text = 'Nigeria';
+        },
         builder: (context, model, child) {
         return Form(
           key: _formKey,
@@ -86,6 +93,9 @@ class SignupScreen extends StatelessWidget {
 
                           model.handleSignInWithGoogle(
                             forSignup: true,
+                            country: countryController.text,
+                            state: stateController.text,
+                            phoneNumber: phoneNumberController.text,
                             onCallBack: () {
                               navigateReplace(context, const DashBoardScreen());
                             },
@@ -178,6 +188,7 @@ class SignupScreen extends StatelessWidget {
                       label: "Phonenumber",
                       isEnabled: true,
                       keyboard: TextInputType.number,
+                      controller: phoneNumberController,
                       validator: (s) {
                         return AnyInputValidator.emptyValidate(s, inputName: 'Phone number');
                       },
@@ -248,7 +259,6 @@ class SignupScreen extends StatelessWidget {
                       const YMargin(20),
                       MainInputField(
                         label: "Business email",
-
                         isEnabled: true,
                         onChanged: (s){
                           model.updateRegData(data: s, dataType: 'bemail');
@@ -322,6 +332,7 @@ class SignupScreen extends StatelessWidget {
                         Expanded(
                           child: MainInputField(
                             label: "State",
+                            controller: stateController,
                             isEnabled: true,
                             validator: (s) {
                               return AnyInputValidator.emptyValidate(s, inputName: 'State');
