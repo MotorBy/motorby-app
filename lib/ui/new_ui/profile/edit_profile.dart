@@ -8,6 +8,7 @@ import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/image_handling.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
+import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -148,8 +149,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     isEnabled: false,
                   ),
                   const YMargin(16),
-                  ContainerWidget(
-                    onTap: hasChanges ? () {
+                  XButton(
+                    onPressed: hasChanges ? () {
+
                       model.updateData = {
                         'firstname': firstNameController.text,
                         'middlename': middleNameController.text,
@@ -157,21 +159,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       };
                       model.updateUserTypeProfile(
                         onCallBack: () {
+                          setState(() {
+                            hasChanges = false;
+                          });
                           Navigator.pop(context);
                         },
                       );
                     } : null,
-                    backgroundColor: hasChanges ? XColors.primaryColor2() : Colors.grey,
-                    borderRadius: BorderRadius.circular(26),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    width: double.infinity,
-                    child: Center(
-                        child: NormalText(
-                      text: 'Update profile',
-                      textColor: XColors.white(),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    )),
+                    text: 'Update profile',
+                    isLoading: model.busy('user_type_loading'),
+                    buttonColor: hasChanges ? XColors.primaryColor() : Colors.grey,
+                    width: 120,
                   ),
                   const YMargin(30),
                   ContainerWidget(
