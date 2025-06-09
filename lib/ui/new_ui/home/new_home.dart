@@ -215,7 +215,6 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                     // Reminder Card
                     ContainerWidget(
                       elevation: 0.2,
-                      height: viewModel.getReminderLists().isNotEmpty ? null : 150,
                       borderRadius: BorderRadius.circular(16),
                       backgroundColor: XColors.white(),
                       width: double.infinity,
