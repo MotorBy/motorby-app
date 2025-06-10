@@ -68,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                     children: [
                       const YMargin(15),
                       NormalText(
-                        text:'Your auto car\ncompanion\nat your finger tips',
+                        text:'Your auto car\ncompanion\nat your fingertips',
                         textColor: XColors.white(),
                         fontSize: 35,
                         fontWeight: FontWeight.w900,
