@@ -71,11 +71,11 @@ class CarsListScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(5.0),
                           child: Container(
                             width: SizeConfig.screenWidthDp!,
-                            decoration: BoxDecorators.containerDecoration(
-                                hasOutline: true,
-                                outlineWidth: 2,
-                                radius: 26,
-                                outlineColor: XColors.primaryColor().withOpacity(0.1),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),

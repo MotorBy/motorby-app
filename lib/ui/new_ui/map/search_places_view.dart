@@ -78,7 +78,7 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
 
     geocode = Geocoding(apiKey: widget.apiKey, language: widget.language);
     _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
-    _containerHeight = Tween<double>(begin: 55, end: 364).animate(
+    _containerHeight = Tween<double>(begin: 50, end: 364).animate(
       CurvedAnimation(
         curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
         parent: _animationController,
@@ -128,7 +128,11 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
         builder: (context, _) {
           return Container(
             height: _containerHeight.value,
-            decoration: _containerDecoration(),
+            decoration: BoxDecoration(
+              color: widget.darkMode ? Colors.grey[800] : Colors.white,
+              borderRadius: const BorderRadius.all(Radius.circular(9.0)),
+              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 6)],
+            ),
             child: Column(
               children: <Widget>[
                 Padding(
@@ -152,13 +156,31 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
     );
   }
 
+  ///SearchPlaces Input TextField View
   Widget _searchInput(BuildContext context) {
     return Center(
       child: Row(
         children: <Widget>[
           Expanded(
             child: TextField(
-              decoration: _inputStyle(),
+              decoration: InputDecoration(
+                hintText: widget.placeholder ?? 'Search place',
+                hintStyle: TextStyle(
+                  color: widget.darkMode ? Colors.grey[400] : Colors.grey[500],
+                  fontSize: 16,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+                isDense: true,
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.location_on_outlined,
+                    color: widget.iconColor.withOpacity(0.8),
+                    size: 20,
+                  ),
+                ),
+              ),
               controller: _textEditingController,
               onSubmitted: (_) => _selectPlace(),
               onEditingComplete: _selectPlace,
@@ -166,28 +188,41 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
               autofocus: false,
               focusNode: _fn,
               style: TextStyle(
-                //fontSize: MediaQuery.of(context).size.width * 0.06,
                 fontSize: 16,
-                color: widget.isEnabled == false ? Colors.black38 : widget.darkMode ? Colors.grey[100] : Colors.grey[850],
+                color: widget.isEnabled == false 
+                    ? Colors.black38 
+                    : widget.darkMode 
+                        ? Colors.grey[100] 
+                        : Colors.grey[850],
               ),
             ),
           ),
-          Container(width: 15),
           if (widget.hasClearButton)
             GestureDetector(
-
               onTap: () {
-                if (_crossFadeState == CrossFadeState.showSecond) _textEditingController.clear();
+                if (_crossFadeState == CrossFadeState.showSecond) {
+                  _textEditingController.clear();
+                  setState(() {
+                    _placePredictions = [];
+                    _animationController.reverse();
+                  });
+                }
               },
-
               child: AnimatedCrossFade(
                 crossFadeState: _crossFadeState!,
                 duration: const Duration(milliseconds: 300),
                 firstChild: Icon(widget.icon, color: widget.iconColor),
-                secondChild: Icon(Icons.clear, color: widget.iconColor),
+                secondChild: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(Icons.clear, color: widget.iconColor),
+                ),
               ),
             ),
-          if (!widget.hasClearButton) Icon(widget.icon, color: widget.iconColor)
+          if (!widget.hasClearButton)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Icon(widget.icon, color: widget.iconColor),
+            ),
         ],
       ),
     );
@@ -218,27 +253,6 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
           vertical: 0,
         ),
       ),
-    );
-  }
-
-  /*
-  STYLING
-  */
-  InputDecoration _inputStyle() {
-    return InputDecoration(
-      hintText: "Enter destination or any address",
-      border: InputBorder.none,
-      hintStyle: TextStyle(
-        color: widget.isEnabled == false ? Colors.black38 : widget.darkMode ? Colors.grey[100] : Colors.grey[850], fontWeight: FontWeight.w400
-      ),
-    );
-  }
-
-  BoxDecoration _containerDecoration() {
-    return BoxDecoration(
-      color: widget.darkMode ? Colors.grey[800] : Colors.white,
-      borderRadius: const BorderRadius.all(Radius.circular(9.0)),
-      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 6)],
     );
   }
 

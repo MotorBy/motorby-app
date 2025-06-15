@@ -223,10 +223,10 @@ class CarDocumentsScreen extends StatelessWidget {
                         fontSize: 12,
                         textColor: Colors.grey,
                       ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.more_vert),
-                        onPressed: () => model.showDocumentOptions(context, document),
-                      ),
+                      // trailing: IconButton(
+                      //   icon: const Icon(Icons.more_vert),
+                      //   onPressed: () => model.showDocumentOptions(context, document),
+                      // ),
                       onTap: () => model.viewDocument(context, document),
                     );
                   },

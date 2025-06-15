@@ -42,7 +42,12 @@ class AuthService {
 
   Future<LoginResponse> loginUser({String? email, String? password, bool? isAuthFromProvider = false}) async {
 
-    final jsonData = JSON.json.encode({"email": email, "password": password, "signinFrom": isAuthFromProvider == true ? 'provider' : '' });
+    final jsonData = JSON.json.encode({
+      "email": email,
+      "password": password,
+      "signinFrom": isAuthFromProvider == true ?
+      'provider' : ''
+    });
 
     var response = await http.post(Uri.parse(APIService.loginUser),
         headers: APIHelper().requestHeaders(), body: jsonData);
