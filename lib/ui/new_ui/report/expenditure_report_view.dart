@@ -370,7 +370,7 @@ class ExpenditureReportView extends StatelessWidget {
                   name: category['name'] as String,
                   color: category['color'] as Color?,
                   value: category['value'] as double,
-                  percentage: (category['value'] as double) / totalBudget * 100,
+                  percentage: category['value'] != 0.0 ? (category['value'] as double) / totalBudget * 100 : 0.0,
                 ),
             ),
             if (remainingBudget > 0)

@@ -6,6 +6,7 @@ import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
@@ -100,18 +101,12 @@ class SavedAddressesScreen extends StatelessWidget {
   ) {
     final bool hasAddress = addressData != null && addressData.isNotEmpty;
     
-    return Container(
+    return ContainerWidget(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: Colors.grey[200]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

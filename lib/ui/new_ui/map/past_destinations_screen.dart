@@ -4,6 +4,7 @@ import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -109,18 +110,12 @@ class PastDestinationsScreen extends StatelessWidget {
         final address = savedAddresses[index];
         final isHome = address == viewModel.homeAddress;
         
-        return Container(
+        return ContainerWidget(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            border: Border.all(color: Colors.grey[200]!),
           ),
           child: Row(
             children: [
@@ -148,7 +143,7 @@ class PastDestinationsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     NormalText(
-                      text: address['address'],
+                      text: address['address'] ?? 'No Address',
                       fontSize: 14,
                       textColor: Colors.black87,
                     ),
@@ -157,7 +152,7 @@ class PastDestinationsScreen extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.directions),
-                color: XColors.primaryColor(),
+                color: address['address'] != null ? XColors.primaryColor() : Colors.grey,
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -182,7 +177,6 @@ class PastDestinationsScreen extends StatelessWidget {
   }
 
   Widget _buildRecentDestinationsList(BuildContext context, MapViewModel viewModel) {
-    // This would normally come from the viewModel
     final recentDestinations = viewModel.recentDestinations ?? [];
 
     if (recentDestinations.isEmpty) {
@@ -213,13 +207,7 @@ class PastDestinationsScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              border: Border.all(color: Colors.grey[200]!),
             ),
             child: Row(
               children: [
@@ -282,14 +270,6 @@ class PastDestinationsScreen extends StatelessWidget {
                             ),
                           ),
                         );
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.bookmark_border),
-                      color: XColors.primaryColor(),
-                      onPressed: () {
-                        // Implement save functionality
-                        viewModel.saveDestination(destination);
                       },
                     ),
                   ],

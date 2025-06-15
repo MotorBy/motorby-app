@@ -228,7 +228,7 @@ class MileageReportView extends StatelessWidget {
                 Expanded(
                   child: _buildStatCard(
                     'Last refuel on',
-                    model.lastRefuelDate,
+                    model.lastRefuelDate.isNotEmpty ? model.lastRefuelDate : '----',
                     null,
                     setIcon: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -240,7 +240,7 @@ class MileageReportView extends StatelessWidget {
                 Expanded(
                   child: _buildStatCard(
                     'Last refuel amount',
-                    '\u20A6 ${model.lastRefuelAmount}',
+                      model.lastRefuelAmount.isNotEmpty ? '\u20A6 ${model.lastRefuelAmount}' : '----',
                       null,
                       setIcon: Padding(
                         padding: const EdgeInsets.all(8.0),

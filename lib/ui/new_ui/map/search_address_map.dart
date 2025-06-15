@@ -156,13 +156,24 @@ class _SearchAddressMapState extends State<SearchAddressMap> {
               ),
 
               Positioned(
-                top: SizeConfig().sh(35) as double?,
-                left: SizeConfig().sw(10) as double?,
-                child: IconButton(
-                    icon: Icon(Icons.arrow_back_ios_rounded, color: XColors.primaryColor(), size: 32,),
-                    onPressed: (){
-                      popView(context);
-                    }
+                top: 30,
+                left: 16,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                            )
+                          ]
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 20)
+                  ),
                 ),
               ),
 
