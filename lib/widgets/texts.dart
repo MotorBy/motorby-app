@@ -43,7 +43,7 @@ class NormalText extends StatelessWidget {
       this.textColor,
       this.fontWeight,
       this.textAlign,
-      this.maxLines
+      this.maxLines,
     });
 
   @override
@@ -55,6 +55,7 @@ class NormalText extends StatelessWidget {
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
           fontSize: fontSize != null ? SizeConfig().sp(fontSize) as double? : 15,
           color: textColor ?? Colors.black,
+          fontFamily: 'Inter',
           fontWeight: fontWeight ?? FontWeight.w400),
     );
   }

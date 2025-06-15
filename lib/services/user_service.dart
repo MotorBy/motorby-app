@@ -1,15 +1,14 @@
 import 'dart:developer';
 
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
-import 'package:mobile_auto_drive/models/nearby_search_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/models/weather_data.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
-import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
@@ -28,19 +27,16 @@ class UserService {
   WeatherData? weatherData;
   FuelData? fuelData;
 
-  NearbySearchModel? nearbySearchModel;
-
   Future getUsers() async {
 
     var response = await http.get(Uri.parse(APIService.getUser(id: persistService.getUserID)),
         headers: APIHelper().requestHeadersWithToken());
 
-    print(APIHelper().requestHeadersWithToken());
-
     final json = JSON.jsonDecode(response.body);
 
     print(json.toString());
     print(persistService.getUserToken);
+    print(NotificationService.fcmToken);
 
     if(response.statusCode == 200 || response.statusCode == 201) {
       UserModel? user = UserModel.fromJson(json);
@@ -93,6 +89,27 @@ class UserService {
 
     if (json["statusCode"] == 200 || json["statusCode"] == 201) {
       await budgetService.getBudgets();
+      budgetService.getCurrentTotalValue(index: 0);
+    } else {
+      var error = json["message"];
+      throw Exception(error);
+    }
+
+  }
+
+  Future uploadCarDocuments({Map<String, dynamic>? documents, String? carId}) async {
+
+    final jsonData = JSON.json.encode(documents);
+
+    var response = await http.post(Uri.parse(APIService.uploadDocuments(carId: carId)),
+        headers: APIHelper().requestHeadersWithToken(), body: jsonData);
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if (json["statusCode"] == 200 || json["statusCode"] == 201) {
+      await budgetService.getBudgets();
     } else {
       var error = json["message"];
       throw Exception(error);
@@ -112,10 +129,11 @@ class UserService {
 
     final json = JSON.jsonDecode(response.body);
 
-    print(json.toString());
-
     if(response.statusCode == 200 || response.statusCode == 201) {
+
       //await getUsers();
+      await budgetService.getBudgets();
+
     } else {
       var error = json["message"];
       throw Exception(error);

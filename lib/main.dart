@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
-import 'package:mobile_auto_drive/ui/home/home_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
-import 'package:mobile_auto_drive/ui/onboarding/onboarding_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/ui/splash/splash_screen.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/env_config.dart';
@@ -24,6 +23,9 @@ void main() {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
+    // Initialize notification service
+    await NotificationService.instance.initialize();
 
     Future<PackageInfo> packageInfo() async => await PackageInfo.fromPlatform();
 
@@ -77,9 +79,9 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           Size size = MediaQuery.of(context).size;
-          EvnConfig.init(envType: APIKey.appStage,);
+          EvnConfig.init(envType: APIKey.development,);
           SizeConfig.init(context, width: size.width, height: size.height, allowFontScaling: true);
-          return isOnboarded == true ? SplashScreen(isAuthed: isAuthed,) : const HomeScreen();
+          return isAuthed != true ? SplashScreen(isAuthed: isAuthed,) : const DashBoardScreen();
         }
       ),
     );

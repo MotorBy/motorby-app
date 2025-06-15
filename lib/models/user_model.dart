@@ -70,7 +70,9 @@ class User {
   PaymentDetails? paymentDetails;
   StatsDetails? statsDetails;
   PlanDetails? planDetails;
+  Subscription? subscription;
   BusinessDetails? businessDetails;
+  KycData? kycData;
   String? fullname;
   String? firstname;
   String? lastname;
@@ -90,6 +92,7 @@ class User {
     this.paymentDetails,
     this.statsDetails,
     this.planDetails,
+    this.subscription,
     this.businessDetails,
     this.fullname,
     this.firstname,
@@ -99,6 +102,7 @@ class User {
     this.state,
     this.phonenumber,
     this.userType,
+    this.kycData,
     this.userId,
     this.referralCode,
     this.favourites,
@@ -112,6 +116,8 @@ class User {
     statsDetails: json["stats_details"] != null ? StatsDetails.fromJson(json["stats_details"]) : null,
     planDetails: json["plan_details"] != null ? PlanDetails.fromJson(json["plan_details"]) : null,
     businessDetails: json["business_details"] != null ? BusinessDetails.fromJson(json["business_details"]) : null,
+    subscription: json["subscription"] != null ? Subscription.fromJson(json["subscription"]) : null,
+    kycData: json["kyc_data"] != null ? KycData.fromJson(json["kyc_data"]) : null,
     fullname: json["fullname"],
     firstname: json["firstname"],
     lastname: json["lastname"],
@@ -133,6 +139,8 @@ class User {
     "stats_details": statsDetails!.toJson(),
     "plan_details": planDetails!.toJson(),
     "business_details": businessDetails!.toJson(),
+    "subscription": subscription!.toJson(),
+    "kyc_data": kycData?.toJson(),
     "fullname": fullname,
     "firstname": firstname,
     "lastname": lastname,
@@ -147,6 +155,90 @@ class User {
     "createdAt": createdAt!.toIso8601String(),
     "updatedAt": updatedAt!.toIso8601String(),
     "__v": v,
+  };
+}
+
+class KycData {
+  List<Document>? documents;
+  String? country;
+  String? dateOfBirth;
+  String? homeAddress;
+  String? gender;
+  String? name;
+  String? nationality;
+  String? placeOfBirth;
+
+  KycData({
+    this.documents,
+    this.country,
+    this.dateOfBirth,
+    this.homeAddress,
+    this.gender,
+    this.name,
+    this.nationality,
+    this.placeOfBirth,
+  });
+
+  factory KycData.fromJson(Map<String, dynamic> json) => KycData(
+    documents: json["documents"] == null ? [] : List<Document>.from(json["documents"]!.map((x) => Document.fromJson(x))),
+    country: json["country"],
+    homeAddress: json["home_address"],
+    dateOfBirth: json["date_of_birth"],
+    gender: json["gender"],
+    name: json["name"],
+    nationality: json["nationality"],
+    placeOfBirth: json["place_of_birth"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "documents": documents == null ? [] : List<dynamic>.from(documents!.map((x) => x.toJson())),
+    "country": country,
+    "date_of_birth": dateOfBirth,
+    "gender": gender,
+    "home_address": homeAddress,
+    "name": name,
+    "nationality": nationality,
+    "place_of_birth": placeOfBirth,
+  };
+}
+
+class Document {
+  String? type;
+  String? number;
+  String? url;
+  String? front;
+  String? back;
+  String? expiryDate;
+  String? id;
+
+  Document({
+    this.type,
+    this.number,
+    this.url,
+    this.front,
+    this.back,
+    this.expiryDate,
+    this.id,
+  });
+
+  factory Document.fromJson(Map<String, dynamic> json) => Document(
+    type: json["type"],
+    number: json["number"],
+    url: json["url"],
+    front: json["front"],
+    back: json["back"],
+    expiryDate: json["expiry_date"],
+    id: json["_id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "type": type,
+    "number": number,
+    "url": url,
+    "front": front,
+    "back": back,
+    "expiry_date": expiryDate,
+    "_id": id,
   };
 }
 
@@ -191,6 +283,78 @@ class ReferralProfile {
     "createdAt": createdAt!.toIso8601String(),
     "updatedAt": updatedAt!.toIso8601String(),
     "__v": v,
+  };
+}
+
+class Subscription {
+  String? tier;
+  DateTime? startDate;
+  bool? isActive;
+  List<Feature>? features;
+  List<dynamic>? paymentHistory;
+
+  Subscription({
+    this.tier,
+    this.startDate,
+    this.isActive,
+    this.features,
+    this.paymentHistory,
+  });
+
+  factory Subscription.fromJson(Map<String, dynamic> json) => Subscription(
+    tier: json["tier"],
+    startDate: json["startDate"] == null ? null : DateTime.parse(json["startDate"]),
+    isActive: json["isActive"],
+    features: json["features"] == null ? [] : List<Feature>.from(json["features"]!.map((x) => Feature.fromJson(x))),
+    paymentHistory: json["paymentHistory"] == null ? [] : List<dynamic>.from(json["paymentHistory"]!.map((x) => x)),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "tier": tier,
+    "startDate": startDate?.toIso8601String(),
+    "isActive": isActive,
+    "features": features == null ? [] : List<dynamic>.from(features!.map((x) => x.toJson())),
+    "paymentHistory": paymentHistory == null ? [] : List<dynamic>.from(paymentHistory!.map((x) => x)),
+  };
+}
+
+class Feature {
+  String? name;
+  int? count;
+  int? limit;
+  bool? isEnabled;
+  String? simpleDescription;
+  String? detailedDescription;
+  String? id;
+
+  Feature({
+    this.name,
+    this.count,
+    this.limit,
+    this.isEnabled,
+    this.simpleDescription,
+    this.detailedDescription,
+    this.id,
+  });
+
+  factory Feature.fromJson(Map<String, dynamic> json) => Feature(
+    name: json["name"],
+    count: json["count"],
+    limit: json["limit"],
+    isEnabled: json["isEnabled"],
+    simpleDescription: json["simpleDescription"],
+    detailedDescription: json["detailedDescription"],
+    id: json["_id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "count": count,
+    "limit": limit,
+    "isEnabled": isEnabled,
+    "simpleDescription": simpleDescription,
+    "detailedDescription": detailedDescription,
+    "_id": id,
   };
 }
 

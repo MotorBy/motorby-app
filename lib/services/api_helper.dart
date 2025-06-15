@@ -9,13 +9,13 @@ class APIHelper {
         'Content-type': 'application/json',
         'Accept': 'application/json',
         'x-access-token': persistService.getUserToken != null ? persistService.getUserToken! : token ?? '',
-        'current-app-version': persistService.currentVersion!
+        'current-app-version': persistService.currentVersion ?? '0.0.0'
   };
 
   Map<String, String> requestHeaders() => {
     'Content-type': 'application/json',
     'Accept': 'application/json',
-    'current-app-version': persistService.currentVersion!
+    'current-app-version': persistService.currentVersion ?? "1.0.0"
   };
 
   Map<String, String> requestRapidAPIHeaders = {

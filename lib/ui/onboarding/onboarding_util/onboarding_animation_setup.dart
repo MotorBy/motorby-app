@@ -23,17 +23,16 @@ class OnboardingAnimationSetup {
   late Animation<double> animationProgressValue3;
   late CurvedAnimation curvedAnimation3;
 
-  static List<double> changingLogoAnimation = [0.0, 30.0];
-  static List<double> changingTextAnimation = [110, 300];
+  static List<double> changingLogoAnimation = [0.0, 120.0];
+  static List<double> changingTextAnimation = [180, 280];
   static List<double> changingChipsAnimation = [5, 520];
 
   static void init({TickerProvider? vsync}) {
     _instance ??= OnboardingAnimationSetup._();
 
-
     _instance!.animationProgressCtrl1 = AnimationController(
       vsync: vsync!,
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 2000),
     );
     _instance!.curvedAnimation1 = CurvedAnimation(parent: _instance!.animationProgressCtrl1, curve: Curves.linear);
     _instance!.animationProgressValue1 = Tween<double>(
@@ -44,7 +43,7 @@ class OnboardingAnimationSetup {
 
     _instance!.animationProgressCtrl2 = AnimationController(
       vsync: vsync,
-      duration: const Duration(milliseconds: 3500),
+      duration: const Duration(milliseconds: 3100),
     );
     _instance!.curvedAnimation2 = CurvedAnimation(parent: _instance!.animationProgressCtrl2, curve: Curves.linear);
     _instance!.animationProgressValue2 = Tween<double>(
@@ -56,7 +55,7 @@ class OnboardingAnimationSetup {
 
     _instance!.animationProgressCtrl3 = AnimationController(
       vsync: vsync,
-      duration: const Duration(milliseconds: 3000),
+      duration: const Duration(milliseconds: 2500),
     );
     _instance!.curvedAnimation3 = CurvedAnimation(parent: _instance!.animationProgressCtrl3, curve: Curves.linear);
     _instance!.animationProgressValue3 = Tween<double>(

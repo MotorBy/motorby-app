@@ -1,50 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/main.dart';
+import 'package:mobile_auto_drive/services/device_info.dart';
+import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_sub_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/referral/referral_screen.dart';
+import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
+import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stacked/stacked.dart';
-import 'profile_viewmodel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+import 'payment_and_subscription/subscription_view.dart';
+
+class NewProfileScreen extends StatelessWidget {
+  const NewProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProfileViewModel>.reactive(
       viewModelBuilder: () => ProfileViewModel(),
+      onViewModelReady: (model) {
+        model.init();
+      },
       builder: (context, model, child) => Scaffold(
-        backgroundColor: const Color(0xFFF8F2FF),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Profile',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+        backgroundColor: XColors.white(),
+        appBar: appBarHeader(
+            hasOnBack: true,
+            context: context,
+          appBarTitle: 'Profile',
           actions: [
-            IconButton(
-              icon: const Icon(Icons.more_vert, color: Colors.black),
-              onPressed: () {
-                // TODO: Implement menu options
+            PopupMenuButton<int>(
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
+              icon: const Icon(Icons.more_vert),
+              itemBuilder: (context) => [
+                PopupMenuItem<int>(
+                  value: 0,
+                  onTap: (){
+                    navigate(context, EditProfileScreen(model: model));
+                  },
+                  child: const NormalText(
+                    text: 'Edit Profile',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                // const PopupMenuItem<int>(
+                //   value: 0,
+                //   child: NormalText(
+                //     text: 'Settings',
+                //     fontSize: 12,
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
+                PopupMenuItem<int>(
+                  value: 1,
+                  onTap: () {
+
+                    model.logOut().then((value) {
+                      popToFirst(context);
+                      navigateReplace(context, const MyApp(
+                        isAuthed: false,
+                        isOnboarded: false,
+                      ));
+                    });
+
+                  },
+                  child: const NormalText(
+                    text: 'Log out',
+                    fontSize: 12,
+                    textColor: Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+              onSelected: (val) {
+
               },
             ),
-          ],
+          ]
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(26.0),
             child: Column(
               children: [
-                _buildProfileHeader(model),
-                const SizedBox(height: 24),
-                _buildCarsCard(model),
-                const SizedBox(height: 24),
-                _buildMenuItems(model),
+                _buildProfileHeader(model, context: context),
+                const SizedBox(height: 44),
+                _buildCarsCard(model, context: context),
+                const SizedBox(height: 44),
+                _buildMenuItems(model, context: context),
               ],
             ),
           ),
@@ -53,102 +106,97 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(ProfileViewModel model) {
+  Widget _buildProfileHeader(ProfileViewModel model, {BuildContext? context}) {
     return Column(
       children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(model.profileImage),
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        // Stack(
+        //   children: [
+        //     CircleAvatar(
+        //       radius: 30,
+        //       backgroundImage: AssetImage(model.profileImage),
+        //     ),
+        //     Positioned(
+        //       right: 0,
+        //       bottom: 5,
+        //       child: Container(
+        //         width: 16,
+        //         height: 16,
+        //         decoration: BoxDecoration(
+        //           color: Colors.green,
+        //           shape: BoxShape.circle,
+        //           border: Border.all(
+        //             color: Colors.white,
+        //             width: 2,
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 16),
-        Text(
-          model.name,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        NormalText(
+          text: model.user != null ? model.user!.fullname : "",
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
         ),
         const SizedBox(height: 4),
         Text(
-          model.email,
+          model.user != null ? model.user!.email! : '',
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
             color: Colors.purple,
           ),
         ),
         const SizedBox(height: 16),
-        if (!model.isPremium)
+        if (!model.isPro)
           OutlinedButton(
-            onPressed: model.upgradeAccount,
+            onPressed: (){
+              navigateWithCallBack(
+                  context!, const SubscriptionView(),
+                  onCallBack: (value) {
+                    if (value != null) {
+                      model.init();
+                    }
+                  },
+              );
+            },
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(32),
               ),
-              side: const BorderSide(color: Color(0xFF7B61FF)),
+              side: BorderSide(color: XColors.borderColor()),
               padding: const EdgeInsets.symmetric(
                 horizontal: 32,
                 vertical: 12,
               ),
             ),
-            child: const Text(
-              'Upgrade',
-              style: TextStyle(
-                color: Color(0xFF7B61FF),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+            child: const NormalText(
+              text: 'Upgrade',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
           ),
       ],
     );
   }
 
-  Widget _buildCarsCard(ProfileViewModel model) {
+  Widget _buildCarsCard(ProfileViewModel model, {BuildContext? context}) {
     return GestureDetector(
-      onTap: model.navigateToMyCars,
-      child: Container(
-        width: double.infinity,
-        height: 160,
-        decoration: BoxDecoration(
-          color: const Color(0xFF7B61FF),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Image.asset(
-                'assets/images/car_illustration.png',
-                height: 120,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
+      onTap: (){
+        navigate(context!, const CarsListScreen());
+      },
+      child: const Stack(
+        children: [
+          GetPngImage(image: 'assets/images/motorby_toyo.png'),
+          Positioned(
+            top: 35,
+            left: 14,
+            child: AbsorbPointer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Cars',
                     style: TextStyle(
                       color: Colors.white,
@@ -156,91 +204,208 @@ class ProfileScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Row(
-                    children: const [
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        'View my cars',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+                        'View my Cars',
+                        style: TextStyle(color: Colors.white),
                       ),
-                      SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                      Icon(Icons.chevron_right, color: Colors.white),
                     ],
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
 
-  Widget _buildMenuItems(ProfileViewModel model) {
+  Widget _buildMenuItems(ProfileViewModel model, {BuildContext? context}) {
+
+    PackageInfo? packageInfo;
+
+    ValueNotifier<String> packageInfoValueState = ValueNotifier("");
+    ValueNotifier<String> deviceCate = ValueNotifier("");
+
+    DeviceService().getPackageData().then((_packageInfo) {
+      packageInfo = _packageInfo;
+      packageInfoValueState.value = packageInfo!.version;
+    });
+
+    DeviceService().getDeviceData().then((d) {
+      if(d['deviceCategory'] != null) {
+        deviceCate.value = d['deviceCategory'];
+      }
+    });
+
     return Column(
       children: [
         _buildMenuItem(
-          icon: Icons.credit_card,
+          icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
-          onTap: model.navigateToPaymentAndSubscription,
+          onTap: (){
+            navigate(context!, const PaymentAndSubscriptionScreen());
+          },
         ),
+        const DividerWidget(),
         _buildMenuItem(
-          icon: Icons.description,
+          icon: 'assets/images/auto/file.svg',
           title: 'My documents',
-          onTap: model.navigateToMyDocuments,
+          onTap: (){
+            navigate(context!, const CarDocumentsScreen(isFromProfile: true,));
+          },
         ),
+        // const DividerWidget(),
+        // _buildMenuItem(
+        //   icon: 'assets/images/auto/user-group.svg',
+        //   title: 'Referral and earning',
+        //   onTap: (){
+        //     navigate(context!, const ReferralScreen());
+        //   },
+        // ),
+        const DividerWidget(),
         _buildMenuItem(
-          icon: Icons.people,
-          title: 'Referral and earning',
-          onTap: model.navigateToReferralAndEarning,
-        ),
-        _buildMenuItem(
-          icon: Icons.settings,
-          title: 'Settings',
-          onTap: model.navigateToSettings,
-        ),
-        _buildMenuItem(
-          icon: Icons.business,
-          title: 'Set up business profile',
-          onTap: model.navigateToBusinessProfile,
-        ),
-        _buildMenuItem(
-          icon: Icons.info,
+          icon: 'assets/images/auto/about_icon.svg',
           title: 'About app',
-          onTap: model.navigateToAboutApp,
+          onTap: () {
+            showModalBottomSheet(
+              context: context!,
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              builder: (context) => Container(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const NormalText(
+                      text: 'MotorBy',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 8),
+                   ValueListenableBuilder<String>(
+                      valueListenable: packageInfoValueState,
+                     builder: (context, value, c) {
+                       return NormalText(
+                          text: 'Version ${value ?? "1.0.0"}',
+                          fontSize: 16,
+                          textColor: Colors.grey,
+                        );
+                     }
+                   ),
+                    const SizedBox(height: 24),
+                    const NormalText(
+                      text: 'Connect with us',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildSocialLink(
+                          icon: Icons.language,
+                          label: 'Website',
+                          onTap: () async {
+
+                            canLaunch('https://motorby.co').then((value) async {
+                              if (deviceCate.value != 'IOS' ? !value : value) {
+                                await launch(
+                                  'https://motorby.co',
+                                  universalLinksOnly: true,
+                                );
+                              }
+                            });
+
+                          },
+                        ),
+                        // _buildSocialLink(
+                        //   icon: Icons.facebook,
+                        //   label: 'Facebook',
+                        //   onTap: () async {
+                        //     final Uri url = Uri.parse('https://facebook.com/motorby');
+                        //     // if (await canLaunchUrl(url)) {
+                        //     //   await launchUrl(url);
+                        //     // }
+                        //   },
+                        // ),
+                        // _buildSocialLink(
+                        //   icon: Icons.messenger,
+                        //   label: 'Twitter',
+                        //   onTap: () async {
+                        //     final Uri url = Uri.parse('https://twitter.com/motorby');
+                        //     // if (await canLaunchUrl(url)) {
+                        //     //   await launchUrl(url);
+                        //     // }
+                        //   },
+                        // ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    const NormalText(
+                      text: '© 2024 MotorBy. All rights reserved.',
+                      fontSize: 14,
+                      textColor: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
+        const DividerWidget(),
       ],
     );
   }
 
   Widget _buildMenuItem({
-    required IconData icon,
+    required String icon,
     required String title,
     required VoidCallback onTap,
   }) {
     return ListTile(
       onTap: onTap,
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: Colors.black54),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        size: 16,
-        color: Colors.black54,
+      leading: GetSvgImage(image: icon, color: Colors.black54),
+      title: NormalText(
+        text: title,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
       ),
     );
   }
+}
+
+Widget _buildSocialLink({
+  required IconData icon,
+  required String label,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 24),
+        ),
+        const SizedBox(height: 8),
+        NormalText(
+          text: label,
+          fontSize: 12,
+          textColor: Colors.grey[700]!,
+        ),
+      ],
+    ),
+  );
 }

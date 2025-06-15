@@ -6,12 +6,14 @@ import 'package:stacked/stacked.dart';
 
 
 class SplashViewModel extends BaseViewModel {
-  final persistService = serviceLocator<PersistenceService>();
 
-
-  void initialise({bool? authNewState,
+  Future<void> initialise({bool? authNewState,
     Function? onNewCallBack,
-    Function? onLoggedCallBack}) {
+    Function? onLoggedCallBack}) async {
+
+    if(!serviceLocator.isRegistered<PersistenceService>()) {
+      await locatorSetup();
+    }
 
     if (kDebugMode) {
       print("is Logged in: ${authNewState!}");

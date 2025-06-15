@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert' as JSON;
 
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_auto_drive/models/sales_model.dart';
 import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
@@ -42,13 +43,12 @@ class AddCarViewModel extends BaseViewModel {
   String? vinNumber = '';
 
   Map<String, dynamic> setCarData = {
-
+    "details" : {},
+    "car_details" : {},
+    "sales_details" : {}
   };
 
-  void init({
-    bool? forSale = false,
-    String? initAction,
-    Function? dataSetup}) {
+  void init({bool? forSale = false, String? initAction, Function? dataSetup}) {
 
     if(initAction != 'sell') {
       isBusinessOrForSale = false;
@@ -60,17 +60,6 @@ class AddCarViewModel extends BaseViewModel {
 
     action = initAction;
     notifyListeners();
-
-    if(action == 'sell') {
-      setCarData = {
-        "car_details" : {},
-        "sales_details" : {}
-      };
-    } else if(action == 'add') {
-      setCarData = {
-        "details" : {},
-      };
-    }
 
     if(dataSetup != null) {
       dataSetup();
@@ -111,171 +100,133 @@ class AddCarViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future uploadFilesToCloud() async {
+  Future<List<String>> uploadFilesToCloud() async {
     setBusy(true);
 
     for (var element in addImagesList) {
+
+      var pathUri = element.path.split('/')[element.path.split('/').length - 1];
+      var storagePath = 'cars/${salesService.currentCarMake?.toLowerCase()}/${userService.userModel?.payload?.user?.userId}/$pathUri';
+
       await FirebaseService().uploadFileToStorage(
-          storagePath: 'cars/${salesService.currentCarMake!.toLowerCase()}/${element.path.split('/')[element.path.split('/').length - 1]}',
+          storagePath: storagePath,
           filePath: element.path,
-          onCallBack: (s){
-            addedImagesUrlList.add(s);
+          onCallBack: (s) {
+
           }
-      );
+      ).then((v) {
+        addedImagesUrlList.add(v);
+      });
     }
 
+    return addedImagesUrlList;
   }
 
-  void updateSetCarData({dynamic data, String? dataType, }) {
+  void updateSetCarData({required Map<String, dynamic> data}) {
     setBusy(false);
 
-    if(action == "sell") {
-      if(dataType == 'make') {
-        setCarData['car_details']['car_make'] = data!;
-        salesService.currentCarMake = data!;
-      } else if(dataType == 'year') {
-        setCarData['car_details']['car_year'] = data!;
+    if (action == 'add' || action == 'edit') {
 
-      } else if (dataType == "model") {
-        setCarData['car_details']['car_model'] = data!;
-
-      } else if(dataType == "grade") {
-        setCarData['car_details']['condition'] = data!;
-
-      } else if(dataType == "mileage") {
-        setCarData['car_details']['mileage'] = int.parse(data!);
-
-      } else if(dataType == "vin") {
-        setCarData['car_details']['vin_number'] = data!;
-
-      } else if(dataType == "selling price") {
-        setCarData['sales_details']['amount_for_sale'] = int.parse(data!);
-
-      } else if(dataType == "units") {
-        setCarData['sales_details']['units_left'] = int.parse(data!);
-
-      } else if(dataType == "color") {
-        setCarData['car_details']['color'] = data!;
-
-      } else if(dataType == "seats") {
-        setCarData['car_details']['seats'] = int.parse(data!);
-        seats = data;
-
-      } else if(dataType == "speakers") {
-        setCarData['car_details']['speakers'] = int.parse(data!);
-        speakers = data;
-
-      } else if(dataType == "gear") {
-        setCarData['car_details']['gear'] = data!;
-        gear = data;
-
-      } else if(dataType == "breaks") {
-        setCarData['car_details']['breaks'] = data!;
-
-      } else if(dataType == "air_bag") {
-        setCarData['car_details']['air_bag'] = data!;
-        airBag = data;
-
-      } else if(dataType == "air_conditioner") {
-        setCarData['car_details']['air_conditioner'] = data!;
-        airConditioner = data;
-
-      }
-    } else if(action == 'add') {
-
-      if(dataType == 'make') {
-        setCarData['car_make'] = data!;
-        salesService.currentCarMake = data!;
-      } else if(dataType == 'year') {
-        setCarData['car_year'] = data!;
-
-      } else if (dataType == "model") {
-        setCarData['car_model'] = data!;
-
-      } else if(dataType == "grade") {
-        setCarData['details']['condition'] = data!;
-
-      } else if(dataType == "amount") {
-        setCarData['amount_bought'] = int.parse(data!);
-
-      } else if(dataType == "mileage") {
-        setCarData['details']['mileage'] = int.parse(data!);
-
-      } else if(dataType == "vin") {
-        setCarData['vin_number'] = data!;
-
-      } else if(dataType == "speakers") {
-        setCarData['details']['speakers'] = data!;
-        speakers = data;
-
-      } else if(dataType == "gear") {
-        setCarData['details']['gear'] = data!;
-        gear = data;
-
-      }  else if(dataType == "seats") {
-        setCarData['details']['seats'] = data!;
-        seats = data;
-
-      } else if(dataType == "breaks") {
-        setCarData['details']['breaks'] = data!;
-
-      } else if(dataType == "air_bag") {
-        setCarData['details']['air_bag'] = data!;
-        airBag = data;
-
-      } else if(dataType == "air_conditioner") {
-        setCarData['details']['air_conditioner'] = data!;
-        airConditioner = data;
-
+      if (data.containsKey('details')) {
+        setCarData['details']?.addAll(data['details']);
       }
 
-    }
+      data.forEach((key, value) {
+        if (key != 'details') {
+          setCarData[key] = value;
+        }
+      });
 
-    if(action == "sell") {
-      salesModel = SalesModel.fromJson(JSON.json.decode(JSON.json.encode(setCarData)));
+      // Update local state variables
+      if(setCarData['details'] != null) {
+        seats = setCarData['details']?['seats'];
+        speakers = setCarData['details']?['speakers'];
+        gear = setCarData['details']?['gear'];
+        airBag = setCarData['details']?['air_bag'];
+        airConditioner = setCarData['details']?['air_conditioner'];
+      }
+
+      if (data['car_make'] != null) {
+        salesService.currentCarMake = data['car_make'];
+      }
     }
 
     print(setCarData.toString());
     notifyListeners();
   }
 
+  Future<void> browseFiles() async {
+    final ImagePicker picker = ImagePicker();
+    try {
+      final List<XFile> images = await picker.pickMultiImage();
+      if (images.isNotEmpty && images.length <= 5) {
+        addImagesList = images.map((xfile) => File(xfile.path)).toList();
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error picking images: $e');
+    }
+  }
+
+  void removeCarByIndex(int index){
+    addImagesList.removeAt(index);
+    notifyListeners();
+  }
+
   Future uploadCar({Function? onCallBack, Function? onErrorCallBack}) async {
 
-    await uploadFilesToCloud();
+    await uploadFilesToCloud().then((v) async {
+      print(addedImagesUrlList.length);
 
-    setCarData['images'] = addedImagesUrlList;
-    setCarData['by'] = persistService.getUserID;
-    setCarData['user_id'] = persistService.getUserID;
+      setCarData['images'] = addedImagesUrlList;
+      setCarData['by'] = persistService.getUserID;
+      setCarData['user_id'] = persistService.getUserID;
 
-    setBusy(true);
-    if(action == 'sell') {
+      setBusy(true);
+      if(action == 'sell') {
 
-      var saleData = {
-        'user_id' : persistService.getUserID,
-        'data': setCarData,
-      };
+        var saleData = {
+          'user_id' : persistService.getUserID,
+          'data': setCarData,
+        };
 
-      await salesService.makeSales(salesData: saleData).then((value) {
-        setBusy(false);
-        onCallBack!();
-      }).onError((error, stackTrace) {
-        setBusy(false);
-        print(stackTrace.toString());
-        onErrorCallBack!();
-      });
+        await salesService.makeSales(salesData: saleData).then((value) {
+          setBusy(false);
+          onCallBack!();
+        }).onError((error, stackTrace) {
 
-    } else {
+          setBusy(false);
+          print(stackTrace.toString());
+          onErrorCallBack!();
 
-      await userService.addACar(carData: setCarData).then((value) {
-        setBusy(false);
-        onCallBack!();
-      }).onError((error, stackTrace) {
-        setBusy(false);
-        print(stackTrace.toString());
-        onErrorCallBack!();
-      });
+        });
 
-    }
+      } else if (action == 'edit') {
+
+        await userService.updateCar(
+            data: setCarData,
+            carId: salesService.currentCar!.sId
+        ).then((value) {
+          setBusy(false);
+          onCallBack!();
+        }).onError((error, stackTrace) {});
+
+      } else {
+
+        await userService.addACar(carData: setCarData).then((value) {
+          setBusy(false);
+          onCallBack!();
+        }).onError((error, stackTrace) {
+
+          setBusy(false);
+          print(stackTrace.toString());
+          onErrorCallBack!();
+
+        });
+
+      }
+
+    });
 
   }
 
@@ -312,7 +263,7 @@ class AddCarViewModel extends BaseViewModel {
 
   }
 
-  void updateVinNumber(String? s){
+  void updateVinNumber(String? s) {
     vinNumber = s;
     notifyListeners();
   }
@@ -331,6 +282,5 @@ class AddCarViewModel extends BaseViewModel {
       setBusy(false);
     });
   }
-
 
 }

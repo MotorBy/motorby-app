@@ -64,9 +64,21 @@ class AuthViewModel extends BaseViewModel {
   Future<void> handleSignInWithGoogle({
     Function? onCallBack,
     Function(String? e)? onErrorBack,
-    bool? forSignup = false
+    bool? forSignup = false,
+    String? country = '',
+    String? state = '',
+    String? phoneNumber = '',
   }) async {
     try {
+
+      if(forSignup == true) {
+
+        if(phoneNumber!.isEmpty || country!.isEmpty || state!.isEmpty) {
+          onErrorBack!('Please enter your country, state and phone number');
+          return;
+        }
+
+      }
 
       await _googleSignIn.signIn().then((value) async {
 
@@ -92,6 +104,9 @@ class AuthViewModel extends BaseViewModel {
             regData['email'] = value.email;
             regData['password'] = authProvider;
             regData['signupFrom'] = 'provider';
+            regData['phonenumber'] = phoneNumber;
+            regData['country'] = country;
+            regData['state'] = state;
             regData['image'] = value.photoUrl;
 
             print(regData.toString());
@@ -124,12 +139,6 @@ class AuthViewModel extends BaseViewModel {
           }
 
         }
-
-        // value.authentication.then((av) {
-        //   print(av.accessToken);
-        //   print(av.idToken);
-        //   print(value.serverAuthCode);
-        // });
 
       });
 

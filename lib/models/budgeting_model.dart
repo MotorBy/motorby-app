@@ -1,7 +1,10 @@
+import 'package:mobile_auto_drive/models/LatLngAddressModel.dart';
+import 'package:mobile_auto_drive/models/checklist_data_model.dart';
+
 class BudgetingModel {
   int? statusCode;
   String? message;
-  List<Budget>? budget;
+  List<Budget>? budget = [];
 
   BudgetingModel({this.statusCode, this.message, this.budget});
 
@@ -31,6 +34,7 @@ class Budget {
   bool? isActive;
   String? sId;
   CarId? carId;
+  ChecklistData? checklistData;
   String? userId;
   String? carName;
   int? mileage;
@@ -40,6 +44,7 @@ class Budget {
   List<Servicing>? servicing;
   List<Repairing>? repairing;
   List<Breakdowns>? breakdowns;
+  List<MileageDatum>? mileageData;
   String? createdAt;
   String? updatedAt;
   int? iV;
@@ -50,11 +55,13 @@ class Budget {
         this.carId,
         this.userId,
         this.carName,
+        this.checklistData,
         this.mileage,
         this.currentSpending,
         this.fueling,
         this.servicing,
         this.repairing,
+        this.mileageData,
         this.breakdowns,
         this.createdAt,
         this.updatedAt,
@@ -68,6 +75,7 @@ class Budget {
     carName = json['car_name'];
     mileage = json['mileage'];
     budget = json['budget_amount'];
+    checklistData = json["checklist_id"] == null ? null : ChecklistData.fromJson(json["checklist_id"]);
     currentSpending = json['current_spending'];
     if (json['fueling'] != null) {
       fueling = <Fueling>[];
@@ -85,6 +93,12 @@ class Budget {
       repairing = <Repairing>[];
       json['repairing'].forEach((v) {
         repairing!.add(Repairing.fromJson(v));
+      });
+    }
+    if (json['mileage_data'] != null) {
+      mileageData = <MileageDatum>[];
+      json['mileage_data'].forEach((v) {
+        mileageData!.add(MileageDatum.fromJson(v));
       });
     }
     if (json['breakdowns'] != null) {
@@ -110,6 +124,9 @@ class Budget {
     data['mileage'] = mileage;
     data['budget_amount'] = budget;
     data['current_spending'] = currentSpending;
+    if (checklistData != null) {
+      data["checklist_id"] = checklistData!.toJson();
+    }
     if (fueling != null) {
       data['fueling'] = fueling!.map((v) => v.toJson()).toList();
     }
@@ -118,6 +135,9 @@ class Budget {
     }
     if (repairing != null) {
       data['repairing'] = repairing!.map((v) => v.toJson()).toList();
+    }
+    if (mileageData != null) {
+      data['mileage_data'] = mileageData!.map((v) => v.toJson()).toList();
     }
     if (breakdowns != null) {
       data['breakdowns'] = breakdowns!.map((v) => v.toJson()).toList();
@@ -135,25 +155,39 @@ class CarId {
   String? carModel;
   String? carYear;
   String? color;
+  String? registrationNumber;
+  String? engineNumber;
+  String? chassisNumber;
+  String? vinNumber;
+  String? type;
+  int? amountBought;
   String? by;
   List<String>? images;
   String? createdAt;
   String? updatedAt;
   int? iV;
   String? carMake;
+  List<CarDocument>? carDocuments;
 
-  CarId(
-      {this.details,
+  CarId({
+        this.details,
         this.sId,
         this.carModel,
         this.carYear,
         this.color,
         this.by,
         this.images,
+        this.registrationNumber,
+        this.engineNumber,
+        this.chassisNumber,
+        this.vinNumber,
+        this.amountBought,
         this.createdAt,
         this.updatedAt,
         this.iV,
-        this.carMake});
+        this.carMake,
+        this.carDocuments
+  });
 
   CarId.fromJson(Map<String, dynamic> json) {
     details =
@@ -161,6 +195,12 @@ class CarId {
     sId = json['_id'];
     carModel = json['car_model'];
     carYear = json['car_year'];
+    amountBought = json['amount_bought'];
+    registrationNumber = json['vehicle_registration_number'];
+    engineNumber = json['engine_number'];
+    chassisNumber = json['chassis_number'];
+    vinNumber = json['vin_number'];
+    type = json['type'];
     color = json['color'];
     by = json['by'];
     images = json['images'].cast<String>();
@@ -168,6 +208,7 @@ class CarId {
     updatedAt = json['updatedAt'];
     iV = json['__v'];
     carMake = json['car_make'];
+    carDocuments = json["car_documents"] == null ? [] : List<CarDocument>.from(json["car_documents"]!.map((x) => CarDocument.fromJson(x)));
   }
 
   Map<String, dynamic> toJson() {
@@ -180,13 +221,57 @@ class CarId {
     data['car_year'] = carYear;
     data['color'] = color;
     data['by'] = by;
+    data['vehicle_registration_number'] = registrationNumber;
+    data['engine_number'] = engineNumber;
+    data['chassis_number'] = chassisNumber;
+    data['vin_number'] = vinNumber;
+    data['type'] = type;
+    data['amount_bought'] = amountBought;
     data['images'] = images;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     data['__v'] = iV;
     data['car_make'] = carMake;
+    data["car_documents"] = carDocuments == null ? [] : List<dynamic>.from(carDocuments!.map((x) => x.toJson()));
     return data;
   }
+
+}
+
+class CarDocument {
+  String? documentType;
+  String? documentExpiryDate;
+  String? documentImage;
+  String? id;
+  String? documentName;
+  String? documentPath;
+
+  CarDocument({
+    this.documentType,
+    this.documentExpiryDate,
+    this.documentImage,
+    this.id,
+    this.documentName,
+    this.documentPath,
+  });
+
+  factory CarDocument.fromJson(Map<String, dynamic> json) => CarDocument(
+    documentType: json["document_type"],
+    documentExpiryDate: json["document_expiry_date"],
+    documentImage: json["document_image"],
+    id: json["_id"],
+    documentName: json["document_name"],
+    documentPath: json["document_path"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "document_type": documentType,
+    "document_expiry_date": documentExpiryDate,
+    "document_image": documentImage,
+    "_id": id,
+    "document_name": documentName,
+    "document_path": documentPath,
+  };
 }
 
 class Details {
@@ -239,14 +324,20 @@ class Fueling {
   int? price;
   String? sId;
   int? pricePerLiter;
+  Location? gasStationLocation;
+  String? fuelStationName;
+  String? gasStationAddress;
 
-  Fueling({this.date, this.price, this.sId, this.pricePerLiter});
+  Fueling({this.date, this.price, this.sId, this.pricePerLiter, this.gasStationLocation, this.fuelStationName, this.gasStationAddress});
 
   Fueling.fromJson(Map<String, dynamic> json) {
     date = json['date'];
     price = json['price'];
     sId = json['_id'];
     pricePerLiter = json['price_per_liter'];
+    gasStationLocation = json["gas_station_location"] == null ? null : Location.fromJson(json["gas_station_location"]);
+    fuelStationName = json["fuel_station_name"];
+    gasStationAddress = json["gas_station_address"];
   }
 
   Map<String, dynamic> toJson() {
@@ -255,20 +346,29 @@ class Fueling {
     data['price'] = price;
     data['_id'] = sId;
     data['price_per_liter'] = pricePerLiter;
+    data["gas_station_location"] = gasStationLocation?.toJson();
+    data["fuel_station_name"] = fuelStationName;
+    data["gas_station_address"] = gasStationAddress;
     return data;
   }
 }
 
 class Servicing {
+  Location? shopLocation;
+  String? shopAddress;
+  String? severity;
   String? date;
   String? condition;
   String? shopName;
   int? price;
   String? sId;
 
-  Servicing({this.date, this.condition, this.shopName, this.price, this.sId});
+  Servicing({this.date, this.condition, this.shopName, this.price, this.sId, this.shopLocation, this.shopAddress, this.severity});
 
   Servicing.fromJson(Map<String, dynamic> json) {
+    shopLocation = json["shop_location"] == null ? null : Location.fromJson(json["shop_location"]);
+    shopAddress = json["shop_address"];
+    severity = json["severity"];
     date = json['date'];
     condition = json['condition'];
     shopName = json['shop_name'];
@@ -281,6 +381,9 @@ class Servicing {
     data['date'] = date;
     data['condition'] = condition;
     data['shop_name'] = shopName;
+    data["shop_location"] = shopLocation?.toJson();
+    data["shop_address"] = shopAddress;
+    data["severity"] = severity;
     data['price'] = price;
     data['_id'] = sId;
     return data;
@@ -288,15 +391,21 @@ class Servicing {
 }
 
 class Repairing {
+  Location? shopLocation;
+  String? shopAddress;
+  String? severity;
   String? date;
   String? condition;
   String? shopName;
   int? price;
   String? sId;
 
-  Repairing({this.date, this.condition, this.shopName, this.price, this.sId});
+  Repairing({this.date, this.condition, this.shopName, this.price, this.sId, this.shopLocation, this.shopAddress, this.severity});
 
   Repairing.fromJson(Map<String, dynamic> json) {
+    shopLocation = json["shop_location"] == null ? null : Location.fromJson(json["shop_location"]);
+    shopAddress = json["shop_address"];
+    severity = json["severity"];
     date = json['date'];
     condition = json['condition'];
     shopName = json['shop_name'];
@@ -306,6 +415,9 @@ class Repairing {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data["shop_location"] = shopLocation?.toJson();
+    data["shop_address"] = shopAddress;
+    data["severity"] = severity;
     data['date'] = date;
     data['condition'] = condition;
     data['shop_name'] = shopName;
@@ -319,12 +431,16 @@ class Breakdowns {
   String? date;
   String? cause;
   String? location;
+  Location? breakdownLocation;
+  String? address;
   String? sId;
 
-  Breakdowns({this.date, this.cause, this.location, this.sId});
+  Breakdowns({this.date, this.cause, this.location, this.sId, this.address, this.breakdownLocation});
 
   Breakdowns.fromJson(Map<String, dynamic> json) {
     date = json['date'];
+    breakdownLocation = json["breakdown_location"] == null ? null : Location.fromJson(json["breakdown_location"]);
+    address = json["address"];
     cause = json['cause'];
     location = json['location'];
     sId = json['_id'];
@@ -333,9 +449,47 @@ class Breakdowns {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['date'] = date;
+    data["breakdown_location"] = breakdownLocation?.toJson();
+    data["address"] = address;
     data['cause'] = cause;
     data['location'] = location;
     data['_id'] = sId;
     return data;
   }
+}
+
+class MileageDatum {
+  Location? destinationLocation;
+  String? currentFuelGauge;
+  String? odometerReading;
+  String? destinationAddress;
+  DateTime? inputDate;
+  String? id;
+
+  MileageDatum({
+    this.destinationLocation,
+    this.currentFuelGauge,
+    this.odometerReading,
+    this.destinationAddress,
+    this.inputDate,
+    this.id,
+  });
+
+  factory MileageDatum.fromJson(Map<String, dynamic> json) => MileageDatum(
+    destinationLocation: json["destination_location"] == null ? null : Location.fromJson(json["destination_location"]),
+    currentFuelGauge: json["current_fuel_gauge"],
+    odometerReading: json["odometer_reading"],
+    destinationAddress: json["destination_address"],
+    inputDate: json["input_date"] == null ? null : DateTime.parse(json["input_date"]),
+    id: json["_id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "destination_location": destinationLocation?.toJson(),
+    "current_fuel_gauge": currentFuelGauge,
+    "odometer_reading": odometerReading,
+    "destination_address": destinationAddress,
+    "input_date": inputDate?.toIso8601String(),
+    "_id": id,
+  };
 }

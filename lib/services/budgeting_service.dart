@@ -13,6 +13,73 @@ class BudgetingService {
   final persistService = serviceLocator<PersistenceService>();
 
   BudgetingModel? budgetingModel;
+  CarId? currentCar;
+  Budget? currentBudget;
+
+  int? _vehicleValue;
+  int? get vehicleValue => _vehicleValue;
+
+  int? currentTotalSpent = 0;
+  int currentSetBudget = 0;
+  int? currentBudgetIndex = 0;
+  List<int>? totalCostingAndValue = [
+    0,
+    0,
+    0,
+    0,
+    0
+  ];
+
+  void resetTotalCostingAndValue() {
+    totalCostingAndValue = [
+      0,
+      0,
+      0,
+      0,
+      0
+    ];
+  }
+
+  void getCurrentTotalValue({int? index}) {
+    resetTotalCostingAndValue();
+    currentBudgetIndex = index;
+
+    if(budgetingModel!.budget!.isNotEmpty) {
+
+      currentCar = budgetingModel!.budget?[index!].carId;
+      currentBudget = budgetingModel!.budget![index!];
+
+      _vehicleValue = currentCar != null ? currentCar!.amountBought : 0;
+
+      for (var element in budgetingModel!.budget![index].fueling!) {
+        totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
+      }
+
+      if(budgetingModel!.budget![index].servicing != null) {
+
+        for (var element in budgetingModel!.budget![index].servicing!) {
+          totalCostingAndValue![1] = totalCostingAndValue![1] + element.price!;  ///for servicing budget will have index 1
+        }
+
+      }
+
+      if(budgetingModel!.budget![index].repairing != null) {
+
+        for (var element in budgetingModel!.budget![index].repairing!) {
+          totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
+        }
+
+      }
+
+      totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
+      totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 4
+
+      currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;
+      currentSetBudget = budgetingModel!.budget![index].budget ?? 0;
+
+    }
+
+  }
 
   Future getBudgets() async {
 
@@ -20,6 +87,8 @@ class BudgetingService {
         headers: APIHelper().requestHeadersWithToken());
 
     final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
 
     if(response.statusCode == 200 || response.statusCode == 201) {
 

@@ -12,6 +12,7 @@ class APIService {
   static const String PLANS = 'plans';
   static const String PAYMENT = 'payment';
   static const String FUEL = 'fuel';
+  static const String CHECKLIST = 'car/checklist';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
   static const String prod = 'https://api.motorby.co/api/v1/';
@@ -50,10 +51,17 @@ class APIService {
   static String addCars = "$root$CAR/add";
   static String updateCars({String? carId}) => "$root$CAR/$carId";
   static String sales({String? saleId}) => "$root$SALES/$saleId";
+  static String uploadDocuments({String? carId}) => "$root$CAR/documents/$carId";
 
   static String createShop = "$root$SHOP/createShop";
   static String getShops = "$root$SHOP/shops";
   static String getPlans = "$root$PLANS/";
+  static String getCurrentPlans = "$root$PLANS/current";
+
+  static String getInsuranceProducts = '$root/car/insurance/products';
+  static String getBoughtInsuranceProducts = '$root/car/insurance/purchased';
+  static String getBuyInsuranceProducts = '$root/car/insurance/buy';
+  static String getInsuranceProductsDetails ='$root$CAR/insurance/products-details?product_id=';
 
   static String addFuelUpdate = "$root/$FUEL/add-price";
   static String getFuelUpdate({String? state, String? country, String? city}) => "$root/$FUEL/location?state=$state&country=$country&city=$city";
@@ -63,5 +71,8 @@ class APIService {
 
   static String vinCheck({String? vinNumber, String? vinType}) => "$vinUrl/$vinType?vin=$vinNumber";
 
+  static String getChecklist({String? carId}) => "$root$CHECKLIST/$carId";
+  static String updateChecklist({String? id}) => "$root$CHECKLIST/$id";
+  static String updateChecklistFrequency({String? carId}) => "$root$CHECKLIST/$carId/frequency";
 
 }

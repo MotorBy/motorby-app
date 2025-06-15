@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.6
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -21,20 +21,25 @@ dependencies:
   cloud_firestore: ^4.0.4
   get_it: ^7.1.3
   shared_preferences: ^2.0.13
+  file_picker: 8.3.3
   flutter_svg: ^2.0.7
   flutter_paystack_max:
-     path: ../motorby-app/flutter_paystack_max
+      path: ../motorby-app/flutter_paystack_max
   http: ^1.2.0
   image_picker: 1.0.7
   image_cropper: 5.0.0
-  app_links: 4.0.1
+  flutter_html: ^3.0.0
+  app_links: 6.3.3
   location: 6.0.0
   geolocator: ^11.0.0
+  device_info_plus: ^9.0.2
   flutter_local_notifications: ^17.1.2
   url_launcher: 6.0.17
   package_info_plus: ^8.3.0
   google_sign_in: ^6.2.1
   permission_handler: ^11.3.1
+  dotted_decoration: ^2.0.0
+  google_maps_flutter: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +55,8 @@ flutter:
     - assets/images/auto/
     - assets/images/icons/
     - assets/images/
+    - assets/images/nav_icons/
+    - assets/images/budget_icons/
 
   fonts:
     - family: Montserrat
@@ -62,4 +69,15 @@ flutter:
         - asset: assets/fonts/montserrat_thin.ttf
           weight: 100
         - asset: assets/fonts/montserrat_regular.ttf
+          weight: 500
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.otf
+        - asset: assets/fonts/Inter-Bold.otf
+          weight: 700
+        - asset: assets/fonts/Inter-Black.otf
+          weight: 900
+        - asset: assets/fonts/Inter-Thin.otf
+          weight: 100
+        - asset: assets/fonts/Inter-Medium.otf
           weight: 500

@@ -6,11 +6,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
+import 'package:mobile_auto_drive/models/reminder_model.dart';
+import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/checklist_service.dart';
+import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
@@ -30,6 +36,9 @@ class HomeViewModel extends BaseViewModel {
   final budgetingService = serviceLocator<BudgetingService>();
   final paymentService =  serviceLocator<AppPaymentService>();
   final salesService = serviceLocator<SalesService>();
+  final checklistService = serviceLocator<ChecklistService>();
+  final reminderService =  serviceLocator<ReminderService>();
+  final insuranceService = serviceLocator<InsuranceService>();
 
   final _navigatorKey = GlobalKey<NavigatorState>();
   late AppLinks _appLinks;
@@ -39,6 +48,12 @@ class HomeViewModel extends BaseViewModel {
 
   BudgetingModel? budgetingModel;
   CarId? currentCar;
+  Budget? currentBudget;
+
+  ChecklistDataModel? checkListDataModel;
+  ReminderListModel? reminderListModel;
+
+  UserModel? userModel;
   List<File> addImagesList = [];
 
   final TextEditingController amountInputController = TextEditingController();
@@ -66,6 +81,21 @@ class HomeViewModel extends BaseViewModel {
     'breakdowns.png'
   ];
 
+  final List<CheckList> checkList = [
+    CheckList(title: 'Fluids (oil and coolant)',isChecked: false),
+    CheckList(title: 'Brakes',isChecked: false),
+    CheckList(title: 'Lights',isChecked: false),
+    CheckList(title: 'Wiper blades',isChecked: false),
+    CheckList(title: 'Horn',isChecked: false),
+    CheckList(title: 'Tyres',isChecked: false),
+    CheckList(title: 'Documents and licenses',isChecked: false),
+  ];
+
+  void toggleItem(int index) {
+      checkList[index].isChecked = !checkList[index].isChecked;
+      notifyListeners();
+  }
+
   List<int>? totalCostingAndValue = [
     0,
     0,
@@ -78,7 +108,6 @@ class HomeViewModel extends BaseViewModel {
   String? date = '';
 
   int? currentTotalSpent = 0;
-  int? totalCarsAdded = 0;
   int? currentBudgetViewIndex = 0;
   int? currentBudgetTypeIndex = 0;
 
@@ -109,7 +138,6 @@ class HomeViewModel extends BaseViewModel {
     setBusyForObject('home-loading', true);
 
     await userService.getUsers().onError((error, stackTrace) {
-      print(stackTrace.toString());
       setError(error.toString());
     });
 
@@ -128,169 +156,41 @@ class HomeViewModel extends BaseViewModel {
 
     } else {
 
-      resetBudgetListTotalCost();
-
       await budgetingService.getBudgets();
       await paymentService.getPlans();
+      await reminderService.getReminders();
       await userService.getCurrentFuelPrice(
           country: userService.userModel!.payload!.user!.country,
           state: userService.userModel!.payload!.user!.state,
       );
 
-      budgetingModel = budgetingService.budgetingModel;
+      userModel = userService.userModel;
+      reminderListModel = reminderService.reminderListModel;
       fuelData = userService.fuelData;
 
-      if(budgetingModel != null) {
-
-        if(budgetingModel!.budget!.isNotEmpty) {
-
-          currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
-
-          hasAddedCar = true;
-          totalCarsAdded = budgetingModel!.budget!.length;
-
-          salesService.currentCar = currentCar;
-          salesService.currentCarMake = currentCar!.carMake!;
-
-          getCurrentTotalValue(index: currentBudgetViewIndex);
-
-        }
-
-      }
-
-      if(onPermissionCallBack != null) {
-        onPermissionCallBack();
-      }
+      onPermissionCallBack?.call();
 
       if(fuelData != null) {
         currentFuelPrice = fuelData!.payload!.toInt().toString();
       }
 
+      onBudgetViewUpdated(0);
       setBusyForObject('home-loading', false);
 
     }
 
-    print('has user in app: $hasUserSetup');
     notifyListeners();
   }
 
-  Future<void> initDeepLinks() async {
-    _appLinks = AppLinks();
-
-    final appLink = await _appLinks.getInitialAppLink();
-    if (appLink != null) {
-      print('getInitialAppLink: $appLink');
-      openAppLink(appLink);
-    }
-
-    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-      print('onAppLink: $uri');
-      openAppLink(uri);
-    });
-  }
-
-  @override
-  void dispose() {
-    _linkSubscription?.cancel();
-    super.dispose();
-  }
-
-  void openAppLink(Uri uri) {
-    _navigatorKey.currentState?.pushNamed(uri.fragment);
-  }
-
-  void getCurrentTotalValue({int? index}) {
-
-    for (var element in budgetingModel!.budget![index!].fueling!) {
-      totalCostingAndValue![0] = totalCostingAndValue![0] + element.price!; ///for fueling budget will have index 0
-    }
-
-    if(budgetingModel!.budget![index].servicing != null) {
-
-      for (var element in budgetingModel!.budget![index].servicing!) {
-        totalCostingAndValue![1] = totalCostingAndValue![1] + element.price!;  ///for servicing budget will have index 1
+  List<ReminderPayload> getReminderLists() {
+    if(reminderListModel != null) {
+      if(reminderListModel!.data.isNotEmpty && reminderListModel!.data.length > 5) {
+        return reminderListModel!.data.sublist(0, 5);
       }
-
-    }
-
-    if(budgetingModel!.budget![index].repairing != null) {
-
-      for (var element in budgetingModel!.budget![index].repairing!) {
-        totalCostingAndValue![2] = totalCostingAndValue![2] + element.price!;  ///for repairing budget will have index 2
-      }
-
-    }
-
-    totalCostingAndValue![3] = budgetingModel!.budget![index].mileage!;  ///for mileage budget will have index 3
-
-    totalCostingAndValue![4] = budgetingModel!.budget![index].breakdowns!.length;  ///for breakdowns budget will have index 0
-
-    currentTotalSpent = budgetingModel!.budget![currentBudgetViewIndex!].currentSpending ?? 0;
-    currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget ?? 0;
-
-    notifyListeners();
-
-  }
-
-  void onBudgetViewUpdated(int? v) {
-    resetBudgetListTotalCost();
-
-    currentBudgetViewIndex = v;
-    getCurrentTotalValue(index: currentBudgetViewIndex);
-
-    currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
-    salesService.currentCar = currentCar;
-    salesService.currentCarMake = currentCar!.carMake!;
-    currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
-    notifyListeners();
-  }
-
-  void updateBudgetTypeIndex({int? v}) {
-    currentBudgetTypeIndex = v;
-
-    fueling = budgetingModel!.budget![currentBudgetViewIndex!].fueling!.reversed.toList();
-    servicing = budgetingModel!.budget![currentBudgetViewIndex!].servicing!.reversed.toList();
-    repairing = budgetingModel!.budget![currentBudgetViewIndex!].repairing!.reversed.toList();
-    breakdowns = budgetingModel!.budget![currentBudgetViewIndex!].breakdowns!.reversed.toList();
-
-    notifyListeners();
-  }
-
-  void resetBudgetListTotalCost(){
-    totalCostingAndValue = [
-      0,
-      0,
-      0,
-      0,
-      0
-    ];
-    notifyListeners();
-  }
-
-  void promoteLocationPermission ({bool? willDecline = false}) {
-
-    if(willDecline == false) {
-
-      PermissionUtil().isLocationServiceAndPermissionsActive().then((value) {
-        if (value == false) {
-          PermissionUtil.requestPermission(Permission.location);
-        }
-      });
-
-      Geolocator.getLastKnownPosition().then((Position? position) async {
-        currentPosition = position;
-        if(currentPosition != null) {
-          weatherSetup();
-        }
-      });
-
+      return reminderListModel!.data;
     } else {
-
-      locationDeclined = true;
-      notifyListeners();
-
+      return [];
     }
-
   }
 
   void weatherSetup() {
@@ -311,6 +211,79 @@ class HomeViewModel extends BaseViewModel {
 
     });
 
+  }
+
+  Future<void> initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    final appLink = await _appLinks.getInitialLinkString();
+    if (appLink != null) {
+      print('getInitialAppLink: $appLink');
+      openAppLink(Uri(path: appLink));
+    }
+
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      print('onAppLink: $uri');
+      openAppLink(uri);
+    });
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  void openAppLink(Uri uri) {
+    _navigatorKey.currentState?.pushNamed(uri.fragment);
+  }
+
+  void onBudgetViewUpdated(int? v) {
+
+    budgetingModel = budgetingService.budgetingModel;
+    currentBudgetViewIndex = v;
+
+    fuelData = userService.fuelData;
+
+    budgetingService.getCurrentTotalValue(index: v);
+    currentBudget = budgetingService.currentBudget;
+
+    totalCostingAndValue = budgetingService.totalCostingAndValue;
+    currentTotalSpent = budgetingService.currentTotalSpent;
+    notifyListeners();
+
+    if(budgetingModel!.budget!.isNotEmpty) {
+      hasAddedCar = true;
+
+      currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
+      salesService.currentCar = currentCar;
+      salesService.currentCarMake = currentCar!.carMake!;
+      currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
+      budgetingService.currentCar = currentCar;
+      notifyListeners();
+
+      getChecklistDataModel();
+
+    }
+
+    notifyListeners();
+
+  }
+
+  Future<void> getChecklistDataModel() async {
+    final response = await checklistService.getCarChecklist(currentCar!.sId!);
+    checkListDataModel = response;
+  }
+
+  void updateBudgetTypeIndex({int? v}) {
+    currentBudgetTypeIndex = v;
+
+    fueling = budgetingModel!.budget![currentBudgetViewIndex!].fueling!.reversed.toList();
+    servicing = budgetingModel!.budget![currentBudgetViewIndex!].servicing!.reversed.toList();
+    repairing = budgetingModel!.budget![currentBudgetViewIndex!].repairing!.reversed.toList();
+    breakdowns = budgetingModel!.budget![currentBudgetViewIndex!].breakdowns!.reversed.toList();
+
+    notifyListeners();
   }
 
   void resetUpdateBudgetData() {
@@ -351,11 +324,14 @@ class HomeViewModel extends BaseViewModel {
 
       if(onCallBack != null) {
 
-        resetBudgetListTotalCost();
         resetUpdateBudgetData();
 
         await budgetingService.getBudgets();
-        getCurrentTotalValue(index: currentBudgetViewIndex);
+        budgetingService.getCurrentTotalValue(index: currentBudgetViewIndex);
+
+        totalCostingAndValue = budgetingService.totalCostingAndValue;
+        currentTotalSpent = budgetingService.currentTotalSpent;
+        currentSetBudget = budgetingService.currentSetBudget;
 
         onCallBack();
 
@@ -435,50 +411,13 @@ class HomeViewModel extends BaseViewModel {
 
   }
 
-  Future updateCurrentFuelPrice({
-    int? price,
-    String? city,
-    String? petrolStation,
-    Function? onCallBack,
-    Function(String e)? onErrorCallBack}) async {
+  void getLocationUpdate() {
 
-    setBusy(true);
-
-    var dataToUpdate = {
-      "country" : userService.userModel!.payload!.user!.country,
-      "state": userService.userModel!.payload!.user!.state ?? '',
-      "priceList" : {
-        "price_per_liter" : price,
-        "gas_station_name": petrolStation,
-        "price_input_by": persistentService.getUserID,
-        "location": {
-          "city": city,
-          "lat": currentPosition != null ? currentPosition?.latitude.toString() : "",
-          "lng": currentPosition != null ? currentPosition?.longitude.toString() : ""
-        }
+    Geolocator.getLastKnownPosition().then((Position? position) async {
+      currentPosition = position;
+      if(currentPosition != null) {
+        weatherSetup();
       }
-    };
-
-    await userService.updateFuelPrice(
-      updateData: dataToUpdate,
-      country: userService.userModel!.payload!.user!.country,
-      state: userService.userModel!.payload!.user!.state
-    ).then((value) {
-
-      fuelData = userService.fuelData;
-      if(fuelData != null) {
-        currentFuelPrice = fuelData!.payload!.toInt().toString();
-      }
-
-      setBusy(false);
-      onCallBack!();
-
-    }).onError((error, stackTrace) {
-
-      print(stackTrace);
-      setBusy(false);
-      onErrorCallBack!(error.toString());
-
     });
 
   }
@@ -488,4 +427,11 @@ class HomeViewModel extends BaseViewModel {
   }
 
 
+}
+class CheckList{
+  final String title;
+  bool isChecked;
+
+  CheckList({required this.title,this.isChecked =false});
+  
 }

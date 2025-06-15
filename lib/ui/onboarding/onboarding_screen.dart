@@ -24,15 +24,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
 
   @override
   void initState() {
-
     OnboardingAnimationSetup.init(vsync: this);
-
-    // OnboardingAnimationSetup().animationProgressCtrl1.addStatusListener((status) {
-    //   if (status == AnimationStatus.completed) {
-    //
-    //   }
-    // });
-
     super.initState();
   }
 
@@ -52,23 +44,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
             ),
           ),
 
-          AnimatedBuilder(
-              animation: OnboardingAnimationSetup().animationProgressCtrl1,
-              builder: (BuildContext context, Widget? child) {
-
-                return Positioned(
-                top: OnboardingAnimationSetup().animationProgressLogoValue,
-                left: 10,
-                right: 10,
-                child: SvgPicture.asset(
-                  'assets/images/motorby_m.svg',
-                  colorFilter: ColorFilter.mode(XColors.white(), BlendMode.srcIn),
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.fitHeight,
-                ),
-              );
-            }
+          Positioned(
+            top: 120,
+            left: 10,
+            right: 10,
+            child: SvgPicture.asset(
+              'assets/images/motorby_m.svg',
+              colorFilter: ColorFilter.mode(XColors.white(), BlendMode.srcIn),
+              width: 150,
+              height: 150,
+              fit: BoxFit.fitHeight,
+            ),
           ),
 
           AnimatedBuilder(
@@ -82,9 +68,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                     children: [
                       const YMargin(15),
                       NormalText(
-                        text:'All-in-one\nplace for you',
+                        text:'Your auto car\ncompanion\nat your fingertips',
                         textColor: XColors.white(),
-                        fontSize: 40,
+                        fontSize: 35,
                         fontWeight: FontWeight.w900,
                       ),
                     ],
@@ -109,7 +95,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
           ),
 
           Positioned(
-            bottom: 20,
+            bottom: 50,
             left: 15,
             right: 15,
             child: XButton(

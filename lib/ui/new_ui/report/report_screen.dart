@@ -1,59 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'report_viewmodel.dart';
 import 'expenditure_report_view.dart';
 import 'mileage_report_view.dart';
-import 'add_mileage_log_sheet.dart';
 
 class ReportScreen extends StatelessWidget {
-  const ReportScreen({Key? key}) : super(key: key);
+  const ReportScreen({
+    Key? key,
+    this.isFromQuickActions = false,
+    this.currentIndex = 0
+  }) : super(key: key);
+
+  final bool? isFromQuickActions;
+  final int? currentIndex;
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ReportViewModel>.reactive(
       viewModelBuilder: () => ReportViewModel(),
+      onViewModelReady: (model) => model.setBudgetData(currentIndex: currentIndex!),
       builder: (context, model, child) => Scaffold(
-        backgroundColor: const Color(0xFFF8F2FF),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: const AddMileageLogSheet(),
-              ),
-            );
+        backgroundColor: XColors.background(),
+        appBar: appBarHeader(
+          hasOnBack: isFromQuickActions,
+          onCloseAction: (){
+            popView(context);
           },
-          backgroundColor: const Color(0xFF7B61FF),
-          child: const Icon(Icons.add),
+          context: context,
+          appBarTitle: 'Report',
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Report',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: CarSelectorView(
+                    cars: model.getBudgetData(),
+                    currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,
+                    onCarSelected: ({Budget? budget, int? index}) {
+                      model.setBudgetData(currentIndex: index!);
+                    }
                 ),
-                const SizedBox(height: 20),
-                _buildTabSelector(model),
-                const SizedBox(height: 24),
-                Expanded(
-                  child: model.selectedTab == 0
-                      ? ExpenditureReportView(model: model)
-                      : MileageReportView(model: model),
-                ),
-              ],
-            ),
+              ),
+              const YMargin(14),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _buildTabSelector(model),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: model.selectedTab == 0
+                    ? ExpenditureReportView(model: model, ctxt: context,)
+                    : MileageReportView(model: model),
+              ),
+            ],
           ),
         ),
       ),
@@ -62,8 +71,9 @@ class ReportScreen extends StatelessWidget {
 
   Widget _buildTabSelector(ReportViewModel model) {
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0XFFF4EFFB),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
@@ -92,7 +102,7 @@ class ReportScreen extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
             color: isSelected ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(30),
