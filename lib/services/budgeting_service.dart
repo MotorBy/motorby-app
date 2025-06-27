@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'dart:convert' as JSON;
 
@@ -13,6 +14,7 @@ class BudgetingService {
   final persistService = serviceLocator<PersistenceService>();
 
   BudgetingModel? budgetingModel;
+  Map<String, dynamic>? lastBudget;
   CarId? currentCar;
   Budget? currentBudget;
 
@@ -77,7 +79,26 @@ class BudgetingService {
       currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;
       currentSetBudget = budgetingModel!.budget![index].budget ?? 0;
 
+      if(persistService.getLastSpending != null) {
+        lastBudget = JSON.jsonDecode(persistService.getLastSpending!);
+      }
+
     }
+
+  }
+
+  bool isFutureSpending({String? date}) {
+    DateTime now = DateTime.now();
+    DateTime currentDate = DateTime(now.year, now.month, now.day);
+
+    DateTime budgetDate;
+    DateFormat inputFormat = DateFormat('d-M-yyyy'); // 'd' for day, 'M' for month, 'yyyy' for year
+    budgetDate = inputFormat.parse(date!);
+
+    bool isFutureSpending = budgetDate.isAfter(currentDate);
+    print("Is for future spending: ${isFutureSpending.toString()}");
+
+    return isFutureSpending;
 
   }
 
@@ -118,11 +139,16 @@ class BudgetingService {
     final json = JSON.jsonDecode(response.body);
 
     if(response.statusCode == 200 || response.statusCode == 201) {
+
+      persistService.setLastSpending(jsonData);
       await getBudgets();
+
     } else {
+
       var error = json["message"];
       print(error);
       throw Exception(error);
+
     }
 
   }

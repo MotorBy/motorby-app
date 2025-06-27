@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/new_home_revamp.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/quick_actions/quick_actions_bottom_sheet.dart';
@@ -50,7 +51,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               },
               physics: const PageScrollPhysics(),
               children: const [
-                NewHomeScreen(),
+                //NewHomeScreen(),
+                NewHomeRevampScreen(),
                 ReportScreen(),
                 ReminderScreen(),
                 MapScreen(),

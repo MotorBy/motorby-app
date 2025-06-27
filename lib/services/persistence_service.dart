@@ -4,7 +4,8 @@ class PersistenceService {
   static const String TK = 'tk';
   static const String USERID = 'id';
   static const String PIN = 'pin';
-  static const String ONBOARDING = 'onboarding';
+  static const String onboarding = 'onboarding';
+  static const String lastSpending = 'lastSpending';
 
   String? currentVersion;
 
@@ -41,6 +42,7 @@ class PersistenceService {
   String? _token;
   String? _userId = '';
   String? _pin;
+  String? _lastSpending;
 
   void setToken(String token) {
     _token = token;
@@ -64,10 +66,17 @@ class PersistenceService {
   String? get getUserPin => readFromStorage(PIN) ?? _pin;
 
   void setOnboarding(bool s) {
-    writeToStorage(ONBOARDING, s);
+    writeToStorage(onboarding, s);
   }
 
-  bool? get getOnboarding => readFromStorage(ONBOARDING) ?? false;
+  bool? get getOnboarding => readFromStorage(onboarding) ?? false;
+
+  void setLastSpending(String s) {
+    _lastSpending = s;
+    writeToStorage(lastSpending, s);
+  }
+
+  String? get getLastSpending => readFromStorage(lastSpending) ?? _lastSpending;
 
   Future<void> deleteAll() async {
     _userId = null;

@@ -175,7 +175,6 @@ class ExpenditureReportView extends StatelessWidget {
   }
 
   Widget _buildBudgetHeader({String? currentSpending, String? totalBudget}) {
-
     return ContainerWidget(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       backgroundColor: XColors.white(),
@@ -191,21 +190,6 @@ class ExpenditureReportView extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
-              // DropdownButton<String>(
-              //   value: model.selectedTimeFrame,
-              //   icon: const Padding(
-              //     padding: EdgeInsets.only(left: 10.0),
-              //     child: GetSvgImage(image: 'assets/images/arrow_down.svg'),
-              //   ),
-              //   items: ['This week', 'This month', 'This year']
-              //       .map((String value) {
-              //     return DropdownMenuItem<String>(
-              //       value: value,
-              //       child: Text(value),
-              //     );
-              //   }).toList(),
-              //   onChanged: (value) => model.setTimeFrame(value!),
-              // ),
             ],
           ),
           NormalText(
@@ -321,12 +305,18 @@ class ExpenditureReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryDistribution({double? fueling, double? servicing, double? repairing, double? expenses, double? total, double? spent}) {
+  Widget _buildCategoryDistribution({
+    double? fueling,
+    double? servicing,
+    double? repairing,
+    double? expenses,
+    double? total,
+    double? spent}) {
+
     final categories = [
       {'name': 'Fuel', 'value': fueling ?? 0.0, 'color': XColors.primaryColor()},
       {'name': 'Services', 'value': servicing ?? 0.0, 'color': Colors.green},
       {'name': 'Repair', 'value': repairing ?? 0.0, 'color': Colors.red},
-      {'name': 'Other Expenses', 'value': expenses ?? 0.0, 'color': Colors.blue[100]},
     ];
 
     final totalSpent = spent ?? 0;
@@ -376,7 +366,7 @@ class ExpenditureReportView extends StatelessWidget {
             if (remainingBudget > 0)
               _buildLegendItem(
                 name: 'Remaining',
-                color: Colors.grey[50],
+                color: Colors.grey[300],
                 value: remainingBudget,
                 percentage: remainingBudget / totalBudget * 100,
               ),
@@ -416,32 +406,4 @@ class ExpenditureReportView extends StatelessWidget {
     );
   }
 
-}
-
-class ReportSummary extends StatelessWidget {
-  const ReportSummary({super.key, this.title});
-  final String? title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircleAvatar(
-            backgroundColor: Color(0xFFF7D1CD),
-            radius: 4,
-          ),
-          const XMargin(2),
-          NormalText(
-            text: title,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            textColor: XColors.black(),
-          ),
-        ],
-      ),
-    );
-  }
 }

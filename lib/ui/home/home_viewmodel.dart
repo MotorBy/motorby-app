@@ -5,6 +5,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
@@ -105,7 +106,8 @@ class HomeViewModel extends BaseViewModel {
   ];
 
   Map<String, dynamic> budgetData = {};
-  String? date = '';
+  Map<String, dynamic>? lastBudget;
+  LastBudget? lastBudgetModel;
 
   int? currentTotalSpent = 0;
   int? currentBudgetViewIndex = 0;
@@ -120,7 +122,7 @@ class HomeViewModel extends BaseViewModel {
   bool? locationDeclined = false;
 
   CurrentView? currentViewState = CurrentView.cars;
-  String? currentWeatherValue = '0.0';
+  String? currentWeatherValue = '0';
   String? currentWeatherDescription = 'No weather';
   String? weatherGuideDescription = '';
 
@@ -174,6 +176,20 @@ class HomeViewModel extends BaseViewModel {
         currentFuelPrice = fuelData!.payload!.toInt().toString();
       }
 
+      lastBudget = budgetingService.lastBudget;
+      if(lastBudget != null) {
+
+        var isFuture = budgetingService.isFutureSpending(date: lastBudget!["data"]["date"]);
+
+        lastBudgetModel = LastBudget.fromJson({
+          ...lastBudget!["data"],
+          "budget_type" : lastBudget!["dataType"],
+          "is_future_budget" : isFuture,
+        });
+
+        print(lastBudgetModel?.toJson().toString());
+      }
+
       onBudgetViewUpdated(0);
       setBusyForObject('home-loading', false);
 
@@ -199,7 +215,7 @@ class HomeViewModel extends BaseViewModel {
 
       if(userService.weatherData != null) {
 
-        currentWeatherValue = userService.weatherData!.payload!.tempMax!.toString();
+        currentWeatherValue = userService.weatherData!.payload!.tempMax!.toInt().toString();
         currentWeatherDescription = userService.weatherData!.payload!.description;
         weatherGuideDescription = userService.weatherData!.payload!.weatherDriveInstruction;
 
@@ -298,7 +314,6 @@ class HomeViewModel extends BaseViewModel {
     addressInputController.clear();
 
     budgetData = {};
-    date = '';
     notifyListeners();
   }
 
@@ -426,8 +441,8 @@ class HomeViewModel extends BaseViewModel {
     await persistentService.deleteAll();
   }
 
-
 }
+
 class CheckList{
   final String title;
   bool isChecked;

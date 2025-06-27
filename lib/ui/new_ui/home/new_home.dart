@@ -98,20 +98,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> with AutomaticKeepAliveCl
                     navigateReplace(context, SignInScreen());
                   },
                   onPermissionCallBack: () {
-                    if(viewModel.currentPosition == null && viewModel.locationDeclined == false) {
-                      modalBottomSheetMenu(
-                        color: Colors.white,
-                        isDismissible: false,
-                        context: context,
-                        height: 450,
-                        child: InfoDetailsView(
-                          infoType: InfoType.locationSetup,
-                          onPermissionAction: () {
-                            viewModel.getLocationUpdate();
-                          },
-                        ),
-                      );
-                    }
+
                   }
                 );
               },

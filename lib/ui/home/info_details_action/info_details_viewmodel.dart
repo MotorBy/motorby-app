@@ -20,7 +20,7 @@ class InfoDetailsViewModel extends BaseViewModel {
   Position? currentPosition;
   bool? locationDeclined = false;
 
-  String? currentWeatherValue = '0.0';
+  String? currentWeatherValue = '0';
   String? currentWeatherDescription = 'No weather';
   String? weatherGuideDescription = '';
 
