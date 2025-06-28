@@ -146,7 +146,7 @@ class _BudgetSummaryViewState extends State<BudgetSummaryView> {
                       },
                       child: NormalText(
                         text: 'update',
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w500,
                         textColor: XColors.primaryColor(),
                       ),
@@ -193,7 +193,7 @@ class _BudgetSummaryViewState extends State<BudgetSummaryView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 30,
+          height: 20,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(9),
             color: Colors.grey[100],

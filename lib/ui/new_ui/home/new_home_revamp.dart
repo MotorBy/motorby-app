@@ -74,7 +74,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
             ),
             title: NormalText(
               text: 'Hey ${viewModel.userModel != null ? viewModel.userModel!.payload!.user!.fullname : ""}',
-              fontSize: 20,
+              fontSize: 17,
               fontWeight: FontWeight.w700,
             ),
             centerTitle: false,
@@ -165,7 +165,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                           children: [
                                             NormalText(
                                               text: 'View details',
-                                              fontSize: 12,
+                                              fontSize: 11,
                                               fontWeight: FontWeight.w500,
                                               textColor: XColors.primaryColor(),
                                             ),
@@ -173,16 +173,16 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                         ),
                                       ),
                                       const YMargin(10),
-                                      const Row(
+                                      Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
-                                          GetSvgImage(
+                                          const GetSvgImage(
                                             image: 'assets/images/car_place_holder.svg',
                                             width: 60,
                                             height: 60,
                                           ),
-                                          XMargin(18),
+                                          const XMargin(18),
                                           Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             mainAxisAlignment: MainAxisAlignment.start,
@@ -193,31 +193,49 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      NormalText(
+                                                      const NormalText(
                                                         text: 'Checklist',
-                                                        fontSize: 14,
+                                                        fontSize: 12,
                                                         textColor: Colors.grey,
                                                       ),
-                                                      XMargin(8),
+                                                      const XMargin(8),
                                                       NormalText(
-                                                        text: '8/10',
-                                                        fontSize: 14,
+                                                        text: viewModel.hasAddedCar
+                                                            ? '${viewModel.currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${viewModel.currentBudget!.checklistData!.items!.length}'
+                                                            : '0/0',
+                                                        fontSize: 13,
                                                         fontWeight: FontWeight.w600,
                                                       ),
                                                     ],
                                                   ),
-                                                  YMargin(8),
+                                                  const YMargin(5),
                                                   Row(
                                                     children: [
-                                                      NormalText(
-                                                        text: 'Mileage',
-                                                        fontSize: 14,
+                                                      const NormalText(
+                                                        text: 'Last traveled',
+                                                        fontSize: 12,
                                                         textColor: Colors.grey,
                                                       ),
-                                                      XMargin(8),
+                                                      const XMargin(8),
                                                       NormalText(
-                                                        text: '604033',
-                                                        fontSize: 14,
+                                                        text: '${viewModel.lastDistance} ${viewModel.totalMileageUnit}',
+                                                        fontSize: 13,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const YMargin(5),
+                                                  Row(
+                                                    children: [
+                                                      const NormalText(
+                                                        text: 'Mileage',
+                                                        fontSize: 12,
+                                                        textColor: Colors.grey,
+                                                      ),
+                                                      const XMargin(8),
+                                                      NormalText(
+                                                        text: '${viewModel.totalMileage} ${viewModel.totalMileageUnit}',
+                                                        fontSize: 13,
                                                         fontWeight: FontWeight.w600,
                                                       ),
                                                     ],
@@ -268,7 +286,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                   ),
                                   NormalText(
                                     text: 'New',
-                                    fontSize: 12,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     textColor: XColors.primaryColor(),
                                   ),
@@ -285,42 +303,45 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
 
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Column(
+                                child: Wrap(
+                                  runAlignment: WrapAlignment.center,
                                   children: [
-                                    Row(
-                                      children: [
-                                        NormalText(
-                                          text: "${viewModel.lastBudgetModel?.isFutureBudget == false ? 'Spent' : 'Will be spending'} a total of ",
+                                    NormalText(
+                                      text: "${viewModel.lastBudgetModel?.isFutureBudget == false ? 'You Spent ' : 'You will be spending'} an amount of ",
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      textColor: XColors.black(),
+                                    ),
+                                    Text(
+                                      '\u20A6',
+                                      style: TextStyle(
                                           fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          textColor: XColors.black(),
-                                        ),
-                                        Text(
-                                          '\u20A6',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: XColors.black(),
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        NormalText(
-                                          text: amtFormatter(viewModel.lastBudgetModel?.price).toString(),
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w700,
-                                          textColor: XColors.black(),
-                                        ),
-                                        NormalText(
-                                          text: " on ",
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          textColor: XColors.black(),
-                                        ),
-                                        NormalText(
-                                          text: viewModel.lastBudgetModel?.budgetType,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          textColor: XColors.black(),
-                                        ),
-                                      ],
+                                          color: XColors.black(),
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    NormalText(
+                                      text: amtFormatter(viewModel.lastBudgetModel?.price).toString(),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      textColor: XColors.black(),
+                                    ),
+                                    NormalText(
+                                      text: " on ",
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      textColor: XColors.black(),
+                                    ),
+                                    NormalText(
+                                      text: viewModel.lastBudgetModel?.budgetType,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      textColor: XColors.black(),
+                                    ),
+                                    NormalText(
+                                      text: " in ${viewModel.lastBudgetModel?.date}.",
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      textColor: XColors.black(),
                                     )
                                   ]
                                 ),
@@ -406,7 +427,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
               children: [
                 NormalText(
                   text: '${viewModel.currentWeatherValue}°C',
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
                 ),
                 const XMargin(8),
@@ -425,7 +446,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
               },
               child: NormalText(
                 text: 'Drive guide',
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w500,
                 textColor: XColors.primaryColor(),
               ),

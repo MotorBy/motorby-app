@@ -50,12 +50,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 }
               },
               physics: const PageScrollPhysics(),
-              children: const [
-                //NewHomeScreen(),
-                NewHomeRevampScreen(),
-                ReportScreen(),
-                ReminderScreen(),
-                MapScreen(),
+              children: [
+                const NewHomeRevampScreen(),
+                const ReminderScreen(),
+                const MapScreen(),
+                Container()
               ],
             ),
             floatingActionButton: FloatingActionButton(
@@ -150,12 +149,12 @@ class BottomNavbar extends StatelessWidget {
           backgroundColor: XColors.background(),
         ),
         BottomNavigationBarItem(
-          label: "Report",
+          label: "Reminder",
           icon: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(model.currentIndex == 1 ? 0 : 2),
             child: GetSvgImage(
-              image: 'assets/images/nav_icons/report.svg',
+              image: 'assets/images/nav_icons/reminder.svg',
               height: 22,
               width: 22,
               color: model.currentIndex == 1 ? XColors.primaryColor() : null,
@@ -168,12 +167,12 @@ class BottomNavbar extends StatelessWidget {
           icon: SizedBox(width: 50),
         ),
         BottomNavigationBarItem(
-          label: "Reminder",
+          label: "Map",
           icon: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(model.currentIndex == 3 ? 0 : 2),
             child: GetSvgImage(
-              image: 'assets/images/nav_icons/reminder.svg',
+              image: 'assets/images/nav_icons/map.svg',
               height: 22,
               width: 22,
               color: model.currentIndex == 3 ? XColors.primaryColor() : null,
@@ -182,12 +181,12 @@ class BottomNavbar extends StatelessWidget {
           backgroundColor: XColors.background(),
         ),
         BottomNavigationBarItem(
-          label: "Map",
+          label: "More",
           icon: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(model.currentIndex == 4 ? 0 : 2),
             child: GetSvgImage(
-              image: 'assets/images/nav_icons/map.svg',
+              image: 'assets/images/nav_icons/more.svg',
               height: 22,
               width: 22,
               color: model.currentIndex == 4 ? XColors.primaryColor() : null,

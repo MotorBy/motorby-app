@@ -24,6 +24,12 @@ class BudgetingService {
   int? currentTotalSpent = 0;
   int currentSetBudget = 0;
   int? currentBudgetIndex = 0;
+
+  String? totalMileage = "0";
+  String? lastDateTrip = "";
+  String? lastTraveled = "0";
+  String? currentMileage = "0";
+
   List<int>? totalCostingAndValue = [
     0,
     0,
@@ -83,6 +89,38 @@ class BudgetingService {
         lastBudget = JSON.jsonDecode(persistService.getLastSpending!);
       }
 
+      getMileageData();
+
+    }
+
+  }
+
+  void getMileageData() {
+
+    if(currentBudget != null && currentBudget!.mileageData!.isNotEmpty) {
+
+      final latestMileage = int.tryParse(currentBudget!.mileageData!.last.odometerReading ?? '0') ?? 0;
+      final firstMileage = int.tryParse(currentBudget!.mileageData!.first.odometerReading ?? '0') ?? 0;
+
+      totalMileage = (latestMileage - firstMileage).toString();
+      currentMileage = latestMileage.toString();
+
+      // Set last trip data
+      final lastTrip = currentBudget!.mileageData!.last;
+      lastDateTrip = lastTrip.inputDate?.toString().split(' ')[0] ?? '';
+
+      if (currentBudget!.mileageData!.length > 1) {
+        final previousMileage = int.tryParse(currentBudget!.mileageData![currentBudget!.mileageData!.length - 2].odometerReading ?? '0') ?? 0;
+        lastTraveled = (latestMileage - previousMileage).toString();
+      } else {
+        lastTraveled = "0";
+      }
+
+    } else {
+      totalMileage = "0";
+      lastDateTrip = "";
+      lastTraveled = "0";
+      currentMileage = "0";
     }
 
   }

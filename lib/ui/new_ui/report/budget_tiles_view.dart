@@ -49,7 +49,7 @@ class BudgetTilesView extends StatelessWidget {
 
           const YMargin(14),
           SizedBox(
-            height: 350,
+            height: 330,
             child: GridView.builder(
               itemCount: budgetIcon.length,
               physics: const NeverScrollableScrollPhysics(),

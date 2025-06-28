@@ -21,8 +21,6 @@ import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
-import 'package:mobile_auto_drive/utils/permission_handling.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 
 enum CurrentView {
@@ -125,6 +123,10 @@ class HomeViewModel extends BaseViewModel {
   String? currentWeatherValue = '0';
   String? currentWeatherDescription = 'No weather';
   String? weatherGuideDescription = '';
+
+  String? totalMileage = '0';
+  String? totalMileageUnit = 'km';
+  String? lastDistance = '0';
 
   int currentSetBudget = 0;
 
@@ -266,6 +268,7 @@ class HomeViewModel extends BaseViewModel {
 
     totalCostingAndValue = budgetingService.totalCostingAndValue;
     currentTotalSpent = budgetingService.currentTotalSpent;
+
     notifyListeners();
 
     if(budgetingModel!.budget!.isNotEmpty) {
@@ -276,6 +279,10 @@ class HomeViewModel extends BaseViewModel {
       salesService.currentCarMake = currentCar!.carMake!;
       currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
       budgetingService.currentCar = currentCar;
+
+      totalMileage = budgetingService.currentMileage;
+      lastDistance = budgetingService.lastTraveled;
+
       notifyListeners();
 
       getChecklistDataModel();
@@ -360,6 +367,12 @@ class HomeViewModel extends BaseViewModel {
       }
       setBusy(false);
     });
+  }
+
+  bool? openCarSpecsView = false;
+  void setCarSpecsView({bool? shouldOpen}) {
+    openCarSpecsView = !openCarSpecsView!;
+    notifyListeners();
   }
 
   void updateBudgetData({String? value, String? type}) {

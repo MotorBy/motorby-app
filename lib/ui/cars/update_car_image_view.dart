@@ -37,23 +37,26 @@ class UpdateCarImage extends StatelessWidget {
           child: Column(
             children: [
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  NormalText(
-                    text: 'Update your car images here',
-                    textColor: XColors.black(),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                  const XMargin(45),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(Icons.close_rounded, size: 31,),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    NormalText(
+                      text: 'Update your car images',
+                      textColor: XColors.black(),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                    const XMargin(45),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(Icons.close_rounded, size: 31,),
+                    ),
+                  ],
+                ),
               ),
 
               const YMargin(25),
