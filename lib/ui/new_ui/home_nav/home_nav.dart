@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/main.dart';
+import 'package:mobile_auto_drive/services/device_info.dart';
+import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
+import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home_revamp.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/more/more_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_sub_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/subscription_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/quick_actions/quick_actions_bottom_sheet.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_screen.dart';
+import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
+import 'package:mobile_auto_drive/utils/margin.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
+import 'package:mobile_auto_drive/widgets/texts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stacked/stacked.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key});
@@ -50,11 +66,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 }
               },
               physics: const PageScrollPhysics(),
-              children: [
-                const NewHomeRevampScreen(),
-                const ReminderScreen(),
-                const MapScreen(),
-                Container()
+              children: const [
+                NewHomeRevampScreen(),
+                ReminderScreen(),
+                MapScreen(),
+                MoreScreen() ////new more screen section
               ],
             ),
             floatingActionButton: FloatingActionButton(

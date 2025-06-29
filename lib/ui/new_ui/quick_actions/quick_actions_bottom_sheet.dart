@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
 import 'package:mobile_auto_drive/ui/home/history_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
@@ -169,10 +170,10 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           svgImage: 'assets/images/car_action_icon.svg',
                           iconColor: Colors.white,
                           iconBgColor: const Color(0xFFCDAEA7),
-                          label: 'Cars',
+                          label: 'Add a car',
                           value: model.addedCarsCount,
                           onTap: () {
-                            navigate(context, const CarsListScreen());
+                            navigate(context, const AddCarsScreen());
                           },
                         ),
                         _buildActionItem(
@@ -183,7 +184,6 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           label: 'Reminder',
                           value: '${model.totalReminderSet} reminder(s)',
                           onTap: () {
-
                             navigate(context, const ReminderScreen(isFromQuickActions: true,));
                           },
                         ),
@@ -191,42 +191,6 @@ class QuickActionsBottomSheet extends StatelessWidget {
                     ),
                   ),
 
-                  // Additional action buttons
-                  _buildFullWidthButton(
-                    context,
-                    label: 'Enter community',
-                    onTap: () {
-                      navigate(context, const CommunityScreen());
-                    },
-                  ),
-                  const YMargin(6),
-                  _buildFullWidthButton(
-                    context,
-                    label: 'Marketplace',
-                    onTap: () {
-
-                      FloatingSnackBar.show(
-                          context,
-                          backgroundColor: XColors.primaryColor(),
-                          'Marketplace is coming soon',
-                      );
-
-                    },
-                  ),
-                  const YMargin(6),
-                  _buildFullWidthButton(
-                    context,
-                    label: 'Vin checks',
-                    onTap: () {
-
-                      FloatingSnackBar.show(
-                        context,
-                        backgroundColor: XColors.primaryColor(),
-                        'Vin checks is coming soon',
-                      );
-
-                    },
-                  ),
                 ],
               ),
         ),
