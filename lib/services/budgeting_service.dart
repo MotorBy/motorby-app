@@ -1,18 +1,22 @@
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'dart:convert' as JSON;
 
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
+import 'package:mobile_auto_drive/services/checklist_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 
 class BudgetingService {
   final persistService = serviceLocator<PersistenceService>();
 
   BudgetingModel? budgetingModel;
+  Map<String, dynamic>? lastBudget;
   CarId? currentCar;
   Budget? currentBudget;
 
@@ -22,6 +26,15 @@ class BudgetingService {
   int? currentTotalSpent = 0;
   int currentSetBudget = 0;
   int? currentBudgetIndex = 0;
+
+  String? totalMileage = "0";
+  String? lastDateTrip = "";
+  String? lastTraveled = "0";
+  String? currentMileage = "0";
+  String? lastRefuelDate = '';
+  String? lastRefuelAmount = '';
+  double? fuelEfficiency = 0.0;
+
   List<int>? totalCostingAndValue = [
     0,
     0,
@@ -77,7 +90,96 @@ class BudgetingService {
       currentTotalSpent = budgetingModel!.budget![index].currentSpending ?? 0;
       currentSetBudget = budgetingModel!.budget![index].budget ?? 0;
 
+      if(persistService.getLastSpending != null) {
+        lastBudget = JSON.jsonDecode(persistService.getLastSpending!);
+      }
+
+      getMileageData();
+      getFuelingData();
+
     }
+
+  }
+
+  void getMileageData() {
+
+    if(currentBudget != null && currentBudget!.mileageData!.isNotEmpty) {
+
+      final latestMileage = int.tryParse(currentBudget!.mileageData!.last.odometerReading ?? '0') ?? 0;
+      final firstMileage = int.tryParse(currentBudget!.mileageData!.first.odometerReading ?? '0') ?? 0;
+
+      totalMileage = (latestMileage - firstMileage).toString();
+      currentMileage = latestMileage.toString();
+
+      // Set last trip data
+      final lastTrip = currentBudget!.mileageData!.last;
+      lastDateTrip = lastTrip.inputDate?.toString().split(' ')[0] ?? '';
+
+      if (currentBudget!.mileageData!.length > 1) {
+        final previousMileage = int.tryParse(
+            currentBudget!.mileageData![currentBudget!.mileageData!.length - 2].odometerReading ?? '0'
+        ) ?? 0;
+        lastTraveled = (latestMileage - previousMileage).toString();
+      } else {
+        lastTraveled = "0";
+      }
+
+    } else {
+      totalMileage = "0";
+      lastDateTrip = "";
+      lastTraveled = "0";
+      currentMileage = "0";
+    }
+
+  }
+
+  void getFuelingData() {
+
+    if (currentBudget != null && currentBudget!.fueling!.isNotEmpty) {
+      final lastFueling = currentBudget!.fueling!.last;
+      lastRefuelDate = lastFueling.date ?? '';
+      lastRefuelAmount = amtFormatter(lastFueling.price);
+
+      if (currentBudget!.mileageData != null && currentBudget!.mileageData!.length > 1) {
+        final totalDistance = int.parse(totalMileage!);
+        double totalLiters = 0.0;
+
+        for (var fuel in currentBudget!.fueling!) {
+          if (fuel.price != null && fuel.pricePerLiter != null && fuel.pricePerLiter! > 0) {
+            totalLiters += fuel.price! / fuel.pricePerLiter!;
+          }
+        }
+        if (totalLiters > 0) {
+          fuelEfficiency = (totalDistance / totalLiters).roundToDouble(); // km/L
+        }
+      }
+    } else {
+      lastRefuelDate = '';
+      lastRefuelAmount = '0';
+      fuelEfficiency = 0.0;
+    }
+
+  }
+
+  String getCheckListStatus() {
+    if(currentBudget != null) {
+      return "${currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${currentBudget!.checklistData!.items!.length}";
+    }
+    return "0/0";
+  }
+
+  bool isFutureSpending({String? date}) {
+    DateTime now = DateTime.now();
+    DateTime currentDate = DateTime(now.year, now.month, now.day);
+
+    DateTime budgetDate;
+    DateFormat inputFormat = DateFormat('d-M-yyyy'); // 'd' for day, 'M' for month, 'yyyy' for year
+    budgetDate = inputFormat.parse(date!);
+
+    bool isFutureSpending = budgetDate.isAfter(currentDate);
+    print("Is for future spending: ${isFutureSpending.toString()}");
+
+    return isFutureSpending;
 
   }
 
@@ -118,13 +220,39 @@ class BudgetingService {
     final json = JSON.jsonDecode(response.body);
 
     if(response.statusCode == 200 || response.statusCode == 201) {
+
+      persistService.setLastSpending(jsonData);
       await getBudgets();
+
     } else {
+
       var error = json["message"];
       print(error);
       throw Exception(error);
+
     }
 
   }
+
+}
+
+class FuelMileageData {
+  String? totalMileage = "0";
+  String? lastDateTrip = "";
+  String? lastTraveled = "0";
+  String? currentMileage = "0";
+  String? lastRefuelDate = '';
+  String? lastRefuelAmount = '0';
+  double? fuelEfficiency = 0.0;
+
+  FuelMileageData({
+    this.currentMileage,
+    this.lastTraveled,
+    this.lastDateTrip,
+    this.totalMileage,
+    this.fuelEfficiency,
+    this.lastRefuelAmount,
+    this.lastRefuelDate,
+  });
 
 }

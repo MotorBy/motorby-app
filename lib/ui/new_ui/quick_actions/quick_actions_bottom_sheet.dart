@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/community/community_screen.dart';
 import 'package:mobile_auto_drive/ui/home/history_screen.dart';
+import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -169,10 +172,10 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           svgImage: 'assets/images/car_action_icon.svg',
                           iconColor: Colors.white,
                           iconBgColor: const Color(0xFFCDAEA7),
-                          label: 'Cars',
+                          label: 'Add a car',
                           value: model.addedCarsCount,
                           onTap: () {
-                            navigate(context, const CarsListScreen());
+                            navigate(context, const AddCarsScreen());
                           },
                         ),
                         _buildActionItem(
@@ -180,53 +183,19 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           svgImage: 'assets/images/reminder_action.svg',
                           iconColor: Colors.white,
                           iconBgColor: const Color(0xFF004D1F),
-                          label: 'Reminder',
+                          label: 'Add Reminder',
                           value: '${model.totalReminderSet} reminder(s)',
                           onTap: () {
-
-                            navigate(context, const ReminderScreen(isFromQuickActions: true,));
+                            navigate(context, const InfoDetailsView(
+                              infoType: InfoType.reminder,
+                              isFromQuickActions: true,
+                            ));
                           },
                         ),
                       ],
                     ),
                   ),
 
-                  // Additional action buttons
-                  _buildFullWidthButton(
-                    context,
-                    label: 'Enter community',
-                    onTap: () {
-                      navigate(context, const CommunityScreen());
-                    },
-                  ),
-                  const YMargin(6),
-                  _buildFullWidthButton(
-                    context,
-                    label: 'Marketplace',
-                    onTap: () {
-
-                      FloatingSnackBar.show(
-                          context,
-                          backgroundColor: XColors.primaryColor(),
-                          'Marketplace is coming soon',
-                      );
-
-                    },
-                  ),
-                  const YMargin(6),
-                  _buildFullWidthButton(
-                    context,
-                    label: 'Vin checks',
-                    onTap: () {
-
-                      FloatingSnackBar.show(
-                        context,
-                        backgroundColor: XColors.primaryColor(),
-                        'Vin checks is coming soon',
-                      );
-
-                    },
-                  ),
                 ],
               ),
         ),

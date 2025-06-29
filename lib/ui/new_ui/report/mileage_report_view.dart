@@ -23,66 +23,6 @@ class MileageReportView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Weather Section
-            // NormalText(
-            //   text: "Today's weather (Lagos)",
-            //   fontSize: 20,
-            //   fontWeight: FontWeight.w600,
-            //   textColor: XColors.black(),
-            // ),
-            // const SizedBox(height: 16),
-            // ContainerWidget(
-            //   padding: const EdgeInsets.symmetric(horizontal: 24),
-            //   backgroundColor: XColors.containerColor(),
-            //   borderRadius: BorderRadius.circular(20),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       NormalText(
-            //         text: model.temperature,
-            //         fontSize: 28,
-            //         fontWeight: FontWeight.w600,
-            //         textColor: XColors.black(),
-            //       ),
-            //       Container(
-            //         height: 60,
-            //         width: 2,
-            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
-            //       ),
-            //       const GetSvgImage(
-            //           image: 'assets/images/meteocons_sun-hot.svg'),
-            //       Container(
-            //         height: 60,
-            //         width: 2,
-            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
-            //       ),
-            //       const GetSvgImage(image: 'assets/images/bi_cloud-sun.svg'),
-            //       Container(
-            //         height: 60,
-            //         width: 2,
-            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
-            //       ),
-            //       NormalText(
-            //         text: model.weatherCondition,
-            //         fontSize: 16,
-            //         fontWeight: FontWeight.w500,
-            //         textColor: XColors.black().withOpacity(0.8),
-            //       ),
-            //       Container(
-            //         height: 60,
-            //         width: 2,
-            //         color: const Color(0xFFF0E8F8).withOpacity(0.9),
-            //       ),
-            //       NormalText(
-            //         text: model.humidity,
-            //         fontSize: 16,
-            //         fontWeight: FontWeight.w500,
-            //         textColor: XColors.black().withOpacity(0.8),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

@@ -105,11 +105,11 @@ class HomeViewModel extends BaseViewModel {
   ];
 
   Map<String, dynamic> budgetData = {};
-  String? date = '';
+  Map<String, dynamic>? lastBudget;
+  LastBudget? lastBudgetModel;
 
   int? currentTotalSpent = 0;
   int? currentBudgetViewIndex = 0;
-  int? currentBudgetTypeIndex = 0;
 
   List<Fueling>? fueling = [];
   List<Servicing>? servicing = [];
@@ -120,9 +120,13 @@ class HomeViewModel extends BaseViewModel {
   bool? locationDeclined = false;
 
   CurrentView? currentViewState = CurrentView.cars;
-  String? currentWeatherValue = '0.0';
+  String? currentWeatherValue = '0';
   String? currentWeatherDescription = 'No weather';
   String? weatherGuideDescription = '';
+
+  String? totalMileage = '0';
+  String? totalMileageUnit = 'km';
+  String? lastDistance = '0';
 
   int currentSetBudget = 0;
 
@@ -174,12 +178,34 @@ class HomeViewModel extends BaseViewModel {
         currentFuelPrice = fuelData!.payload!.toInt().toString();
       }
 
+      lastBudget = budgetingService.lastBudget;
+      if(lastBudget != null) {
+
+        var isFuture = budgetingService.isFutureSpending(date: lastBudget!["data"]["date"]);
+
+        lastBudgetModel = LastBudget.fromJson({
+          ...lastBudget!["data"],
+          "budget_type" : lastBudget!["dataType"],
+          "is_future_budget" : isFuture,
+        });
+
+        print(lastBudgetModel?.toJson().toString());
+      }
+
       onBudgetViewUpdated(0);
       setBusyForObject('home-loading', false);
 
     }
 
     notifyListeners();
+  }
+
+  String checkListStatus({int? index}) {
+
+    budgetingService.currentBudgetIndex = index;
+    budgetingService.getCurrentTotalValue(index: index);
+
+    return budgetingService.getCheckListStatus();
   }
 
   List<ReminderPayload> getReminderLists() {
@@ -199,7 +225,7 @@ class HomeViewModel extends BaseViewModel {
 
       if(userService.weatherData != null) {
 
-        currentWeatherValue = userService.weatherData!.payload!.tempMax!.toString();
+        currentWeatherValue = userService.weatherData!.payload!.tempMax!.toInt().toString();
         currentWeatherDescription = userService.weatherData!.payload!.description;
         weatherGuideDescription = userService.weatherData!.payload!.weatherDriveInstruction;
 
@@ -250,6 +276,7 @@ class HomeViewModel extends BaseViewModel {
 
     totalCostingAndValue = budgetingService.totalCostingAndValue;
     currentTotalSpent = budgetingService.currentTotalSpent;
+
     notifyListeners();
 
     if(budgetingModel!.budget!.isNotEmpty) {
@@ -260,8 +287,11 @@ class HomeViewModel extends BaseViewModel {
       salesService.currentCarMake = currentCar!.carMake!;
       currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
       budgetingService.currentCar = currentCar;
-      notifyListeners();
 
+      totalMileage = budgetingService.currentMileage;
+      lastDistance = budgetingService.lastTraveled;
+
+      notifyListeners();
       getChecklistDataModel();
 
     }
@@ -276,7 +306,6 @@ class HomeViewModel extends BaseViewModel {
   }
 
   void updateBudgetTypeIndex({int? v}) {
-    currentBudgetTypeIndex = v;
 
     fueling = budgetingModel!.budget![currentBudgetViewIndex!].fueling!.reversed.toList();
     servicing = budgetingModel!.budget![currentBudgetViewIndex!].servicing!.reversed.toList();
@@ -298,7 +327,6 @@ class HomeViewModel extends BaseViewModel {
     addressInputController.clear();
 
     budgetData = {};
-    date = '';
     notifyListeners();
   }
 
@@ -345,6 +373,12 @@ class HomeViewModel extends BaseViewModel {
       }
       setBusy(false);
     });
+  }
+
+  bool? openCarSpecsView = false;
+  void setCarSpecsView({bool? shouldOpen}) {
+    openCarSpecsView = !openCarSpecsView!;
+    notifyListeners();
   }
 
   void updateBudgetData({String? value, String? type}) {
@@ -411,23 +445,63 @@ class HomeViewModel extends BaseViewModel {
 
   }
 
+  FuelMileageData getFuelMileageDate({int? index}) {
+
+    budgetingService.currentBudgetIndex = index;
+    budgetingService.getCurrentTotalValue(index: index);
+
+    return FuelMileageData(
+      currentMileage: budgetingService.currentMileage,
+      lastTraveled: budgetingService.lastTraveled,
+      lastDateTrip: budgetingService.lastDateTrip,
+      totalMileage: budgetingService.totalMileage,
+      fuelEfficiency: budgetingService.fuelEfficiency,
+      lastRefuelAmount: budgetingService.lastRefuelAmount,
+      lastRefuelDate: budgetingService.lastRefuelDate,
+    );
+  }
+
   void getLocationUpdate() {
+    PermissionUtil().isLocationServiceAndPermissionsActive().then((value) {
+      if (value == false) {
+        PermissionUtil.requestPermission(Permission.location).then((value) {
 
-    Geolocator.getLastKnownPosition().then((Position? position) async {
-      currentPosition = position;
-      if(currentPosition != null) {
-        weatherSetup();
+          Future.delayed(const Duration(seconds: 2), () {
+
+            Geolocator.getLastKnownPosition().then((Position? position) async {
+              currentPosition = position;
+              if(currentPosition != null) {
+                weatherSetup();
+              }
+            });
+          });
+
+        });
       }
-    });
 
+      if(value == true) {
+
+        Future.microtask(() {
+
+          Geolocator.getLastKnownPosition().then((Position? position) async {
+            currentPosition = position;
+            if(currentPosition != null) {
+              weatherSetup();
+            }
+          });
+        });
+
+      }
+
+    });
   }
 
   Future logOut() async {
     await persistentService.deleteAll();
   }
 
-
 }
+
 class CheckList{
   final String title;
   bool isChecked;

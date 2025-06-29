@@ -493,3 +493,68 @@ class MileageDatum {
     "_id": id,
   };
 }
+
+class LastBudget {
+  String? date;
+  String? condition;
+  String? gasLocationAddress;
+  String? shopLocationAddress;
+  bool? isFutureBudget;
+  int? price;
+  int? gasPrice;
+  String? sId;
+  String? budgetType;
+
+  LastBudget({this.date, this.condition, this.gasLocationAddress, this.price, this.sId, this.shopLocationAddress, this.gasPrice, this.budgetType});
+
+  LastBudget copy({ String? date,
+        String? condition,
+        String? gasLocationAddress,
+        String? shopLocationAddress,
+        bool? isFutureBudget,
+        int? price,
+        int? gasPrice,
+        String? sId,
+        String? budgetType,
+  }) {
+
+    date = this.date ?? date;
+    condition = this.condition ?? condition;
+    gasLocationAddress = this.gasLocationAddress ?? gasLocationAddress;
+    price = this.price ?? price;
+    gasPrice = this.gasPrice ?? gasPrice;
+    shopLocationAddress = this.shopLocationAddress ?? shopLocationAddress;
+    sId = this.sId ?? sId;
+    budgetType = this.budgetType ?? budgetType;
+    isFutureBudget = this.isFutureBudget ?? isFutureBudget;
+
+    return this;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['date'] = date;
+    data['condition'] = condition;
+    data['gas_station_address'] = gasLocationAddress;
+    data['shop_address'] = shopLocationAddress;
+    data['price'] = price;
+    data['price_per_liter'] = gasPrice;
+    data['_id'] = sId;
+    data['budget_type'] = budgetType;
+    data['is_future_budget'] = isFutureBudget;
+    return data;
+  }
+
+  LastBudget.fromJson(Map<String, dynamic> json) {
+    date = json['date'];
+    condition = json['condition'];
+    gasLocationAddress = json['gas_station_address'];
+    sId = json['_id'];
+    shopLocationAddress = json['shop_address'];
+    price = json['price'];
+    gasPrice = json['price_per_liter'];
+    budgetType = json['budget_type'];
+    isFutureBudget = json['is_future_budget'];
+  }
+
+}

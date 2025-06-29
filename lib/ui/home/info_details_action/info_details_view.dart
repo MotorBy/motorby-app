@@ -28,7 +28,8 @@ class InfoDetailsView extends StatelessWidget {
     this.currentIndex,
     this.onHistoryNav,
     this.onBudgetAction,
-    this.onPermissionAction
+    this.onPermissionAction,
+    this.isFromQuickActions = false,
   });
 
   final InfoType? infoType;
@@ -36,6 +37,7 @@ class InfoDetailsView extends StatelessWidget {
   final Function? onHistoryNav;
   final Function? onBudgetAction;
   final Function? onPermissionAction;
+  final bool? isFromQuickActions;
 
   final InfoDetailsViewModel? infoDetailsViewModel;
 
@@ -46,84 +48,133 @@ class InfoDetailsView extends StatelessWidget {
         disposeViewModel: false,
         onViewModelReady: (model) => model.initializeTotalCostingAndValue(),
         builder: (context, viewModel, child) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              if(infoType == InfoType.empty || infoType == InfoType.fueling) ... [
 
-                FuelBudgetView(
-                  infoType: infoType,
-                  infoDetailsViewModel: viewModel,
-                  onBudgetAction: onBudgetAction,
-                )
+          if(isFromQuickActions != true) {
+            return InfoBodyView(
+              infoType: infoType,
+              currentIndex: currentIndex,
+              onHistoryNav: onHistoryNav,
+              onBudgetAction: onBudgetAction,
+              onPermissionAction: onPermissionAction,
+            );
+          }
 
-              ] else if(infoType == InfoType.servicing || infoType == InfoType.repairing) ... [
-
-                ServiceRepairBudgetView(
-                  infoType: infoType,
-                  infoDetailsViewModel: viewModel,
-                  onBudgetAction: onBudgetAction,
-                ),
-
-              ] else if(infoType == InfoType.mileage) ... [
-
-                MileageInputView(
-                  infoType: infoType,
-                  infoDetailsViewModel: viewModel,
-                  currentIndex: currentIndex,
-                  onBudgetAction: onBudgetAction,
-                ),
-
-              ] else if(infoType == InfoType.breakdown) ... [
-
-                BreakdownInputView(
-                  infoType: infoType,
-                  infoDetailsViewModel: viewModel,
-                  currentIndex: currentIndex,
-                  onBudgetAction: onBudgetAction,
-                ),
-
-              ] else if(infoType == InfoType.fuelUpdate) ... [
-
-                FuelPricingInputView(
-                  infoDetailsViewModel: viewModel,
-                  onBudgetAction: onBudgetAction,
-                ),
-
-              ] else if(infoType == InfoType.weatherView) ... [
-
-                WeatherInfoView(
-                  infoDetailsViewModel: viewModel,
-                ),
-
-              ] else if(infoType == InfoType.locationSetup) ... [
-
-                PermissionLocationGuide(
-                  infoDetailsViewModel: viewModel,
-                  onPermissionAction: onPermissionAction,
-                ),
-
-              ] else if(infoType == InfoType.budgeting) ... [
-
-                BudgetingInfoView(
-                  infoDetailsViewModel: viewModel,
-                  currentIndex: currentIndex,
-                  onBudgetAction: onBudgetAction,
-                )
-
-              ] else if(infoType == InfoType.reminder) ... [
-
-                ReminderInputView(
-                  infoDetailsViewModel: viewModel,
-                  onBudgetAction: onBudgetAction,
-                )
-
-              ]
-            ],
-          ),
+          return Scaffold(
+            body: Column(
+              children: [
+                const YMargin(25),
+                InfoBodyView(
+                infoType: infoType,
+                currentIndex: currentIndex,
+                onHistoryNav: onHistoryNav,
+                onBudgetAction: onBudgetAction,
+                onPermissionAction: onPermissionAction,
+                          ),
+              ],
+            ),
         );
+
       }
+    );
+  }
+
+}
+
+class InfoBodyView extends ViewModelWidget<InfoDetailsViewModel> {
+
+  final InfoType? infoType;
+  final int? currentIndex;
+  final Function? onHistoryNav;
+  final Function? onBudgetAction;
+  final Function? onPermissionAction;
+
+  const InfoBodyView({
+    super.key,
+    this.infoType = InfoType.empty,
+    this.currentIndex,
+    this.onHistoryNav,
+    this.onBudgetAction,
+    this.onPermissionAction,
+  });
+
+  @override
+  Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          if(infoType == InfoType.empty || infoType == InfoType.fueling) ... [
+
+            FuelBudgetView(
+              infoType: infoType,
+              infoDetailsViewModel: viewModel,
+              onBudgetAction: onBudgetAction,
+            )
+
+          ] else if(infoType == InfoType.servicing || infoType == InfoType.repairing) ... [
+
+            ServiceRepairBudgetView(
+              infoType: infoType,
+              infoDetailsViewModel: viewModel,
+              onBudgetAction: onBudgetAction,
+            ),
+
+          ] else if(infoType == InfoType.mileage) ... [
+
+            MileageInputView(
+              infoType: infoType,
+              infoDetailsViewModel: viewModel,
+              currentIndex: currentIndex,
+              onBudgetAction: onBudgetAction,
+            ),
+
+          ] else if(infoType == InfoType.breakdown) ... [
+
+            BreakdownInputView(
+              infoType: infoType,
+              infoDetailsViewModel: viewModel,
+              currentIndex: currentIndex,
+              onBudgetAction: onBudgetAction,
+            ),
+
+          ] else if(infoType == InfoType.fuelUpdate) ... [
+
+            FuelPricingInputView(
+              infoDetailsViewModel: viewModel,
+              onBudgetAction: onBudgetAction,
+            ),
+
+          ] else if(infoType == InfoType.weatherView) ... [
+
+            WeatherInfoView(
+              infoDetailsViewModel: viewModel,
+            ),
+
+          ] else if(infoType == InfoType.locationSetup) ... [
+
+            PermissionLocationGuide(
+              infoDetailsViewModel: viewModel,
+              onPermissionAction: onPermissionAction,
+            ),
+
+          ] else if(infoType == InfoType.budgeting) ... [
+
+            BudgetingInfoView(
+              infoDetailsViewModel: viewModel,
+              currentIndex: currentIndex,
+              onBudgetAction: onBudgetAction,
+            )
+
+          ] else if(infoType == InfoType.reminder) ... [
+
+            ReminderInputView(
+              infoDetailsViewModel: viewModel,
+              onBudgetAction: onBudgetAction,
+            )
+
+          ]
+        ],
+      ),
     );
   }
 
@@ -284,8 +335,7 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
             if(viewModel.priceInputController.text.isNotEmpty &&
                 viewModel.amountInputController.text.isNotEmpty &&
-                viewModel.dateInputController.text.isNotEmpty &&
-                viewModel.addressInput['address'] != null) {
+                viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue().toString(),
@@ -570,8 +620,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
             if(viewModel.problemInputController.text.isNotEmpty &&
                 viewModel.amountInputController.text.isNotEmpty &&
-                viewModel.dateInputController.text.isNotEmpty &&
-                viewModel.addressInput['address'] != null) {
+                viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue(),

@@ -13,10 +13,10 @@ import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 
 class CarDocumentsScreen extends StatelessWidget {
-  const CarDocumentsScreen({Key? key, this.carId, this.isFromProfile = false}) : super(key: key);
+  const CarDocumentsScreen({Key? key, this.carId, this.showCarSelection = false}) : super(key: key);
 
   final String? carId;
-  final bool? isFromProfile;
+  final bool? showCarSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class CarDocumentsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              if(isFromProfile == true) ... [
+              if(showCarSelection == true) ... [
                 CarSelectorView(
                     cars: model.getBudgetData(),
                     currentCar: model.getCurrentCar() != null ? '${model.getCurrentCar()!.carMake} ${model.getCurrentCar()!.carModel} ${model.getCurrentCar()!.carYear}' : null,

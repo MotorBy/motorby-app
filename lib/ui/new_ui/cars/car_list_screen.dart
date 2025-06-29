@@ -36,7 +36,7 @@ class CarsListScreen extends StatelessWidget {
             appBarTitle: 'Your cars',
             actions: [
               ContainerWidget(
-                onTap: (){
+                onTap: () {
                   navigate(context, const AddCarsScreen());
                 },
                 borderColor: XColors.primaryColor2(),

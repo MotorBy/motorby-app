@@ -78,31 +78,34 @@ class CommunityScreen extends StatelessWidget {
             ],
           ),
           body: SingleChildScrollView(
-            child: Container(
-                height: MediaQuery.of(context).size.height - 130,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                  height: MediaQuery.of(context).size.height - 130,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
 
-                    ...List.generate(
-                            model.communities!.isNotEmpty ? model.communities!.length : 4,
-                          (index) => Shimmer(
-                            child: ShimmerLoading(
-                              isLoading: model.isBusy,
-                              child: _buildItem(
-                                  isLoading: model.isBusy,
-                                  context: context,
-                                  model: model,
-                                  index: index
+                      ...List.generate(
+                              model.communities!.isNotEmpty ? model.communities!.length : 4,
+                            (index) => Shimmer(
+                              child: ShimmerLoading(
+                                isLoading: model.isBusy,
+                                child: _buildItem(
+                                    isLoading: model.isBusy,
+                                    context: context,
+                                    model: model,
+                                    index: index
+                                ),
                               ),
                             ),
-                          ),
-                    ),
+                      ),
 
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+            ),
           ),
           );
       }
@@ -163,7 +166,7 @@ class CommunityScreen extends StatelessWidget {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
@@ -176,7 +179,7 @@ class CommunityScreen extends StatelessWidget {
                           Icon(
                             Icons.chat_outlined,
                             size: 16,
-                            color: XColors.primaryColor().withOpacity(0.3),
+                            color: XColors.primaryColor(),
                           ),
                           const XMargin(5),
                           GestureDetector(
@@ -197,10 +200,9 @@ class CommunityScreen extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            Icons
-                                .supervisor_account_outlined,
+                            Icons.supervisor_account_outlined,
                             size: 16,
-                            color: XColors.primaryColor().withOpacity(0.3),
+                            color: XColors.primaryColor(),
                           ),
                           const XMargin(5),
                           GestureDetector(

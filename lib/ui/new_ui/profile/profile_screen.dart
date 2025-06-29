@@ -109,30 +109,6 @@ class NewProfileScreen extends StatelessWidget {
   Widget _buildProfileHeader(ProfileViewModel model, {BuildContext? context}) {
     return Column(
       children: [
-        // Stack(
-        //   children: [
-        //     CircleAvatar(
-        //       radius: 30,
-        //       backgroundImage: AssetImage(model.profileImage),
-        //     ),
-        //     Positioned(
-        //       right: 0,
-        //       bottom: 5,
-        //       child: Container(
-        //         width: 16,
-        //         height: 16,
-        //         decoration: BoxDecoration(
-        //           color: Colors.green,
-        //           shape: BoxShape.circle,
-        //           border: Border.all(
-        //             color: Colors.white,
-        //             width: 2,
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         const SizedBox(height: 16),
         NormalText(
           text: model.user != null ? model.user!.fullname : "",
@@ -256,7 +232,7 @@ class NewProfileScreen extends StatelessWidget {
           icon: 'assets/images/auto/file.svg',
           title: 'My documents',
           onTap: (){
-            navigate(context!, const CarDocumentsScreen(isFromProfile: true,));
+            navigate(context!, const CarDocumentsScreen(showCarSelection: true,));
           },
         ),
         // const DividerWidget(),
@@ -305,6 +281,13 @@ class NewProfileScreen extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
+                    const SizedBox(height: 24),
+                  const NormalText(
+                    text: 'MotorBy is your comprehensive auto companion, designed to help you manage your vehicles, track expenses, set reminders, and stay on top of your automotive needs.',
+                    fontSize: 13,
+                    textAlign: TextAlign.center,
+                    fontWeight: FontWeight.w500,
+                  ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

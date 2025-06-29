@@ -221,13 +221,13 @@ class ReminderListView extends StatelessWidget {
                       visualDensity: const VisualDensity(horizontal: -4),
                       title: NormalText(
                         text: reminder.title ?? '',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
                         textColor: XColors.black(),
                       ),
                       subtitle: NormalText(
                         text: reminder.description ?? '',
-                        fontSize: 13,
+                        fontSize: 12,
                         textColor: XColors.textColor().withOpacity(0.6),
                       ),
                       trailing: Column(

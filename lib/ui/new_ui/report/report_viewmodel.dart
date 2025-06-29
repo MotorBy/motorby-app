@@ -19,6 +19,8 @@ class ReportViewModel extends BaseViewModel {
   String _fuelAdded = '';
   String _location = '';
 
+  bool? isBudgetSet = false;
+
   // Mileage data
   int _totalMileage = 0;
   double _fuelEfficiency = 0.0;
@@ -102,6 +104,8 @@ class ReportViewModel extends BaseViewModel {
   }
 
   Future setBudgetData({int currentIndex = 0}) async {
+    isBudgetSet = false;
+
     if(budgetingService.budgetingModel == null) {
       await budgetingService.getBudgets();
       notifyListeners();
@@ -116,8 +120,15 @@ class ReportViewModel extends BaseViewModel {
     currentSetBudget = budgetingService.currentSetBudget;
 
     _calculateMileageStats();
-
     notifyListeners();
+
+  }
+
+  List<int> getCostingAndValue({required int currentIndex}) {
+    if(budgetingService.budgetingModel != null) {
+      budgetingService.getCurrentTotalValue(index: currentIndex);
+    }
+    return budgetingService.totalCostingAndValue!;
   }
 
   void resetReport() {

@@ -39,13 +39,18 @@ class UserService {
     print(NotificationService.fcmToken);
 
     if(response.statusCode == 200 || response.statusCode == 201) {
+
       UserModel? user = UserModel.fromJson(json);
       userModel = user;
       isBusiness = userModel!.payload!.user!.userType != 'USER';
       authService.hasUser = true;
       return userModel;
+
     } else {
+
       var error = json["message"];
+      print(error);
+
       throw Exception(error);
     }
 
