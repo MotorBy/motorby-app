@@ -335,8 +335,7 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
             if(viewModel.priceInputController.text.isNotEmpty &&
                 viewModel.amountInputController.text.isNotEmpty &&
-                viewModel.dateInputController.text.isNotEmpty &&
-                viewModel.addressInput['address'] != null) {
+                viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue().toString(),
@@ -621,8 +620,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
             if(viewModel.problemInputController.text.isNotEmpty &&
                 viewModel.amountInputController.text.isNotEmpty &&
-                viewModel.dateInputController.text.isNotEmpty &&
-                viewModel.addressInput['address'] != null) {
+                viewModel.dateInputController.text.isNotEmpty) {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue(),

@@ -149,7 +149,7 @@ class MoreScreen extends StatelessWidget {
                 subtitle: 'Access and manage your vehicle documents',
                 color: Colors.green,
                 onTap: () {
-                  navigate(context, const CarDocumentsScreen(isFromProfile: true));
+                  navigate(context, const CarDocumentsScreen(showCarSelection: true));
                 },
               ),
               const YMargin(12),

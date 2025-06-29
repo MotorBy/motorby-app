@@ -232,7 +232,7 @@ class NewProfileScreen extends StatelessWidget {
           icon: 'assets/images/auto/file.svg',
           title: 'My documents',
           onTap: (){
-            navigate(context!, const CarDocumentsScreen(isFromProfile: true,));
+            navigate(context!, const CarDocumentsScreen(showCarSelection: true,));
           },
         ),
         // const DividerWidget(),

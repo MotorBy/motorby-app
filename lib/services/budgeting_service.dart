@@ -7,6 +7,7 @@ import 'dart:convert' as JSON;
 
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
+import 'package:mobile_auto_drive/services/checklist_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
@@ -154,10 +155,17 @@ class BudgetingService {
       }
     } else {
       lastRefuelDate = '';
-      lastRefuelAmount = '';
+      lastRefuelAmount = '0';
       fuelEfficiency = 0.0;
     }
 
+  }
+
+  String getCheckListStatus() {
+    if(currentBudget != null) {
+      return "${currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${currentBudget!.checklistData!.items!.length}";
+    }
+    return "0/0";
   }
 
   bool isFutureSpending({String? date}) {
@@ -234,7 +242,7 @@ class FuelMileageData {
   String? lastTraveled = "0";
   String? currentMileage = "0";
   String? lastRefuelDate = '';
-  String? lastRefuelAmount = '';
+  String? lastRefuelAmount = '0';
   double? fuelEfficiency = 0.0;
 
   FuelMileageData({

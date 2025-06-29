@@ -200,6 +200,14 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  String checkListStatus({int? index}) {
+
+    budgetingService.currentBudgetIndex = index;
+    budgetingService.getCurrentTotalValue(index: index);
+
+    return budgetingService.getCheckListStatus();
+  }
+
   List<ReminderPayload> getReminderLists() {
     if(reminderListModel != null) {
       if(reminderListModel!.data.isNotEmpty && reminderListModel!.data.length > 5) {
@@ -456,18 +464,35 @@ class HomeViewModel extends BaseViewModel {
   void getLocationUpdate() {
     PermissionUtil().isLocationServiceAndPermissionsActive().then((value) {
       if (value == false) {
-        PermissionUtil.requestPermission(Permission.location);
+        PermissionUtil.requestPermission(Permission.location).then((value) {
+
+          Future.delayed(const Duration(seconds: 2), () {
+
+            Geolocator.getLastKnownPosition().then((Position? position) async {
+              currentPosition = position;
+              if(currentPosition != null) {
+                weatherSetup();
+              }
+            });
+          });
+
+        });
       }
 
-      Future.microtask(() {
+      if(value == true) {
 
-        Geolocator.getLastKnownPosition().then((Position? position) async {
-          currentPosition = position;
-          if(currentPosition != null) {
-            weatherSetup();
-          }
+        Future.microtask(() {
+
+          Geolocator.getLastKnownPosition().then((Position? position) async {
+            currentPosition = position;
+            if(currentPosition != null) {
+              weatherSetup();
+            }
+          });
         });
-      });
+
+      }
+
     });
   }
 

@@ -218,7 +218,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildCarSpecifications(BuildContext context, {HomeViewModel? viewModel}) {
+  Widget _buildCarSpecifications(BuildContext context, {required HomeViewModel viewModel}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ContainerWidget(
@@ -234,29 +234,40 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 NormalText(
-                  text: 'Car Specifications (4)',
+                  text: 'Car Specifications',
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   textColor: XColors.textColor(),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    viewModel!.setCarSpecsView();
-                    if (viewModel.openCarSpecsView!) {
-                      _controller.forward();
-                    } else {
-                      _controller.reverse();
-                    }
-                  },
-                  child: Container(
-                    child: RotationTransition(
-                      turns: Tween(begin: 0.0, end: 0.5).animate(_animation),
-                      child: Icon(
-                        Icons.keyboard_arrow_down,
-                        color: XColors.primaryColor(),
+                Row(
+                  children: [
+                    NormalText(
+                      text: viewModel.openCarSpecsView == true ? 'Less' : 'More',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      textColor: XColors.primaryColor(),
+                    ),
+                    const XMargin(10),
+                    GestureDetector(
+                      onTap: () {
+                        viewModel.setCarSpecsView();
+                        if (viewModel.openCarSpecsView!) {
+                          _controller.forward();
+                        } else {
+                          _controller.reverse();
+                        }
+                      },
+                      child: Container(
+                        child: RotationTransition(
+                          turns: Tween(begin: 0.0, end: 0.5).animate(_animation),
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: XColors.primaryColor(),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -314,8 +325,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                       const XMargin(20),
                       Expanded(
                         child: ChecklistTileView(
-                          checkedItems: 2,
-                          totalItems: 5,
+                          checkedItems: viewModel!.checkListStatus(index: widget.currentBudgetIndex).split('/')[0] == '0' ? 0 :
+                                int.parse(viewModel.checkListStatus(index: widget.currentBudgetIndex).split('/')[0]),
+                          totalItems: viewModel.checkListStatus(index: widget.currentBudgetIndex).split('/')[1] == '0' ? 0 :
+                                int.parse(viewModel.checkListStatus(index: widget.currentBudgetIndex).split('/')[1]),
                           onCheckListScreen: () {
                             navigate(
                               context,
@@ -338,7 +351,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                         fontWeight: FontWeight.w500,
                       ),
                       NormalText(
-                        text: '${viewModel!.getFuelMileageDate(index: widget.currentBudgetIndex ?? 0).fuelEfficiency}km/L',
+                        text: '${viewModel.getFuelMileageDate(index: widget.currentBudgetIndex ?? 0).fuelEfficiency}km/L',
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       )
@@ -375,7 +388,34 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                         fontWeight: FontWeight.bold,
                       )
                     ],
-                  )
+                  ),
+                  const YMargin(20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const NormalText(
+                        text: 'Last fuel price',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            '\u20A6',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: XColors.black(),
+                                fontWeight: FontWeight.w600),
+                          ),
+                          NormalText(
+                            text: '${viewModel.getFuelMileageDate(index: widget.currentBudgetIndex ?? 0).lastRefuelAmount}',
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ],),
               ],),
             ),
@@ -445,7 +485,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                   onTap: () {
                     navigate(
                       context,
-                      CarDocumentsScreen(carId: widget.carData.sId!),
+                      CarDocumentsScreen(
+                          carId: widget.carData.sId!,
+                          showCarSelection: true
+                      ),
                     );
                   },
                   child: NormalText(

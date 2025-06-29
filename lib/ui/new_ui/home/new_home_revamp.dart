@@ -139,119 +139,179 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                 ),
                               ),
 
-                              ///current car body details
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 13.0),
-                                child: ContainerWidget(
-                                  backgroundColor: XColors.secondaryColor().withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(16),
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (viewModel.budgetingModel?.budget != null && viewModel.budgetingModel!.budget!.isNotEmpty &&
-                                              viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId != null) {
-                                            navigate(context,
-                                              CarDetailsScreen(
-                                                carData: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId!,
-                                                budget: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0],
-                                                currentBudgetIndex: viewModel.currentBudgetViewIndex ?? 0,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            NormalText(
-                                              text: 'View details',
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w600,
-                                              textColor: XColors.primaryColor(),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const YMargin(10),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          const GetSvgImage(
-                                            image: 'assets/images/car_place_holder.svg',
-                                            width: 60,
-                                            height: 60,
-                                          ),
-                                          const XMargin(18),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                              if(viewModel.hasAddedCar) ... [
+
+                                ///current car body summary details
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                                  child: ContainerWidget(
+                                    backgroundColor: XColors.secondaryColor().withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(16),
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (viewModel.budgetingModel?.budget != null && viewModel.budgetingModel!.budget!.isNotEmpty &&
+                                                viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId != null) {
+                                              navigate(context,
+                                                CarDetailsScreen(
+                                                  carData: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId!,
+                                                  budget: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0],
+                                                  currentBudgetIndex: viewModel.currentBudgetViewIndex ?? 0,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      const NormalText(
-                                                        text: 'Checklist',
-                                                        fontSize: 12,
-                                                        textColor: Colors.grey,
-                                                      ),
-                                                      const XMargin(8),
-                                                      NormalText(
-                                                        text: viewModel.hasAddedCar
-                                                            ? '${viewModel.currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${viewModel.currentBudget!.checklistData!.items!.length}'
-                                                            : '0/0',
-                                                        fontSize: 13,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const YMargin(5),
-                                                  Row(
-                                                    children: [
-                                                      const NormalText(
-                                                        text: 'Last traveled',
-                                                        fontSize: 12,
-                                                        textColor: Colors.grey,
-                                                      ),
-                                                      const XMargin(8),
-                                                      NormalText(
-                                                        text: '${viewModel.lastDistance} ${viewModel.totalMileageUnit}',
-                                                        fontSize: 13,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const YMargin(5),
-                                                  Row(
-                                                    children: [
-                                                      const NormalText(
-                                                        text: 'Mileage',
-                                                        fontSize: 12,
-                                                        textColor: Colors.grey,
-                                                      ),
-                                                      const XMargin(8),
-                                                      NormalText(
-                                                        text: '${viewModel.totalMileage} ${viewModel.totalMileageUnit}',
-                                                        fontSize: 13,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
+                                              NormalText(
+                                                text: 'View details',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                textColor: XColors.primaryColor(),
                                               ),
                                             ],
                                           ),
-                                        ],
-                                      ),
-                                    ],
+                                        ),
+                                        const YMargin(15),
+                                        // Car Images Grid
+                                        Row(
+                                          children: [
+
+                                            if(viewModel.currentBudget!.carId!.images!.isNotEmpty) ... [
+                                              SizedBox(
+                                                height: 80,
+                                                width: 120,
+                                                child: GridView.count(
+                                                  crossAxisCount: 2,
+                                                  mainAxisSpacing: 1,
+                                                  crossAxisSpacing: 1,
+                                                  childAspectRatio: 1.2,
+                                                  physics: const NeverScrollableScrollPhysics(),
+                                                  children: [
+                                                    ...List.generate(
+                                                      viewModel.currentBudget!.carId!.images!.length, (imgIndex) => ClipRRect(
+                                                      borderRadius: BorderRadius.circular(4),
+                                                      child: Image.network(
+                                                        viewModel.currentBudget!.carId!.images![imgIndex],
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ] else ... [
+                                              const GetSvgImage(
+                                                image: 'assets/images/car_place_holder.svg',
+                                                width: 60,
+                                                height: 60,
+                                              )
+                                            ],
+
+                                            const XMargin(15),
+                                            Expanded(
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.5),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        NormalText(
+                                                          text: 'Checklist',
+                                                          fontSize: 13,
+                                                          textColor: XColors.textColor(),
+                                                        ),
+                                                        const XMargin(8),
+                                                        NormalText(
+                                                          text: viewModel.hasAddedCar
+                                                              ? '${viewModel.currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${viewModel.currentBudget!.checklistData!.items!.length}'
+                                                              : '0/0',
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const YMargin(8),
+                                                    Row(
+                                                      children: [
+                                                        NormalText(
+                                                          text: 'Last traveled',
+                                                          fontSize: 13,
+                                                          textColor: XColors.textColor(),
+                                                        ),
+                                                        const XMargin(8),
+                                                        NormalText(
+                                                          text: '${viewModel.lastDistance} ${viewModel.totalMileageUnit}',
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const YMargin(8),
+                                                    Row(
+                                                      children: [
+                                                        NormalText(
+                                                          text: 'Mileage',
+                                                          fontSize: 13,
+                                                          textColor: XColors.textColor(),
+                                                        ),
+                                                        const XMargin(8),
+                                                        NormalText(
+                                                          text: '${viewModel.totalMileage} ${viewModel.totalMileageUnit}',
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+
+                                          ],
+                                        ),
+
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
+
+                              ] else ... [
+
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                                  child: ContainerWidget(
+                                    backgroundColor: XColors.secondaryColor().withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(16),
+                                    padding: const EdgeInsets.all(10),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          NormalText(
+                                            text: 'No cars added yet',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            textColor: XColors.black(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+
+                              ],
 
                               const YMargin(24),
                               Padding(
