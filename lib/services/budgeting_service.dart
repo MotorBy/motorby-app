@@ -8,6 +8,7 @@ import 'dart:convert' as JSON;
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
+import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 
 class BudgetingService {
@@ -29,6 +30,9 @@ class BudgetingService {
   String? lastDateTrip = "";
   String? lastTraveled = "0";
   String? currentMileage = "0";
+  String? lastRefuelDate = '';
+  String? lastRefuelAmount = '';
+  double? fuelEfficiency = 0.0;
 
   List<int>? totalCostingAndValue = [
     0,
@@ -90,6 +94,7 @@ class BudgetingService {
       }
 
       getMileageData();
+      getFuelingData();
 
     }
 
@@ -110,7 +115,9 @@ class BudgetingService {
       lastDateTrip = lastTrip.inputDate?.toString().split(' ')[0] ?? '';
 
       if (currentBudget!.mileageData!.length > 1) {
-        final previousMileage = int.tryParse(currentBudget!.mileageData![currentBudget!.mileageData!.length - 2].odometerReading ?? '0') ?? 0;
+        final previousMileage = int.tryParse(
+            currentBudget!.mileageData![currentBudget!.mileageData!.length - 2].odometerReading ?? '0'
+        ) ?? 0;
         lastTraveled = (latestMileage - previousMileage).toString();
       } else {
         lastTraveled = "0";
@@ -121,6 +128,34 @@ class BudgetingService {
       lastDateTrip = "";
       lastTraveled = "0";
       currentMileage = "0";
+    }
+
+  }
+
+  void getFuelingData() {
+
+    if (currentBudget != null && currentBudget!.fueling!.isNotEmpty) {
+      final lastFueling = currentBudget!.fueling!.last;
+      lastRefuelDate = lastFueling.date ?? '';
+      lastRefuelAmount = amtFormatter(lastFueling.price);
+
+      if (currentBudget!.mileageData != null && currentBudget!.mileageData!.length > 1) {
+        final totalDistance = int.parse(totalMileage!);
+        double totalLiters = 0.0;
+
+        for (var fuel in currentBudget!.fueling!) {
+          if (fuel.price != null && fuel.pricePerLiter != null && fuel.pricePerLiter! > 0) {
+            totalLiters += fuel.price! / fuel.pricePerLiter!;
+          }
+        }
+        if (totalLiters > 0) {
+          fuelEfficiency = (totalDistance / totalLiters).roundToDouble(); // km/L
+        }
+      }
+    } else {
+      lastRefuelDate = '';
+      lastRefuelAmount = '';
+      fuelEfficiency = 0.0;
     }
 
   }
@@ -190,5 +225,26 @@ class BudgetingService {
     }
 
   }
+
+}
+
+class FuelMileageData {
+  String? totalMileage = "0";
+  String? lastDateTrip = "";
+  String? lastTraveled = "0";
+  String? currentMileage = "0";
+  String? lastRefuelDate = '';
+  String? lastRefuelAmount = '';
+  double? fuelEfficiency = 0.0;
+
+  FuelMileageData({
+    this.currentMileage,
+    this.lastTraveled,
+    this.lastDateTrip,
+    this.totalMileage,
+    this.fuelEfficiency,
+    this.lastRefuelAmount,
+    this.lastRefuelDate,
+  });
 
 }

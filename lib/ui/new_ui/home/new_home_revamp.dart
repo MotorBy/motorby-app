@@ -152,10 +152,12 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                       GestureDetector(
                                         onTap: () {
                                           if (viewModel.budgetingModel?.budget != null && viewModel.budgetingModel!.budget!.isNotEmpty &&
-                                              viewModel.budgetingModel!.budget![0].carId != null) {
+                                              viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId != null) {
                                             navigate(context,
                                               CarDetailsScreen(
-                                                carData: viewModel.budgetingModel!.budget![0].carId!,
+                                                carData: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId!,
+                                                budget: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0],
+                                                currentBudgetIndex: viewModel.currentBudgetViewIndex ?? 0,
                                               ),
                                             );
                                           }
@@ -166,7 +168,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                             NormalText(
                                               text: 'View details',
                                               fontSize: 11,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                               textColor: XColors.primaryColor(),
                                             ),
                                           ],
@@ -284,12 +286,6 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                     fontWeight: FontWeight.w700,
                                     textColor: XColors.black(),
                                   ),
-                                  NormalText(
-                                    text: 'New',
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    textColor: XColors.primaryColor(),
-                                  ),
                                 ],
                               ),
                             ),
@@ -380,19 +376,38 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                              child: NormalText(
-                                text: 'Reminders',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                textColor: XColors.black(),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  NormalText(
+                                    text: 'Reminders',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    textColor: XColors.black(),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      navigate(context, const InfoDetailsView(
+                                        infoType: InfoType.reminder,
+                                        isFromQuickActions: true,
+                                      ));
+                                    },
+                                    child: NormalText(
+                                      text: 'New',
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      textColor: XColors.primaryColor(),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             Container(
-                              margin: const EdgeInsets.symmetric(vertical: 12),
+                              margin: const EdgeInsets.symmetric(vertical: 6),
                               height: 1,
                               width: double.infinity,
-                              color: const Color(0xFFD0D5DD),
+                              color: const Color(0xFFD0D5DD).withOpacity(0.5),
                             ),
                             ReminderListView(
                               reminders: viewModel.getReminderLists(),
@@ -447,7 +462,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
               child: NormalText(
                 text: 'Drive guide',
                 fontSize: 11,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 textColor: XColors.primaryColor(),
               ),
             ),

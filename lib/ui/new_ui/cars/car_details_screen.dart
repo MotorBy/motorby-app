@@ -20,8 +20,10 @@ import 'package:stacked/stacked.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final CarId carData;
+  final Budget? budget;
+  final int? currentBudgetIndex;
   
-  const CarDetailsScreen({Key? key, required this.carData}) : super(key: key);
+  const CarDetailsScreen({Key? key, required this.carData, this.budget, this.currentBudgetIndex}) : super(key: key);
 
   @override
   State<CarDetailsScreen> createState() => _CarDetailsScreenState();
@@ -36,7 +38,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
   void initState() {
     super.initState();
 
-    _controller = AnimationController(duration: const Duration(milliseconds: 700), vsync: this);
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 700),
+        vsync: this
+    );
 
     _animation = CurvedAnimation(
       parent: _controller,
@@ -208,7 +213,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                 ],
               ),
             ),
-          );
+    );
   }
 
   Widget _buildCarSpecifications(BuildContext context, {HomeViewModel? viewModel}) {
@@ -299,9 +304,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
 
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: MileageTileView(
-                          totalMileage: "346576",
+                          totalMileage: widget.carData.details?.mileage!.toString() ?? "N/A",
                         ),
                       ),
                       const XMargin(20),
@@ -322,48 +327,48 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                     ],
                   ),
                   const YMargin(20),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      NormalText(
+                      const NormalText(
                         text: 'Fuel efficiency',
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                       NormalText(
-                        text: '5.0km/L',
+                        text: '${viewModel!.getFuelMileageDate(index: widget.currentBudgetIndex ?? 0).fuelEfficiency}km/L',
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       )
                     ],
                   ),
                   const YMargin(20),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      NormalText(
+                      const NormalText(
                         text: 'Transmission',
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                       NormalText(
-                        text: 'Automatic',
+                        text: widget.carData.details?.gear?.toString() ?? "N/A",
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       )
                     ],
                   ),
                   const YMargin(20),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      NormalText(
+                      const NormalText(
                         text: 'Last distance traveled',
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                       NormalText(
-                        text: '20km',
+                        text: '${viewModel.getFuelMileageDate(index: widget.currentBudgetIndex ?? 0).lastTraveled}km',
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       )

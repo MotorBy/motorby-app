@@ -254,15 +254,15 @@ class MoreScreen extends StatelessWidget {
           //     // Navigate to settings
           //   },
           // ),
-          _buildMenuItem(
-            icon: 'assets/images/user_.svg',
-            title: 'Log Out',
-            subtitle: 'Sign out of your account securely',
-            textColor: Colors.red,
-            onTap: () {
-              _showLogoutDialog(context, model);
-            },
-          ),
+          // _buildMenuItem(
+          //   icon: 'assets/images/user_.svg',
+          //   title: 'Log Out',
+          //   subtitle: 'Sign out of your account securely',
+          //   textColor: Colors.red,
+          //   onTap: () {
+          //     _showLogoutDialog(context, model);
+          //   },
+          // ),
         ],
       ),
     );
@@ -403,51 +403,6 @@ class MoreScreen extends StatelessWidget {
           ),
       ),
     ));
-  }
-
-  Widget _buildDivider() {
-    return Container(
-      height: 1,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      color: Colors.grey[200],
-    );
-  }
-
-  void _showAboutDialog(BuildContext context) {
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            NormalText(
-              text: 'About MotorBy',
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-            YMargin(16),
-            NormalText(
-              text: 'MotorBy is your comprehensive automotive companion, designed to help you manage your vehicles, track expenses, set reminders, and stay on top of your automotive needs.',
-              fontSize: 16,
-              textAlign: TextAlign.center,
-              textColor: Colors.grey,
-            ),
-            YMargin(24),
-            NormalText(
-              text: '© 2024 MotorBy. All rights reserved.',
-              fontSize: 14,
-              textColor: Colors.grey,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showLogoutDialog(BuildContext context, MoreViewModel model) {

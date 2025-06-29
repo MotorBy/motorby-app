@@ -5,7 +5,6 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
@@ -21,6 +20,8 @@ import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
+import 'package:mobile_auto_drive/utils/permission_handling.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 
 enum CurrentView {
@@ -109,7 +110,6 @@ class HomeViewModel extends BaseViewModel {
 
   int? currentTotalSpent = 0;
   int? currentBudgetViewIndex = 0;
-  int? currentBudgetTypeIndex = 0;
 
   List<Fueling>? fueling = [];
   List<Servicing>? servicing = [];
@@ -284,7 +284,6 @@ class HomeViewModel extends BaseViewModel {
       lastDistance = budgetingService.lastTraveled;
 
       notifyListeners();
-
       getChecklistDataModel();
 
     }
@@ -299,7 +298,6 @@ class HomeViewModel extends BaseViewModel {
   }
 
   void updateBudgetTypeIndex({int? v}) {
-    currentBudgetTypeIndex = v;
 
     fueling = budgetingModel!.budget![currentBudgetViewIndex!].fueling!.reversed.toList();
     servicing = budgetingModel!.budget![currentBudgetViewIndex!].servicing!.reversed.toList();
@@ -439,15 +437,38 @@ class HomeViewModel extends BaseViewModel {
 
   }
 
+  FuelMileageData getFuelMileageDate({int? index}) {
+
+    budgetingService.currentBudgetIndex = index;
+    budgetingService.getCurrentTotalValue(index: index);
+
+    return FuelMileageData(
+      currentMileage: budgetingService.currentMileage,
+      lastTraveled: budgetingService.lastTraveled,
+      lastDateTrip: budgetingService.lastDateTrip,
+      totalMileage: budgetingService.totalMileage,
+      fuelEfficiency: budgetingService.fuelEfficiency,
+      lastRefuelAmount: budgetingService.lastRefuelAmount,
+      lastRefuelDate: budgetingService.lastRefuelDate,
+    );
+  }
+
   void getLocationUpdate() {
-
-    Geolocator.getLastKnownPosition().then((Position? position) async {
-      currentPosition = position;
-      if(currentPosition != null) {
-        weatherSetup();
+    PermissionUtil().isLocationServiceAndPermissionsActive().then((value) {
+      if (value == false) {
+        PermissionUtil.requestPermission(Permission.location);
       }
-    });
 
+      Future.microtask(() {
+
+        Geolocator.getLastKnownPosition().then((Position? position) async {
+          currentPosition = position;
+          if(currentPosition != null) {
+            weatherSetup();
+          }
+        });
+      });
+    });
   }
 
   Future logOut() async {

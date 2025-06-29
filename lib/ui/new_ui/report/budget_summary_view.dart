@@ -147,7 +147,7 @@ class _BudgetSummaryViewState extends State<BudgetSummaryView> {
                       child: NormalText(
                         text: 'update',
                         fontSize: 11,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         textColor: XColors.primaryColor(),
                       ),
                     ),
@@ -261,13 +261,11 @@ class _BudgetSummaryViewState extends State<BudgetSummaryView> {
           ),
         ),
         const SizedBox(width: 4),
-        Text(
-          '$name (${percentage.toStringAsFixed(1)}%)',
-          style: TextStyle(
-            fontSize: 10,
-            color: XColors.black().withOpacity(0.7),
-            fontWeight: FontWeight.w600,
-          ),
+        NormalText(
+          text: '$name (${percentage.toStringAsFixed(1)}%)',
+          fontSize: 11,
+          textColor: XColors.black(),
+          fontWeight: FontWeight.w500,
         ),
       ],
     );

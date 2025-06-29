@@ -119,7 +119,7 @@ class ReportViewModel extends BaseViewModel {
     currentTotalSpent = budgetingService.currentTotalSpent;
     currentSetBudget = budgetingService.currentSetBudget;
 
-    //_calculateMileageStats();
+    _calculateMileageStats();
     notifyListeners();
 
   }

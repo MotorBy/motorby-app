@@ -179,7 +179,7 @@ class CommunityScreen extends StatelessWidget {
                           Icon(
                             Icons.chat_outlined,
                             size: 16,
-                            color: XColors.primaryColor().withOpacity(0.3),
+                            color: XColors.primaryColor(),
                           ),
                           const XMargin(5),
                           GestureDetector(
@@ -200,10 +200,9 @@ class CommunityScreen extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            Icons
-                                .supervisor_account_outlined,
+                            Icons.supervisor_account_outlined,
                             size: 16,
-                            color: XColors.primaryColor().withOpacity(0.3),
+                            color: XColors.primaryColor(),
                           ),
                           const XMargin(5),
                           GestureDetector(

@@ -151,7 +151,7 @@ class InfoDetailsViewModel extends BaseViewModel {
 
   }
 
-  void promoteLocationPermission ({bool? willDecline = false}) {
+  void promoteLocationPermission ({bool? willDecline = false, Function? onCallback}) {
 
     if(willDecline == false) {
 
