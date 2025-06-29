@@ -265,7 +265,7 @@ class _BudgetSummaryViewState extends State<BudgetSummaryView> {
           text: '$name (${percentage.toStringAsFixed(1)}%)',
           fontSize: 11,
           textColor: XColors.black(),
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
         ),
       ],
     );

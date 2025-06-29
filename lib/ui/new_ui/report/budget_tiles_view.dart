@@ -14,14 +14,20 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class BudgetTilesView extends StatelessWidget {
-  const BudgetTilesView({super.key});
+
+  final int? budgetCurrentIndex;
+
+  const BudgetTilesView({
+    super.key,
+    this.budgetCurrentIndex
+  });
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ReportViewModel>.reactive(
         viewModelBuilder: () => ReportViewModel(),
         disposeViewModel: false,
-        onViewModelReady: (model) => model.setBudgetData(currentIndex: 0),
+        onViewModelReady: (model) => model.setBudgetData(currentIndex: budgetCurrentIndex ?? 0),
         builder: (context, model, child) {
 
           final List<String> budgetIcon = [

@@ -96,7 +96,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                             ),
                           ],
                         ),
-                        const BudgetTilesView(),
+                        BudgetTilesView(
+                            budgetCurrentIndex: widget.currentBudgetIndex
+                        ),
                       ],
                     ),
                   ),
@@ -449,7 +451,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                   child: NormalText(
                     text: 'View All',
                     fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     textColor: XColors.primaryColor(),
                   ),
                 ),

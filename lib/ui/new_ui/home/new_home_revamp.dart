@@ -282,7 +282,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                 children: [
                                   NormalText(
                                     text: 'Recent budget',
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     textColor: XColors.black(),
                                   ),
@@ -382,7 +382,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                 children: [
                                   NormalText(
                                     text: 'Reminders',
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     textColor: XColors.black(),
                                   ),
@@ -416,7 +416,6 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
