@@ -134,7 +134,7 @@ class MoreScreen extends StatelessWidget {
           Column(
             children: [
               _buildQuickActionCard(
-                icon: 'assets/images/auto/card.svg',
+                icon: 'assets/images/new_car.svg',
                 title: 'My Cars',
                 subtitle: 'Manage your vehicles and track maintenance',
                 color: Colors.blue,
