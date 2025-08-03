@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_details_screen.dart';
@@ -10,6 +11,7 @@ import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_summary_view.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
+import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -187,27 +189,80 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                               SingleChildScrollView(
                                                 scrollDirection: Axis.horizontal,
                                                 child: Row(
-                                                  spacing: 3.5,
                                                   children: [
                                                     ...List.generate(
-                                                      viewModel.currentBudget!.carId!.images!.length, (imgIndex) => ClipRRect(
-                                                      borderRadius: BorderRadius.circular(4),
-                                                      child: Image.network(
-                                                        viewModel.currentBudget!.carId!.images![imgIndex],
-                                                        fit: BoxFit.cover,
-                                                        height: 70,
-                                                      ),
-                                                    ),
-                                                    )
-                                                ],),
+                                                      viewModel.currentBudget!.carId!.images!.length,
+                                                          (imgIndex) => Padding(
+                                                        padding: const EdgeInsets.all(3.0),
+                                                        child: Container(
+                                                          width: 90,
+                                                          height: 70,
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.black.withOpacity(0.1),
+                                                            borderRadius: BorderRadius.circular(16),
+                                                          ),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.circular(16),
+                                                            child: Image.network(
+                                                              viewModel.currentBudget!.carId!.images![imgIndex],
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),)
+                                                  ],
+                                                ),
                                               ),
 
                                             ] else ... [
 
-                                              const GetSvgImage(
-                                                image: 'assets/images/car_place_holder.svg',
-                                                width: 60,
-                                                height: 60,
+                                              Column(
+                                                children: [
+                                                  const GetSvgImage(
+                                                    image: 'assets/images/car_place_holder.svg',
+                                                    width: 60,
+                                                    height: 60,
+                                                  ),
+                                                  const YMargin(12),
+                                                  GestureDetector(
+                                                    onTap: () {
+
+                                                      navigate(context,
+                                                          AddCarsScreen(
+                                                            action: "edit",
+                                                            currentCar: viewModel.currentBudget!.carId,
+                                                          )
+                                                      );
+
+                                                    },
+                                                    child: Container(
+                                                      width: 180,
+                                                      decoration: BoxDecorators.containerDecoration(
+                                                          hasOutline: true,
+                                                          outlineWidth: 1,
+                                                          radius: 32,
+                                                          outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                                      ),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(8.0),
+                                                        child: Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            NormalText(
+                                                              text: 'Add car Images',
+                                                              textColor: XColors.black().withOpacity(0.5),
+                                                              fontWeight: FontWeight.w700,
+                                                              fontSize: 12,
+                                                            ),
+                                                            const XMargin(5),
+                                                            Icon(Icons.add, size: 17, color: XColors.primaryColor(),),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
                                               )
 
                                             ],

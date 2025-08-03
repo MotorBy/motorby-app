@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
@@ -8,6 +9,7 @@ import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.da
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_tiles_view.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -70,7 +72,50 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildCarImageSlider(context: context),
-                const YMargin(20),
+                const YMargin(10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+
+                        navigate(context,
+                            AddCarsScreen(
+                              action: "edit",
+                              currentCar: widget.carData,
+                            )
+                        );
+
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        decoration: BoxDecorators.containerDecoration(
+                          hasOutline: true,
+                          outlineWidth: 2,
+                          radius: 26,
+                          outlineColor:
+                          Colors.transparent,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            NormalText(
+                              text: 'edit car',
+                              textColor: XColors.black().withOpacity(0.5),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                            const XMargin(10),
+                            Icon(Icons.edit, size: 17, color: XColors.primaryColor(),),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const XMargin(16),
+                  ],
+                ),
+                const YMargin(10),
                 _buildCarSpecifications(
                     context,
                     viewModel: viewModel
