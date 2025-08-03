@@ -43,6 +43,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
         vsync: this
     );
 
+    _controller.forward();
+
     _animation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
@@ -242,7 +244,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                 Row(
                   children: [
                     NormalText(
-                      text: viewModel.openCarSpecsView == true ? 'Less' : 'More',
+                      text: viewModel.openCarSpecsView == true ? 'More' : 'Less',
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       textColor: XColors.primaryColor(),
@@ -252,9 +254,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                       onTap: () {
                         viewModel.setCarSpecsView();
                         if (viewModel.openCarSpecsView!) {
-                          _controller.forward();
-                        } else {
                           _controller.reverse();
+                        } else {
+                          _controller.forward();
                         }
                       },
                       child: Container(

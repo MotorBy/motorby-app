@@ -154,22 +154,3 @@ class XButton extends StatelessWidget {
     }
   }
 }
-
-Widget button() {
-  return OutlinedButton(
-    style: OutlinedButton.styleFrom(
-      minimumSize: Size(300, 56),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-        side: BorderSide(color: Colors.white.withOpacity(0.4), width: 1),
-      ),
-    ),
-    child: NormalText(
-      text: 'Continue',
-      textColor: Colors.white,
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    ),
-    onPressed: () {},
-  );
-}

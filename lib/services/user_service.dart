@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:mobile_auto_drive/models/car_makers_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/models/weather_data.dart';
@@ -26,6 +27,7 @@ class UserService {
   bool? isBusiness;
   WeatherData? weatherData;
   FuelData? fuelData;
+  CarMakersModel? carMakersModel;
 
   Future getUsers() async {
 
@@ -98,6 +100,22 @@ class UserService {
     } else {
       var error = json["message"];
       throw Exception(error);
+    }
+
+  }
+
+  Future getCarMakers() async {
+
+    var response = await http.get(Uri.parse(APIService.getCarMakers),
+        headers: APIHelper().requestHeadersWithToken());
+
+    final json = JSON.jsonDecode(response.body);
+
+    print(json.toString());
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+      CarMakersModel? carMakers = CarMakersModel.fromJson(json);
+      carMakersModel = carMakers;
     }
 
   }

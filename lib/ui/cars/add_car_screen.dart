@@ -41,7 +41,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(8),
@@ -50,14 +50,14 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
         child: Column(
           children: [
             Container(
-              height: 24,
-              width: 24,
+              height: 20,
+              width: 20,
               child: Image.asset(icon),
             ),
             const YMargin(8),
             NormalText(
               text: label,
-              fontSize: 12,
+              fontSize: 10,
               textColor: Colors.grey[600]!,
             ),
             const YMargin(4),
@@ -65,7 +65,7 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
               text: value,
               textColor: XColors.black(),
               fontWeight: FontWeight.w600,
-              fontSize: 13,
+              fontSize: 12,
             ),
           ],
         ),
@@ -185,9 +185,12 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                             context: context,
                             height: 500,
                             title: 'Car make',
-                            listString: carMakeDataList!,
+                            listString: model.carMakeLists.isNotEmpty ? model.carMakeLists : carMakeDataList!,
                             selected: (s) {
                               _carMakeController.text = s!;
+                              _carModelController.clear();
+
+                              model.setCarModels(carMaker: _carMakeController.text);
                               model.updateSetCarData(data: {'car_make': s});
                             },
                           );
@@ -206,6 +209,22 @@ class _AddCarsScreenState extends State<AddCarsScreen> {
                       onChanged: (s){
                         model.updateSetCarData(data: {'car_model': s});
                       },
+                      suffixIcon: model.carModelLists.isNotEmpty ? GestureDetector(
+                        onTap: () {
+                          listHelperPicker(
+                            context: context,
+                            height: 500,
+                            title: 'Car Models',
+                            listString: model.carModelLists,
+                            selected: (s) {
+                              _carModelController.text = s!;
+                              model.setSelectedModel(model: s);
+                              model.updateSetCarData(data: {'car_model': s});
+                            },
+                          );
+                        },
+                        child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
+                      ) : null,
                     ),
                     const YMargin(15),
                     MainInputField(

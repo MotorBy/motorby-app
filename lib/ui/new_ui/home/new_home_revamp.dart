@@ -47,7 +47,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
               color: Colors.white,
               isDismissible: false,
               context: context,
-              height: 450,
+              height: 470,
               child: InfoDetailsView(
                 infoType: InfoType.locationSetup,
                 onPermissionAction: () {
@@ -177,7 +177,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                           ),
                                         ),
 
-                                        const YMargin(5),
+                                        const YMargin(15),
 
                                         Column(
                                           children: [

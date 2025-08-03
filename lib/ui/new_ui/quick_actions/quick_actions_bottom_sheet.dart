@@ -183,7 +183,7 @@ class QuickActionsBottomSheet extends StatelessWidget {
                           svgImage: 'assets/images/reminder_action.svg',
                           iconColor: Colors.white,
                           iconBgColor: const Color(0xFF004D1F),
-                          label: 'Add Reminder',
+                          label: 'Reminders',
                           value: '${model.totalReminderSet} reminder(s)',
                           onTap: () {
                             navigate(context, const InfoDetailsView(
@@ -222,7 +222,6 @@ class QuickActionsBottomSheet extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              const YMargin(5),
               Column(
                 children: [
                   Container(
@@ -251,15 +250,15 @@ class QuickActionsBottomSheet extends StatelessWidget {
                   const YMargin(6),
                   NormalText(
                     text: label,
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ],
               ),
-              const YMargin(8),
+              const YMargin(6),
               NormalText(
                 text: value,
-                fontSize: 12,
+                fontSize: 11,
                 textColor: XColors.textColor(),
               ),
             ],

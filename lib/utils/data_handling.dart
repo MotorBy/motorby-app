@@ -383,4 +383,5 @@ List<String>? carMakeDataList = [
   "Lotus",
   "Rolls-Royce",
   "SRT",
-  "Suzuki",];
+  "Suzuki",
+];

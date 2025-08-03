@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert' as JSON;
 
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_auto_drive/models/car_makers_model.dart';
 import 'package:mobile_auto_drive/models/sales_model.dart';
 import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
@@ -21,6 +22,12 @@ class AddCarViewModel extends BaseViewModel {
   bool isBusinessOrForSale = false;
   List<File> addImagesList = [];
   List<String> addedImagesUrlList = [];
+  CarMakers? carMakers;
+  Model? selectedModel;
+  String? selectedCarMaker;
+
+  List<String> carMakeLists = [];
+  List<String> carModelLists = [];
 
   List<String> vinDataLabel = [
     'Make',
@@ -48,7 +55,19 @@ class AddCarViewModel extends BaseViewModel {
     "sales_details" : {}
   };
 
-  void init({bool? forSale = false, String? initAction, Function? dataSetup}) {
+  void init({bool? forSale = false, String? initAction, Function? dataSetup}) async {
+
+    if(userService.carMakersModel == null) {
+      await getCarMakers();
+    } else {
+      carMakers = userService.carMakersModel!.payload!;
+    }
+
+    if(carMakers != null) {
+      carMakeLists = userService.carMakersModel!.payload!.cars!.map((e) => e.brand!).toList();
+    }
+
+    print(carMakeLists.toString());
 
     if(initAction != 'sell') {
       isBusinessOrForSale = false;
@@ -67,6 +86,28 @@ class AddCarViewModel extends BaseViewModel {
 
   }
 
+  List<String> setCarModels({String? carMaker}) {
+    selectedCarMaker = carMaker;
+    List<Model>? models = carMakers?.cars?.firstWhere((element) => element.brand == carMaker).models;
+    carModelLists = models?.map((e) => e.name!).toList() ?? [];
+
+    print(carModelLists.toString());
+
+    return carModelLists;
+  }
+
+  List<Model>? getCarModelsList({String? carMaker}) {
+    selectedCarMaker = carMaker;
+    return carMakers?.cars?.firstWhere((element) => element.brand == carMaker).models!;
+  }
+
+  void setSelectedModel({String? model}) {
+    Model? pickedModel = getCarModelsList(carMaker: selectedCarMaker)!.firstWhere((element) => element.name == model);
+
+    selectedModel = pickedModel;
+    notifyListeners();
+  }
+
   void setUrlImage({List<String>? urlImageList}){
     if(urlImageList != null) {
       addedImagesUrlList = urlImageList;
@@ -82,6 +123,16 @@ class AddCarViewModel extends BaseViewModel {
     }
 
     notifyListeners();
+  }
+
+  Future getCarMakers() async {
+    setBusy(true);
+    await userService.getCarMakers().then((value) {
+      setBusy(false);
+    }).onError((error, stackTrace) {
+      setBusy(false);
+    });
+
   }
 
   Future pickImages() async {
