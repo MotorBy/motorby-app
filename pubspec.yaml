@@ -27,15 +27,15 @@ dependencies:
   flutter_paystack_max:
       path: ../motorby-app/flutter_paystack_max
   http: ^1.2.0
-  image_picker: 1.0.7
-  image_cropper: 5.0.0
+  image_picker: ^1.0.7
+  image_cropper: ^8.0.0
   flutter_html: ^3.0.0
   app_links: 6.3.3
   location: 6.0.0
   geolocator: ^11.0.0
   device_info_plus: ^9.0.2
   flutter_local_notifications: ^17.1.2
-  url_launcher: 6.0.17
+  url_launcher: 6.3.3
   package_info_plus: ^8.3.0
   google_sign_in: ^6.2.1
   permission_handler: ^11.3.1
@@ -47,6 +47,9 @@ dev_dependencies:
     sdk: flutter
   intl: ^0.17.0
   flutter_lints: ^2.0.0
+
+dependency_overrides:
+  html: 0.15.4
 
 flutter:
 

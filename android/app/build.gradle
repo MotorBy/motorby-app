@@ -14,7 +14,7 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    compileSdk 35
+    compileSdk 36
     namespace "com.motorby.motorbyapp"
 
     compileOptions {
