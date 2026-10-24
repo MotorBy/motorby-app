@@ -115,6 +115,7 @@ class MainInputField extends StatelessWidget {
         this.showHint = true,
         this.isForgottenOption = false,
         this.suffixIcon,
+        this.prefix,
         this.inputFormatters})
       : assert(label != null);
 
@@ -141,6 +142,7 @@ class MainInputField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final Color? borderColor;
   final Widget? suffixIcon;
+  final Widget? prefix;
 
   final ValueNotifier<bool> hasError = ValueNotifier<bool>(false);
 
@@ -216,6 +218,8 @@ class MainInputField extends StatelessWidget {
                 )
             ),
             contentPadding: const EdgeInsets.only(bottom: 17, left: 10.0, right: 10.0, top: 17),
+            prefixIcon: prefix,
+            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
             labelText: label,
             labelStyle: TextStyle(color: XColors.textColor(), fontWeight: FontWeight.w400),
           ),
@@ -230,134 +234,6 @@ class MainInputField extends StatelessWidget {
           )
         ]
       ],
-    );
-  }
-}
-
-class XCustomInputField extends StatelessWidget {
-  const XCustomInputField(
-      {Key? key, this.controller,
-        this.currentNode,
-        required this.label,
-        this.hint,
-        this.nextNode,
-        this.isPassword = false,
-        this.autoValidate = false,
-        this.textAlign,
-        this.errorText,
-        this.onChanged,
-        this.validator,
-        this.borderColor,
-        this.onsaved,
-        this.filledColor,
-        this.bottomLineColor,
-        this.inputTextColor,
-        this.hintTextColor,
-        this.keyboard,
-        this.initialValue,
-        this.copy = false,
-        this.isEnabled = true,
-        this.focusColor,
-        this.padding,
-        this.autoFocus,
-        this.onFieldSubmitted,
-        this.textInputAction,
-        this.maxLines = 1,
-        this.showHint = true,
-        this.suffixIcon,
-        this.isForgottenOption = false,
-        this.inputFormatters,
-      })
-      : assert( label != null), super(key: key);
-
-  final String label;
-  final String? hint;
-  final FocusNode? currentNode;
-  final FocusNode? nextNode;
-  final String? errorText;
-  final bool isPassword;
-  final Function(String)? onChanged;
-  final Function(String)? validator;
-  final Function(String?)? onsaved;
-  final TextInputType? keyboard;
-  final bool isEnabled;
-  final bool copy;
-  final Color? filledColor;
-  final Color? bottomLineColor;
-  final Color? inputTextColor;
-  final Color? hintTextColor;
-  final bool autoValidate;
-  final String? initialValue;
-  final TextAlign? textAlign;
-  final bool? autoFocus;
-  final Color? focusColor;
-  final Padding? padding;
-  final TextInputAction? textInputAction;
-  final dynamic onFieldSubmitted;
-  final int maxLines;
-  final bool showHint;
-  final TextEditingController? controller;
-  final Widget? suffixIcon;
-  final bool isForgottenOption;
-  final List<TextInputFormatter>? inputFormatters;
-  final Color? borderColor;
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Container(
-      child: TextFormField(
-        controller: controller,
-        maxLines: maxLines,
-        enabled: isEnabled,
-        initialValue: initialValue,
-        keyboardType: keyboard,
-        obscureText: isPassword,
-        onChanged: onChanged,
-        focusNode: currentNode,
-        autofocus: autoFocus ?? false,
-        textAlign: textAlign ?? TextAlign.start,
-        cursorColor: focusColor ?? XColors.background(),
-        onSaved: (String? value) {
-          FocusScope.of(context).requestFocus(nextNode);
-          onsaved!(value);
-        },
-        onFieldSubmitted: (String value) {
-          FocusScope.of(context).requestFocus(nextNode);
-          onFieldSubmitted(value);
-        },
-        textInputAction: textInputAction,
-        inputFormatters: inputFormatters,
-        style: TextStyle(color: inputTextColor),
-        decoration: InputDecoration(
-            border: UnderlineInputBorder(
-                borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-              borderSide: BorderSide(color: bottomLineColor ?? XColors.background()),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-              borderSide: BorderSide(color: bottomLineColor ?? XColors.background()),
-            ),
-            disabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: bottomLineColor ?? XColors.background()),
-            ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: bottomLineColor ?? XColors.background()),
-              borderRadius: const BorderRadius.all(Radius.circular(25.0)),
-            ),
-            focusColor: focusColor ?? XColors.background(),
-            floatingLabelStyle: TextStyle(color: XColors.background()),
-            filled: true,
-            fillColor: filledColor ?? Colors.white,
-            labelText: label,
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: hintTextColor ?? XColors.textColor(),
-              fontSize: 16,
-            ),
-            suffixIcon: suffixIcon
-        ),
-      ),
     );
   }
 }

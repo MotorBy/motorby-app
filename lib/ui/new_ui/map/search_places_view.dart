@@ -78,7 +78,7 @@ class _SearchMapPlaceState extends State<SearchMapPlace> with TickerProviderStat
 
     geocode = Geocoding(apiKey: widget.apiKey, language: widget.language);
     _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
-    _containerHeight = Tween<double>(begin: 50, end: 364).animate(
+    _containerHeight = Tween<double>(begin: 54, end: 364).animate(
       CurvedAnimation(
         curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
         parent: _animationController,

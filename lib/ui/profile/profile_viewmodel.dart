@@ -1,7 +1,6 @@
 
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mobile_auto_drive/firebase_options.dart';
 import 'package:mobile_auto_drive/models/current_plans_model.dart';
 import 'package:mobile_auto_drive/models/plan_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
@@ -59,8 +58,7 @@ class ProfileViewModel extends BaseViewModel {
   ];
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    // Optional clientId
-    clientId: DefaultFirebaseOptions.android.androidClientId,
+    serverClientId: APIKey.googleServerClientId,
     scopes: scopes,
   );
 

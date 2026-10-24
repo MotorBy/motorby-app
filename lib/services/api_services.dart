@@ -15,7 +15,7 @@ class APIService {
   static const String CHECKLIST = 'car/checklist';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
-  static const String prod = 'https://api.motorby.co/api/v1/';
+  static const String prod = 'https://motorbyweb.exceptos.com/api/v1/';
 
   static const String vinUrl = 'https://vin-decoder19.p.rapidapi.com';
 
@@ -62,6 +62,7 @@ class APIService {
   static String getBoughtInsuranceProducts = '$root/car/insurance/purchased';
   static String getBuyInsuranceProducts = '$root/car/insurance/buy';
   static String getInsuranceProductsDetails ='$root$CAR/insurance/products-details?product_id=';
+  static String getCarMakers = '$root/car/makers';
 
   static String addFuelUpdate = "$root/$FUEL/add-price";
   static String getFuelUpdate({String? state, String? country, String? city}) => "$root/$FUEL/location?state=$state&country=$country&city=$city";

@@ -1,10 +1,11 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobile_auto_drive/utils/api_keys.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../firebase_options.dart';
 
 class AuthViewModel extends BaseViewModel {
   final authService = serviceLocator<AuthService>();
@@ -13,12 +14,19 @@ class AuthViewModel extends BaseViewModel {
   bool? isLoggedIn = false;
   bool? registerAsPro = false;
 
-  bool? hasSignupWithProvider = false;
+  /// Which of the two sign-up buttons is currently running, or null when idle.
+  /// Lets each button show its own spinner instead of both reacting to isBusy.
+  SignupMethod? activeSignup;
+
+  bool get isSigningUp => activeSignup != null;
 
   String? authProvider = '';
 
+  // `country` is derived from the phone number's dial code, never typed.
+  // `state` is no longer collected at sign-up; users set it in Edit profile.
   Map<String, dynamic> regData = {
-
+    'country': defaultCountry.name,
+    'state': defaultCountry.name,
   };
 
   static List<String> scopes = <String>[
@@ -27,8 +35,7 @@ class AuthViewModel extends BaseViewModel {
   ];
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    // Optional clientId
-    clientId: DefaultFirebaseOptions.android.androidClientId,
+    serverClientId: APIKey.googleServerClientId,
     scopes: scopes,
   );
 
@@ -58,7 +65,6 @@ class AuthViewModel extends BaseViewModel {
 
     });
 
-    //ErrorLogging().showError((await authService.loginUser(email: email, password: password)) as Future);
   }
 
   Future<void> handleSignInWithGoogle({
@@ -66,85 +72,71 @@ class AuthViewModel extends BaseViewModel {
     Function(String? e)? onErrorBack,
     bool? forSignup = false,
     String? country = '',
-    String? state = '',
     String? phoneNumber = '',
   }) async {
+
+    // The account is created in one request, so the number has to be in hand
+    // before we hand off to Google.
+    if(forSignup == true && (phoneNumber == null || phoneNumber.isEmpty)) {
+      onErrorBack?.call('Please enter your phone number first');
+      return;
+    }
+
     try {
 
-      if(forSignup == true) {
+      final account = await _googleSignIn.signIn();
 
-        if(phoneNumber!.isEmpty || country!.isEmpty || state!.isEmpty) {
-          onErrorBack!('Please enter your country, state and phone number');
-          return;
-        }
+      // Null means the user dismissed the Google sheet. Not a failure.
+      if(account == null) return;
 
+      authProvider = account.id;
+
+      if(forSignup != true) {
+        await login(
+            email: account.email,
+            password: authProvider,
+            isFromProvider: true,
+            onCallBack: onCallBack,
+            onErrorBack: onErrorBack
+        );
+        return;
       }
 
-      await _googleSignIn.signIn().then((value) async {
+      final nameParts = (account.displayName ?? '')
+          .split(' ')
+          .where((part) => part.isNotEmpty)
+          .toList();
 
-        authProvider = value!.id;
-        print(authProvider);
+      regData['firstname'] = nameParts.isNotEmpty ? nameParts.first : '';
+      regData['lastname'] =
+          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      regData['email'] = account.email;
+      regData['password'] = authProvider;
+      regData['signupFrom'] = 'provider';
+      regData['phonenumber'] = phoneNumber;
+      regData['country'] = country!.isEmpty ? defaultCountry.name : country;
+      regData['state'] = '';
+      regData['image'] = account.photoUrl;
 
-        if(forSignup == false) {
-
-          await login(
-              email: value.email,
-              password: authProvider,
-              isFromProvider: true,
-              onCallBack: onCallBack,
-              onErrorBack: onErrorBack
-          );
-
-        } else {
-
-          if(hasSignupWithProvider == false) {
-
-            regData['firstname'] = value.displayName!.split(' ')[0];
-            regData['lastname'] = value.displayName!.split(' ')[1];
-            regData['email'] = value.email;
-            regData['password'] = authProvider;
-            regData['signupFrom'] = 'provider';
-            regData['phonenumber'] = phoneNumber;
-            regData['country'] = country;
-            regData['state'] = state;
-            regData['image'] = value.photoUrl;
-
-            print(regData.toString());
-
-            setBusy(true);
-            await authService.createUser(
-                data: regData,
-                isAuthFromProvider: true
-            ).then((value) {
-
-              hasSignupWithProvider = true;
-              notifyListeners();
-
-              setBusy(false);
-              if(onCallBack != null) {
-                onCallBack();
-              }
-
-            }).onError((error, stackTrace) async {
-              await _googleSignIn.signOut();
-              print(stackTrace.toString());
-
-              setBusy(false);
-
-              if(onErrorBack != null) {
-                onErrorBack(error.toString());
-              }
-            });
-
-          }
-
-        }
-
-      });
+      await _createAccount(
+        method: SignupMethod.google,
+        onCallBack: onCallBack,
+        onErrorBack: onErrorBack,
+      );
 
     } catch (error) {
-      print(error);
+      // Google itself failed (cancelled mid-flow, no Play Services, bad config).
+      _finishSignup();
+      await _googleSignIn.signOut();
+      onErrorBack?.call(readableError(error));
     }
+  }
+
+  /// The dial-code picker is the only source of `country`, so the phone number
+  /// and the country it implies are always written together.
+  void updatePhoneNumber({required SupportedCountry country, required String number}) {
+    regData['phonenumber'] = country.e164(number);
+    regData['country'] = country.name;
   }
 
   void updateRegData({dynamic data, String? dataType, }) {
@@ -160,8 +152,6 @@ class AuthViewModel extends BaseViewModel {
       regData['country'] = data;
     } else if(dataType == 'state'){
       regData['state'] = data;
-    } else if(dataType == 'referralcode'){
-      regData['referral_code'] = data;
     } else if(dataType == 'bname'){
       regData['business_details']['business_name'] = data;
     } else if(dataType == 'bcontact'){
@@ -178,41 +168,52 @@ class AuthViewModel extends BaseViewModel {
   }
 
 
-  Future signup({Function? onCallBack, Function? onErrorCallBack}) async {
-    setBusy(true);
-
-    if(hasSignupWithProvider == true) {
-
-      await userService.updateUsers(data: regData).then((value) {
-        setBusy(false);
-        if(onCallBack != null) {
-          onCallBack();
-        }
-      }).onError((error, stackTrace) {
-        setBusy(false);
-        if(onErrorCallBack != null) {
-          onErrorCallBack();
-        }
-      });
-
-    } else {
-
-      authService.createUser(data: regData).then((value) {
-        setBusy(false);
-        if(onCallBack != null) {
-          onCallBack();
-        }
-      }).onError((error, stackTrace) {
-        setBusy(false);
-        if(onErrorCallBack != null) {
-          onErrorCallBack();
-        }
-      });
-
-    }
-
+  /// The "Sign up" button. Same account-creation path the Google button ends
+  /// up in, only the fields were typed rather than read off a Google account.
+  Future signup({Function? onCallBack, Function(String? e)? onErrorCallBack}) async {
+    await _createAccount(
+      method: SignupMethod.form,
+      onCallBack: onCallBack,
+      onErrorBack: onErrorCallBack,
+    );
   }
-  
+
+  Future<void> _createAccount({
+    required SignupMethod method,
+    Function? onCallBack,
+    Function(String? e)? onErrorBack,
+  }) async {
+
+    if(isSigningUp) return; // the other button is already mid-flight
+
+    _startSignup(method);
+
+    try {
+      await authService.createUser(
+        data: regData,
+        isAuthFromProvider: method == SignupMethod.google,
+      );
+      _finishSignup();
+      onCallBack?.call();
+    } catch (error) {
+      _finishSignup();
+      if(method == SignupMethod.google) {
+        await _googleSignIn.signOut();
+      }
+      onErrorBack?.call(readableError(error));
+    }
+  }
+
+  void _startSignup(SignupMethod method) {
+    activeSignup = method;
+    setBusy(true);
+  }
+
+  void _finishSignup() {
+    activeSignup = null;
+    setBusy(false);
+  }
+
   void updateRegAsPro({bool? v}){
     registerAsPro = v;
     if(registerAsPro!) {
@@ -223,4 +224,15 @@ class AuthViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+}
+
+enum SignupMethod { form, google }
+
+/// createUser throws Exception(json['message']), so the useful part is behind
+/// a prefix no user should ever see.
+String readableError(Object? error) {
+  final text = (error ?? '').toString();
+  return text.startsWith('Exception: ')
+      ? text.substring('Exception: '.length)
+      : text;
 }

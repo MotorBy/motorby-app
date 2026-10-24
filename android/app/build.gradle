@@ -1,6 +1,6 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
+    id "org.jetbrains.kotlin.android"
     id 'com.google.gms.google-services'
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -14,7 +14,7 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    compileSdk 35
+    compileSdk 36
     namespace "com.motorby.motorbyapp"
 
     compileOptions {

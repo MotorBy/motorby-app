@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_auto_drive/ui/auth/auth_viewmodel.dart';
@@ -7,35 +6,75 @@ import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/inputfield.dart';
-import 'package:mobile_auto_drive/widgets/list_selector.dart';
+import 'package:mobile_auto_drive/widgets/phone_field.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../widgets/snackbar.dart';
 
-class SignupScreen extends StatelessWidget {
-  SignupScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
-  final TextEditingController regAsController = TextEditingController();
-  final TextEditingController businessController = TextEditingController();
-  final TextEditingController countryController = TextEditingController();
-  final TextEditingController stateController = TextEditingController();
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController phoneNumberController = TextEditingController();
+  final FocusNode phoneNumberFocus = FocusNode();
 
+  /// Mirrors the dial-code picker. Sign-up sends this as the user's country.
+  SupportedCountry selectedCountry = defaultCountry;
 
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    phoneNumberController.dispose();
+    phoneNumberFocus.dispose();
+    super.dispose();
+  }
+
+  void _onSignedUp() => navigateReplace(context, const DashBoardScreen());
+
+  void _showError(String? message) => FloatingSnackBar.show(
+        context,
+        message ?? 'Something went wrong. Please try again.',
+        isError: true,
+      );
+
+  /// "Sign up" button: everything the account needs is on the form.
+  void _signUpWithForm(AuthViewModel model) {
+    if (!_formKey.currentState!.validate()) return;
+    model.signup(onCallBack: _onSignedUp, onErrorCallBack: _showError);
+  }
+
+  /// "Signup with Google" button: Google supplies the name, email and password,
+  /// the form supplies the phone number. Both still create the account in one
+  /// request, so nudge the user to the field rather than failing at them.
+  void _signUpWithGoogle(AuthViewModel model) {
+    if (phoneNumberController.text.trim().isEmpty) {
+      phoneNumberFocus.requestFocus();
+      _showError('Enter your phone number first, then continue with Google');
+      return;
+    }
+
+    model.handleSignInWithGoogle(
+      forSignup: true,
+      country: selectedCountry.name,
+      phoneNumber: selectedCountry.e164(phoneNumberController.text),
+      onCallBack: _onSignedUp,
+      onErrorBack: _showError,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<AuthViewModel>.reactive(
         viewModelBuilder: () => AuthViewModel(),
-        onViewModelReady: (model){
-          regAsController.text = 'User';
-          countryController.text = 'Nigeria';
-        },
         builder: (context, model, child) {
         return Form(
           key: _formKey,
@@ -45,24 +84,9 @@ class SignupScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 XButton(
-                  onPressed: () {
-                    if(_formKey.currentState!.validate()) {
-                      model.signup(
-                          onCallBack: () {
-                            navigateReplace(context, const DashBoardScreen());
-                          },
-                          onErrorCallBack: () {
-                            showSnackBar(
-                                error: true,
-                                context: context,
-                                message: 'Error creating your account'
-                            );
-                          }
-                      );
-                    }
-                  },
-                  text: model.hasSignupWithProvider == false ? 'Sign up' : 'Complete your sign up',
-                  isLoading: model.isBusy,
+                  onPressed: () => _signUpWithForm(model),
+                  text: 'Sign up',
+                  isLoading: model.activeSignup == SignupMethod.form,
                   buttonColor: XColors.primaryColor(),
                   width: 120,
                 ),
@@ -86,60 +110,38 @@ class SignupScreen extends StatelessWidget {
                       ),
                     ),
                     const YMargin(30),
-                    if(model.hasSignupWithProvider == false) ... [
-
-                      XButton(
-                        onPressed: () {
-
-                          model.handleSignInWithGoogle(
-                            forSignup: true,
-                            country: countryController.text,
-                            state: stateController.text,
-                            phoneNumber: phoneNumberController.text,
-                            onCallBack: () {
-                              navigateReplace(context, const DashBoardScreen());
-                            },
-                            onErrorBack: (e) {
-
-                              FloatingSnackBar.show(
-                                  context,
-                                  e!,
-                                isError: true
-                              );
-
-                            },
-                          );
-
-                        },
-                        isOutline: true,
-                        buttonWidget: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              NormalText(
-                                text: 'Signup with',
-                                textColor: XColors.textColor(),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15,
-                              ),
-                              const XMargin(15),
-                              Container(
-                                height: 25,
-                                width: 25,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    32,
-                                  ),
+                    XButton(
+                      onPressed: () => _signUpWithGoogle(model),
+                      isOutline: true,
+                      isLoading: model.activeSignup == SignupMethod.google,
+                      buttonWidget: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            NormalText(
+                              text: 'Signup with',
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                            ),
+                            const XMargin(15),
+                            Container(
+                              height: 25,
+                              width: 25,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  32,
                                 ),
-                                child: Image.asset('assets/images/icons/google.png'),
                               ),
-                              const XMargin(3),
-                            ],
-                          ),
+                              child: Image.asset('assets/images/icons/google.png'),
+                            ),
+                            const XMargin(3),
+                          ],
                         ),
                       ),
+                    ),
                       const YMargin(30),
                       NormalText(
                         text: 'or',
@@ -149,15 +151,13 @@ class SignupScreen extends StatelessWidget {
                       ),
                       const YMargin(30),
 
-                    ],
-
-                    if(model.hasSignupWithProvider == false) ... [
-                      Row(
+                    Row(
                         children: [
                           Expanded(
                             child: MainInputField(
                               label: "First name",
                               isEnabled: true,
+                              textInputAction: TextInputAction.next,
                               validator: (s) {
                                 return AnyInputValidator.emptyValidate(s, inputName: 'Firstname');
                               },
@@ -166,13 +166,14 @@ class SignupScreen extends StatelessWidget {
                               },
                             ),
                           ),
-                          XMargin(10),
+                          const XMargin(10),
                           Expanded(
                             child: MainInputField(
-                              label: "Second name",
+                              label: "Last name",
                               isEnabled: true,
+                              textInputAction: TextInputAction.next,
                               validator: (s) {
-                                return AnyInputValidator.emptyValidate(s, inputName: 'Secondname');
+                                return AnyInputValidator.emptyValidate(s, inputName: 'Lastname');
                               },
                               onChanged: (s){
                                 model.updateRegData(data: s, dataType: 'lastname');
@@ -182,189 +183,42 @@ class SignupScreen extends StatelessWidget {
                         ],
                       ),
                       const YMargin(20),
-                    ],
 
-                    MainInputField(
-                      label: "Phonenumber",
-                      isEnabled: true,
-                      keyboard: TextInputType.number,
+                    // The dial code picked here is what sets the account's country.
+                    PhoneNumberField(
                       controller: phoneNumberController,
-                      validator: (s) {
-                        return AnyInputValidator.emptyValidate(s, inputName: 'Phone number');
+                      currentNode: phoneNumberFocus,
+                      initialCountry: selectedCountry,
+                      onChanged: (country, number) {
+                        selectedCountry = country;
+                        model.updatePhoneNumber(country: country, number: number);
                       },
+                    ),
+
+                    const YMargin(20),
+                    MainInputField(
+                      label: "Email address",
+                      isEnabled: true,
+                      keyboard: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      validator: EmailValidator.validate,
                       onChanged: (s){
-                        model.updateRegData(data: s, dataType: 'phonenumber');
+                        model.updateRegData(data: s, dataType: 'email');
                       },
                     ),
-
-                    if(model.hasSignupWithProvider == false) ... [
-                      const YMargin(20),
-                      MainInputField(
-                        label: "Email address",
-                        isEnabled: true,
-                        validator: EmailValidator.validate,
-                        onChanged: (s){
-                          model.updateRegData(data: s, dataType: 'email');
-                        },
-                      ),
-                    ],
-
                     const YMargin(20),
                     MainInputField(
-                      label: "Register as",
-                      controller: regAsController,
-                      isEnabled: false,
-                      suffixIcon: GestureDetector(
-                        onTap: (){
-                          listHelperPicker(
-                            height: 150,
-                            context: context,
-                            title: 'Register as',
-                            listString: [
-                              "User",
-                              "Business"
-                            ],
-                            selected: (s) {
-                              regAsController.text = s!;
-                              model.updateRegAsPro(v: s == 'User' ? false : true);
-                            },
-                          );
-                        },
-                        child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
-                      ),
-                    ),
-                    if(model.registerAsPro == true) ... [
-                      const YMargin(20),
-                      MainInputField(
-                        label: "Business name",
-                        isEnabled: true,
-                        validator: (s) {
-                          return AnyInputValidator.emptyValidate(s, inputName: 'Business name');
-                        },
-                        onChanged: (s){
-                          model.updateRegData(data: s, dataType: 'bname');
-                        },
-                      ),
-                      const YMargin(20),
-                      MainInputField(
-                        label: "Business contact",
-                        validator: (s) {
-                          return AnyInputValidator.emptyValidate(s, inputName: 'Business contact');
-                        },
-                        isEnabled: true,
-                        onChanged: (s){
-                          model.updateRegData(data: s, dataType: 'bcontact');
-                        },
-                      ),
-                      const YMargin(20),
-                      MainInputField(
-                        label: "Business email",
-                        isEnabled: true,
-                        onChanged: (s){
-                          model.updateRegData(data: s, dataType: 'bemail');
-                        },
-                      ),
-                      const YMargin(20),
-                      MainInputField(
-                        label: "Business type",
-                        validator: (s) {
-                          return AnyInputValidator.emptyValidate(s, inputName: 'Business type');
-                        },
-                        isEnabled: false,
-                        controller: businessController,
-                        suffixIcon: GestureDetector(
-                          onTap: (){
-                            listHelperPicker(
-                              height: 210,
-                              context: context,
-                              title: 'Business type',
-                              listString: [
-                                "Dealership",
-                                "Repair",
-                                "Servicing",
-                                "Detailing",
-                                "Part sales",
-                                "Rental",
-                                "Insurance",],
-                              selected: (s) {
-                                businessController.text = s!;
-                                model.updateRegData(data: s, dataType: 'btype');
-                              },
-                            );
-                          },
-                          child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
-                        ),
-                      ),
-                    ],
-                    const YMargin(20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: MainInputField(
-                            label: "Country",
-                            isEnabled: false,
-                            validator: (s) {
-                              return AnyInputValidator.emptyValidate(s, inputName: 'Country');
-                            },
-                            controller: countryController,
-                            suffixIcon: GestureDetector(
-                              onTap: (){
-                                listHelperPicker(
-                                  height: 150,
-                                  context: context,
-                                  title: 'Countries',
-                                  listString: [
-                                    "Nigeria",
-                                    "Ghana",
-                                    "Kenya"
-                                  ],
-                                  selected: (s) {
-                                    countryController.text = s!;
-                                    model.updateRegData(data: s, dataType: 'country');
-                                  },
-                                );
-                              },
-                              child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21,),
-                            ),
-                          ),
-                        ),
-                        const XMargin(10),
-                        Expanded(
-                          child: MainInputField(
-                            label: "State",
-                            controller: stateController,
-                            isEnabled: true,
-                            validator: (s) {
-                              return AnyInputValidator.emptyValidate(s, inputName: 'State');
-                            },
-                            onChanged: (s){
-                              model.updateRegData(data: s, dataType: 'state');
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const YMargin(20),
-                    if(model.hasSignupWithProvider == false) ... [
-                      MainInputField(
-                        label: "Password",
-                        isPassword: true,
-                        validator: PasswordValidator.validate,
-                        isEnabled: true,
-                        onChanged: (s){
-                          model.updateRegData(data: s, dataType: 'password');
-                        },
-                      ),
-                      const YMargin(20),
-                    ],
-                    MainInputField(
-                      label: "Referral code",
+                      label: "Password",
+                      isPassword: true,
+                      textInputAction: TextInputAction.done,
+                      validator: PasswordValidator.validate,
                       isEnabled: true,
                       onChanged: (s){
-                        model.updateRegData(data: s, dataType: 'referralcode');
+                        model.updateRegData(data: s, dataType: 'password');
                       },
                     ),
-                    const YMargin(20),
+
+                  const YMargin(20),
                     Row(children: [
                       NormalText(
                         text: 'Already have an account?',

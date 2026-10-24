@@ -263,7 +263,7 @@ class ReminderListView extends StatelessWidget {
 
               Center(child: NormalText(
                 text: 'No reminders set here',
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 textColor: XColors.black(),
               ))

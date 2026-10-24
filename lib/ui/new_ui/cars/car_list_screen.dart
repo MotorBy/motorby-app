@@ -43,10 +43,10 @@ class CarsListScreen extends StatelessWidget {
                 hasBorder: true,
                 borderThickness: 2,
                 borderRadius: BorderRadius.circular(21),
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 child: const NormalText(
                   text: 'Add new car',
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),

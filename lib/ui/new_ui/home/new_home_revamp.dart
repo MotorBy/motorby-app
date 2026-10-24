@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
+import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_details_screen.dart';
@@ -10,6 +11,7 @@ import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_summary_view.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
+import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -47,7 +49,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
               color: Colors.white,
               isDismissible: false,
               context: context,
-              height: 450,
+              height: 470,
               child: InfoDetailsView(
                 infoType: InfoType.locationSetup,
                 onPermissionAction: () {
@@ -176,105 +178,157 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                             ],
                                           ),
                                         ),
+
                                         const YMargin(15),
-                                        // Car Images Grid
-                                        Row(
+
+                                        Column(
                                           children: [
 
                                             if(viewModel.currentBudget!.carId!.images!.isNotEmpty) ... [
-                                              SizedBox(
-                                                height: 80,
-                                                width: 120,
-                                                child: GridView.count(
-                                                  crossAxisCount: 2,
-                                                  mainAxisSpacing: 1,
-                                                  crossAxisSpacing: 1,
-                                                  childAspectRatio: 1.2,
-                                                  physics: const NeverScrollableScrollPhysics(),
+
+                                              SingleChildScrollView(
+                                                scrollDirection: Axis.horizontal,
+                                                child: Row(
                                                   children: [
                                                     ...List.generate(
-                                                      viewModel.currentBudget!.carId!.images!.length, (imgIndex) => ClipRRect(
-                                                      borderRadius: BorderRadius.circular(4),
-                                                      child: Image.network(
-                                                        viewModel.currentBudget!.carId!.images![imgIndex],
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                    )
+                                                      viewModel.currentBudget!.carId!.images!.length,
+                                                          (imgIndex) => Padding(
+                                                        padding: const EdgeInsets.all(3.0),
+                                                        child: Container(
+                                                          width: 90,
+                                                          height: 70,
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.black.withOpacity(0.1),
+                                                            borderRadius: BorderRadius.circular(16),
+                                                          ),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.circular(16),
+                                                            child: Image.network(
+                                                              viewModel.currentBudget!.carId!.images![imgIndex],
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),)
                                                   ],
                                                 ),
                                               ),
+
                                             ] else ... [
-                                              const GetSvgImage(
-                                                image: 'assets/images/car_place_holder.svg',
-                                                width: 60,
-                                                height: 60,
+
+                                              Column(
+                                                children: [
+                                                  const GetSvgImage(
+                                                    image: 'assets/images/car_place_holder.svg',
+                                                    width: 60,
+                                                    height: 60,
+                                                  ),
+                                                  const YMargin(12),
+                                                  GestureDetector(
+                                                    onTap: () {
+
+                                                      navigate(context,
+                                                          AddCarsScreen(
+                                                            action: "edit",
+                                                            currentCar: viewModel.currentBudget!.carId,
+                                                          )
+                                                      );
+
+                                                    },
+                                                    child: Container(
+                                                      width: 180,
+                                                      decoration: BoxDecorators.containerDecoration(
+                                                          hasOutline: true,
+                                                          outlineWidth: 1,
+                                                          radius: 32,
+                                                          outlineColor: Colors.purpleAccent.withOpacity(0.2)
+                                                      ),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(8.0),
+                                                        child: Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            NormalText(
+                                                              text: 'Add car Images',
+                                                              textColor: XColors.black().withOpacity(0.5),
+                                                              fontWeight: FontWeight.w700,
+                                                              fontSize: 12,
+                                                            ),
+                                                            const XMargin(5),
+                                                            Icon(Icons.add, size: 17, color: XColors.primaryColor(),),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
                                               )
+
                                             ],
 
-                                            const XMargin(15),
-                                            Expanded(
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white.withOpacity(0.5),
-                                                  borderRadius: BorderRadius.circular(12),
-                                                ),
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        NormalText(
-                                                          text: 'Checklist',
-                                                          fontSize: 13,
-                                                          textColor: XColors.textColor(),
-                                                        ),
-                                                        const XMargin(8),
-                                                        NormalText(
-                                                          text: viewModel.hasAddedCar
-                                                              ? '${viewModel.currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${viewModel.currentBudget!.checklistData!.items!.length}'
-                                                              : '0/0',
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w600,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const YMargin(8),
-                                                    Row(
-                                                      children: [
-                                                        NormalText(
-                                                          text: 'Last traveled',
-                                                          fontSize: 13,
-                                                          textColor: XColors.textColor(),
-                                                        ),
-                                                        const XMargin(8),
-                                                        NormalText(
-                                                          text: '${viewModel.lastDistance} ${viewModel.totalMileageUnit}',
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w600,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const YMargin(8),
-                                                    Row(
-                                                      children: [
-                                                        NormalText(
-                                                          text: 'Mileage',
-                                                          fontSize: 13,
-                                                          textColor: XColors.textColor(),
-                                                        ),
-                                                        const XMargin(8),
-                                                        NormalText(
-                                                          text: '${viewModel.totalMileage} ${viewModel.totalMileageUnit}',
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w600,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
+                                            const YMargin(15),
+
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.5),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      NormalText(
+                                                        text: 'Checklist',
+                                                        fontSize: 13,
+                                                        textColor: XColors.textColor(),
+                                                      ),
+                                                      const XMargin(8),
+                                                      NormalText(
+                                                        text: viewModel.hasAddedCar
+                                                            ? '${viewModel.currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${viewModel.currentBudget!.checklistData!.items!.length}'
+                                                            : '0/0',
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  // const YMargin(8),
+                                                  // Row(
+                                                  //   children: [
+                                                  //     NormalText(
+                                                  //       text: 'Last traveled',
+                                                  //       fontSize: 13,
+                                                  //       textColor: XColors.textColor(),
+                                                  //     ),
+                                                  //     const XMargin(8),
+                                                  //     NormalText(
+                                                  //       text: '${viewModel.lastDistance} ${viewModel.totalMileageUnit}',
+                                                  //       fontSize: 14,
+                                                  //       fontWeight: FontWeight.w600,
+                                                  //     ),
+                                                  //   ],
+                                                  // ),
+                                                  const XMargin(8),
+                                                  Row(
+                                                    children: [
+                                                      NormalText(
+                                                        text: 'Mileage',
+                                                        fontSize: 13,
+                                                        textColor: XColors.textColor(),
+                                                      ),
+                                                      const XMargin(8),
+                                                      NormalText(
+                                                        text: '${viewModel.totalMileage} ${viewModel.totalMileageUnit}',
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
 
