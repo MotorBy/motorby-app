@@ -74,6 +74,52 @@ void main() {
     });
   });
 
+  group('the two sign-up buttons', () {
+    testWidgets('both are offered at once', (tester) async {
+      await pumpSignup(tester);
+
+      expect(find.text('Sign up'), findsOneWidget);
+      expect(find.text('Signup with'), findsOneWidget);
+    });
+
+    testWidgets('there is no staged "complete your sign up" step',
+        (tester) async {
+      await pumpSignup(tester);
+
+      expect(find.text('Complete your sign up'), findsNothing);
+    });
+
+    testWidgets('the form button validates instead of submitting a blank form',
+        (tester) async {
+      await pumpSignup(tester);
+
+      await tester.tap(find.text('Sign up'));
+      await tester.pump();
+
+      expect(find.text('Enter your Firstname'), findsOneWidget);
+      expect(find.text('Enter your phone number'), findsOneWidget);
+      // Still on the form, nothing was sent.
+      expect(find.byType(SignupScreen), findsOneWidget);
+    });
+
+    testWidgets('the Google button asks for a phone number before handing off',
+        (tester) async {
+      await pumpSignup(tester);
+
+      await tester.tap(find.text('Signup with'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(
+        find.text('Enter your phone number first, then continue with Google'),
+        findsOneWidget,
+      );
+
+      // Let the snackbar's own 3s dismissal timer drain before the test ends.
+      await tester.pump(const Duration(seconds: 4));
+    });
+  });
+
   group('phone number field', () {
     testWidgets('defaults to the Nigerian dial code', (tester) async {
       await pumpSignup(tester);

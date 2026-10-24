@@ -14,7 +14,6 @@ import 'package:mobile_auto_drive/widgets/phone_field.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../widgets/snackbar.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -39,17 +38,27 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  /// Google sign-up creates the account in one shot, so the phone number has to
-  /// be in hand before we hand off. Send the user to the field instead of just
-  /// complaining at them.
+  void _onSignedUp() => navigateReplace(context, const DashBoardScreen());
+
+  void _showError(String? message) => FloatingSnackBar.show(
+        context,
+        message ?? 'Something went wrong. Please try again.',
+        isError: true,
+      );
+
+  /// "Sign up" button: everything the account needs is on the form.
+  void _signUpWithForm(AuthViewModel model) {
+    if (!_formKey.currentState!.validate()) return;
+    model.signup(onCallBack: _onSignedUp, onErrorCallBack: _showError);
+  }
+
+  /// "Signup with Google" button: Google supplies the name, email and password,
+  /// the form supplies the phone number. Both still create the account in one
+  /// request, so nudge the user to the field rather than failing at them.
   void _signUpWithGoogle(AuthViewModel model) {
     if (phoneNumberController.text.trim().isEmpty) {
       phoneNumberFocus.requestFocus();
-      FloatingSnackBar.show(
-        context,
-        'Enter your phone number first, then continue with Google',
-        isError: true,
-      );
+      _showError('Enter your phone number first, then continue with Google');
       return;
     }
 
@@ -57,12 +66,8 @@ class _SignupScreenState extends State<SignupScreen> {
       forSignup: true,
       country: selectedCountry.name,
       phoneNumber: selectedCountry.e164(phoneNumberController.text),
-      onCallBack: () {
-        navigateReplace(context, const DashBoardScreen());
-      },
-      onErrorBack: (e) {
-        FloatingSnackBar.show(context, e!, isError: true);
-      },
+      onCallBack: _onSignedUp,
+      onErrorBack: _showError,
     );
   }
 
@@ -79,24 +84,9 @@ class _SignupScreenState extends State<SignupScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 XButton(
-                  onPressed: () {
-                    if(_formKey.currentState!.validate()) {
-                      model.signup(
-                          onCallBack: () {
-                            navigateReplace(context, const DashBoardScreen());
-                          },
-                          onErrorCallBack: () {
-                            showSnackBar(
-                                error: true,
-                                context: context,
-                                message: 'Error creating your account'
-                            );
-                          }
-                      );
-                    }
-                  },
-                  text: model.hasSignupWithProvider == false ? 'Sign up' : 'Complete your sign up',
-                  isLoading: model.isBusy,
+                  onPressed: () => _signUpWithForm(model),
+                  text: 'Sign up',
+                  isLoading: model.activeSignup == SignupMethod.form,
                   buttonColor: XColors.primaryColor(),
                   width: 120,
                 ),
@@ -120,39 +110,38 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     const YMargin(30),
-                    if(model.hasSignupWithProvider == false) ... [
-
-                      XButton(
-                        onPressed: () => _signUpWithGoogle(model),
-                        isOutline: true,
-                        buttonWidget: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              NormalText(
-                                text: 'Signup with',
-                                textColor: XColors.textColor(),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15,
-                              ),
-                              const XMargin(15),
-                              Container(
-                                height: 25,
-                                width: 25,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    32,
-                                  ),
+                    XButton(
+                      onPressed: () => _signUpWithGoogle(model),
+                      isOutline: true,
+                      isLoading: model.activeSignup == SignupMethod.google,
+                      buttonWidget: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            NormalText(
+                              text: 'Signup with',
+                              textColor: XColors.textColor(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                            ),
+                            const XMargin(15),
+                            Container(
+                              height: 25,
+                              width: 25,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  32,
                                 ),
-                                child: Image.asset('assets/images/icons/google.png'),
                               ),
-                              const XMargin(3),
-                            ],
-                          ),
+                              child: Image.asset('assets/images/icons/google.png'),
+                            ),
+                            const XMargin(3),
+                          ],
                         ),
                       ),
+                    ),
                       const YMargin(30),
                       NormalText(
                         text: 'or',
@@ -162,10 +151,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       const YMargin(30),
 
-                    ],
-
-                    if(model.hasSignupWithProvider == false) ... [
-                      Row(
+                    Row(
                         children: [
                           Expanded(
                             child: MainInputField(
@@ -197,7 +183,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         ],
                       ),
                       const YMargin(20),
-                    ],
 
                     // The dial code picked here is what sets the account's country.
                     PhoneNumberField(
@@ -210,32 +195,30 @@ class _SignupScreenState extends State<SignupScreen> {
                       },
                     ),
 
-                    if(model.hasSignupWithProvider == false) ... [
-                      const YMargin(20),
-                      MainInputField(
-                        label: "Email address",
-                        isEnabled: true,
-                        keyboard: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        validator: EmailValidator.validate,
-                        onChanged: (s){
-                          model.updateRegData(data: s, dataType: 'email');
-                        },
-                      ),
-                      const YMargin(20),
-                      MainInputField(
-                        label: "Password",
-                        isPassword: true,
-                        textInputAction: TextInputAction.done,
-                        validator: PasswordValidator.validate,
-                        isEnabled: true,
-                        onChanged: (s){
-                          model.updateRegData(data: s, dataType: 'password');
-                        },
-                      ),
-                    ],
-
                     const YMargin(20),
+                    MainInputField(
+                      label: "Email address",
+                      isEnabled: true,
+                      keyboard: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      validator: EmailValidator.validate,
+                      onChanged: (s){
+                        model.updateRegData(data: s, dataType: 'email');
+                      },
+                    ),
+                    const YMargin(20),
+                    MainInputField(
+                      label: "Password",
+                      isPassword: true,
+                      textInputAction: TextInputAction.done,
+                      validator: PasswordValidator.validate,
+                      isEnabled: true,
+                      onChanged: (s){
+                        model.updateRegData(data: s, dataType: 'password');
+                      },
+                    ),
+
+                  const YMargin(20),
                     Row(children: [
                       NormalText(
                         text: 'Already have an account?',
