@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
@@ -21,7 +21,7 @@ import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 
 class NewHomeScreen extends StatefulWidget {
   const NewHomeScreen({Key? key}) : super(key: key);

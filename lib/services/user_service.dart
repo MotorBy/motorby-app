@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/car_makers_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
@@ -8,6 +9,7 @@ import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
@@ -164,6 +166,33 @@ class UserService {
 
   }
 
+  /// Removes a car and the files that belong only to it.
+  ///
+  /// The record goes first: if the backend refuses, the car keeps working and
+  /// its photos are still there. Storage cleanup follows and is best-effort,
+  /// since an orphaned file is a smaller problem than a car the user was told
+  /// was deleted but which is still in their list.
+  Future deleteCar({CarId? car}) async {
+
+    var response = await http.delete(
+        Uri.parse(APIService.deleteCar(carId: car!.sId!)),
+        headers: APIHelper().requestHeadersWithToken()
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception(json["message"] ?? 'Could not delete this car');
+    }
+
+    final failed = await FirebaseService().deleteFilesFromStorage(carStorageUrls(car));
+    if (failed.isNotEmpty) {
+      log('Car ${car.sId} deleted, but ${failed.length} file(s) remain: $failed');
+    }
+
+    await budgetService.getBudgets();
+  }
+
   Future getWeather({String? lat, String? lng}) async {
 
     var response = await http.get(
@@ -288,4 +317,23 @@ class UserService {
   //   }
   // }
 
+}
+
+/// Every Storage file a car owns: its photos plus any uploaded document scans.
+///
+/// Duplicates are dropped so the same file is never deleted twice, and URLs
+/// that are not ours are left for [isFirebaseStorageUrl] to filter.
+List<String> carStorageUrls(CarId car) {
+  final urls = <String>{};
+
+  for (final image in car.images ?? const <String>[]) {
+    if (image.isNotEmpty) urls.add(image);
+  }
+
+  for (final document in car.carDocuments ?? const <CarDocument>[]) {
+    final image = document.documentImage;
+    if (image != null && image.isNotEmpty) urls.add(image);
+  }
+
+  return urls.toList();
 }

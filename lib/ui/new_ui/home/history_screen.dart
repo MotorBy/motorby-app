@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';

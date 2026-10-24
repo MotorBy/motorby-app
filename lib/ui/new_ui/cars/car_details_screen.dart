@@ -1,13 +1,14 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
-import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
-import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/update_car_image_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_tiles_view.dart';
+import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
@@ -16,6 +17,7 @@ import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
@@ -52,6 +54,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
       curve: Curves.easeInOut,
     );
 
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -112,6 +120,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                         ),
                       ),
                     ),
+                    _buildDeleteCarAction(context, viewModel),
                     const XMargin(16),
                   ],
                 ),
@@ -154,6 +163,116 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDeleteCarAction(BuildContext context, HomeViewModel viewModel) {
+    return GestureDetector(
+      onTap: viewModel.isDeletingCar
+          ? null
+          : () => _confirmDeleteCar(context, viewModel),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        decoration: BoxDecorators.containerDecoration(
+          hasOutline: true,
+          outlineWidth: 2,
+          radius: 26,
+          outlineColor: Colors.transparent,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            NormalText(
+              text: viewModel.isDeletingCar ? 'deleting...' : 'delete car',
+              textColor: XColors.black().withOpacity(0.5),
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+            const XMargin(10),
+            if (viewModel.isDeletingCar)
+              const SizedBox(
+                height: 15,
+                width: 15,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red),
+              )
+            else
+              const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Deleting takes the photos and documents with it and cannot be undone, so
+  /// spell out what goes before asking.
+  void _confirmDeleteCar(BuildContext context, HomeViewModel viewModel) {
+    final car = widget.carData;
+    final imageCount = carStorageUrls(car).length;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const NormalText(
+          text: 'Delete car',
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
+        content: NormalText(
+          text: imageCount == 0
+              ? 'Delete ${car.carMake} ${car.carModel}? This cannot be undone.'
+              : 'Delete ${car.carMake} ${car.carModel}? Its $imageCount uploaded '
+                  'file${imageCount == 1 ? '' : 's'} will be removed too. '
+                  'This cannot be undone.',
+          fontSize: 16,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: NormalText(
+              text: 'Cancel',
+              fontSize: 16,
+              textColor: Colors.grey[600]!,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              _deleteCar(viewModel);
+            },
+            child: const NormalText(
+              text: 'Delete',
+              fontSize: 16,
+              textColor: Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteCar(HomeViewModel viewModel) {
+    viewModel.deleteCar(
+      car: widget.carData,
+      onCallBack: () {
+        if (!mounted) return;
+        FloatingSnackBar.show(
+          context,
+          '${widget.carData.carMake} ${widget.carData.carModel} deleted',
+          isError: false,
+        );
+        // The car this screen is built from is gone, so leave with it.
+        popView(context);
+      },
+      onErrorBack: (e) {
+        if (!mounted) return;
+        FloatingSnackBar.show(
+          context,
+          e ?? 'Could not delete this car. Please try again.',
+          isError: true,
         );
       },
     );

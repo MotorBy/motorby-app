@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/sales_details_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/sales_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';

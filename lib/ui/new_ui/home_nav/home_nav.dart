@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/main.dart';
 import 'package:mobile_auto_drive/services/device_info.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';

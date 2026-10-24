@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
-import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_details_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_summary_view.dart';

@@ -1,5 +1,6 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
+import 'package:mobile_auto_drive/utils/error_logging.dart';
 import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
@@ -227,12 +228,3 @@ class AuthViewModel extends BaseViewModel {
 }
 
 enum SignupMethod { form, google }
-
-/// createUser throws Exception(json['message']), so the useful part is behind
-/// a prefix no user should ever see.
-String readableError(Object? error) {
-  final text = (error ?? '').toString();
-  return text.startsWith('Exception: ')
-      ? text.substring('Exception: '.length)
-      : text;
-}

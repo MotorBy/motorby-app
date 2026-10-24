@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
-import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/marketplace_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/car_sales_screen.dart';
 import 'package:mobile_auto_drive/ui/marketplace/shops/shops_screen.dart';

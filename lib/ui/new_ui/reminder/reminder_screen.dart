@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/services/reminder_service.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';

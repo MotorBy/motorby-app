@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_auto_drive/ui/home/history_screen.dart';
-import 'package:mobile_auto_drive/ui/home/info_details_action/info_details_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/history_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/search_address_map.dart';
 import 'package:mobile_auto_drive/utils/circular_paint.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
