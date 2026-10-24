@@ -115,6 +115,7 @@ class MainInputField extends StatelessWidget {
         this.showHint = true,
         this.isForgottenOption = false,
         this.suffixIcon,
+        this.prefix,
         this.inputFormatters})
       : assert(label != null);
 
@@ -141,6 +142,7 @@ class MainInputField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final Color? borderColor;
   final Widget? suffixIcon;
+  final Widget? prefix;
 
   final ValueNotifier<bool> hasError = ValueNotifier<bool>(false);
 
@@ -216,6 +218,8 @@ class MainInputField extends StatelessWidget {
                 )
             ),
             contentPadding: const EdgeInsets.only(bottom: 17, left: 10.0, right: 10.0, top: 17),
+            prefixIcon: prefix,
+            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
             labelText: label,
             labelStyle: TextStyle(color: XColors.textColor(), fontWeight: FontWeight.w400),
           ),

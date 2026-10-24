@@ -1,10 +1,11 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobile_auto_drive/utils/api_keys.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../firebase_options.dart';
 
 class AuthViewModel extends BaseViewModel {
   final authService = serviceLocator<AuthService>();
@@ -17,8 +18,11 @@ class AuthViewModel extends BaseViewModel {
 
   String? authProvider = '';
 
+  // `country` is derived from the phone number's dial code, never typed.
+  // `state` is no longer collected at sign-up; users set it in Edit profile.
   Map<String, dynamic> regData = {
-
+    'country': defaultCountry.name,
+    'state': '',
   };
 
   static List<String> scopes = <String>[
@@ -27,8 +31,7 @@ class AuthViewModel extends BaseViewModel {
   ];
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    // Optional clientId
-    clientId: DefaultFirebaseOptions.android.androidClientId,
+    serverClientId: APIKey.googleServerClientId,
     scopes: scopes,
   );
 
@@ -66,15 +69,14 @@ class AuthViewModel extends BaseViewModel {
     Function(String? e)? onErrorBack,
     bool? forSignup = false,
     String? country = '',
-    String? state = '',
     String? phoneNumber = '',
   }) async {
     try {
 
       if(forSignup == true) {
 
-        if(phoneNumber!.isEmpty || country!.isEmpty || state!.isEmpty) {
-          onErrorBack!('Please enter your country, state and phone number');
+        if(phoneNumber == null || phoneNumber.isEmpty) {
+          onErrorBack!('Please enter your phone number first');
           return;
         }
 
@@ -99,14 +101,20 @@ class AuthViewModel extends BaseViewModel {
 
           if(hasSignupWithProvider == false) {
 
-            regData['firstname'] = value.displayName!.split(' ')[0];
-            regData['lastname'] = value.displayName!.split(' ')[1];
+            final nameParts = (value.displayName ?? '')
+                .split(' ')
+                .where((part) => part.isNotEmpty)
+                .toList();
+
+            regData['firstname'] = nameParts.isNotEmpty ? nameParts.first : '';
+            regData['lastname'] =
+                nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
             regData['email'] = value.email;
             regData['password'] = authProvider;
             regData['signupFrom'] = 'provider';
             regData['phonenumber'] = phoneNumber;
-            regData['country'] = country;
-            regData['state'] = state;
+            regData['country'] = country!.isEmpty ? defaultCountry.name : country;
+            regData['state'] = '';
             regData['image'] = value.photoUrl;
 
             print(regData.toString());
@@ -147,6 +155,13 @@ class AuthViewModel extends BaseViewModel {
     }
   }
 
+  /// The dial-code picker is the only source of `country`, so the phone number
+  /// and the country it implies are always written together.
+  void updatePhoneNumber({required SupportedCountry country, required String number}) {
+    regData['phonenumber'] = country.e164(number);
+    regData['country'] = country.name;
+  }
+
   void updateRegData({dynamic data, String? dataType, }) {
     if(dataType == 'firstname') {
       regData['firstname'] = data;
@@ -160,8 +175,6 @@ class AuthViewModel extends BaseViewModel {
       regData['country'] = data;
     } else if(dataType == 'state'){
       regData['state'] = data;
-    } else if(dataType == 'referralcode'){
-      regData['referral_code'] = data;
     } else if(dataType == 'bname'){
       regData['business_details']['business_name'] = data;
     } else if(dataType == 'bcontact'){

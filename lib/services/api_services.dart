@@ -15,7 +15,7 @@ class APIService {
   static const String CHECKLIST = 'car/checklist';
 
   static const String dev = 'https://motorby-dev.onrender.com/api/v1/';
-  static const String prod = 'https://api.motorby.co/api/v1/';
+  static const String prod = 'https://motorbyweb.exceptos.com/api/v1/';
 
   static const String vinUrl = 'https://vin-decoder19.p.rapidapi.com';
 
