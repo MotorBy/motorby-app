@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
-import 'package:mobile_auto_drive/ui/cars/add_car_viewmodel.dart';
-import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/update_car_image_view.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';

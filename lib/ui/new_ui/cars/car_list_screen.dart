@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/components/coming_soon_view.dart';
-import 'package:mobile_auto_drive/ui/cars/add_car_screen.dart';
-import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/update_car_image_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/marketplace/shops/shops_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';

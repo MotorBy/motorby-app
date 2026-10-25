@@ -36,7 +36,13 @@ class APIService {
   static String authUser = "$root$USER/create";
   static String loginUser = "$root$USER/login";
   static String getUser({String? id}) => "$root$USER/$id";
+  /// Asks for the account and its data to be removed. Needs the backend to
+  /// implement it; until then the app surfaces whatever error comes back.
+  static String requestAccountDeletion = "$root$USER/delete-request";
   static String makePayment = "$root$PAYMENT/create-payment";
+  /// Backend-created Stripe PaymentIntent. Must exist before euro payments
+  /// can work; the secret key stays server-side.
+  static String createStripeIntent = "$root$PAYMENT/stripe/create-intent";
 
   static String getWeather({String? lng, String? lat, String? country}) => "$root$USER/weather/?lng=$lng&lat=$lat&country=$country";
 
@@ -50,6 +56,7 @@ class APIService {
   static String makeSales = "$root$SALES/makesales";
   static String addCars = "$root$CAR/add";
   static String updateCars({String? carId}) => "$root$CAR/$carId";
+  static String deleteCar({String? carId}) => "$root$CAR/$carId";
   static String sales({String? saleId}) => "$root$SALES/$saleId";
   static String uploadDocuments({String? carId}) => "$root$CAR/documents/$carId";
 

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/main.dart';
 import 'package:mobile_auto_drive/services/device_info.dart';
-import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_sub_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/profile/referral/referral_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/divider_widget.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
+import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stacked/stacked.dart';
@@ -36,57 +35,6 @@ class NewProfileScreen extends StatelessWidget {
             hasOnBack: true,
             context: context,
           appBarTitle: 'Profile',
-          actions: [
-            PopupMenuButton<int>(
-              color: Colors.white,
-              surfaceTintColor: Colors.white,
-              icon: const Icon(Icons.more_vert),
-              itemBuilder: (context) => [
-                PopupMenuItem<int>(
-                  value: 0,
-                  onTap: (){
-                    navigate(context, EditProfileScreen(model: model));
-                  },
-                  child: const NormalText(
-                    text: 'Edit Profile',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                // const PopupMenuItem<int>(
-                //   value: 0,
-                //   child: NormalText(
-                //     text: 'Settings',
-                //     fontSize: 12,
-                //     fontWeight: FontWeight.w600,
-                //   ),
-                // ),
-                PopupMenuItem<int>(
-                  value: 1,
-                  onTap: () {
-
-                    model.logOut().then((value) {
-                      popToFirst(context);
-                      navigateReplace(context, const MyApp(
-                        isAuthed: false,
-                        isOnboarded: false,
-                      ));
-                    });
-
-                  },
-                  child: const NormalText(
-                    text: 'Log out',
-                    fontSize: 12,
-                    textColor: Colors.red,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-              onSelected: (val) {
-
-              },
-            ),
-          ]
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -221,6 +169,17 @@ class NewProfileScreen extends StatelessWidget {
     return Column(
       children: [
         _buildMenuItem(
+          icon: 'assets/images/user_.svg',
+          title: 'Edit profile',
+          subtitle: 'Name, phone number and address',
+          onTap: (){
+            navigate(context!, EditProfileScreen(model: model));
+          },
+        ),
+        const DividerWidget(
+
+        ),
+        _buildMenuItem(
           icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
           onTap: (){
@@ -343,6 +302,18 @@ class NewProfileScreen extends StatelessWidget {
           },
         ),
         const DividerWidget(),
+        ListTile(
+          onTap: () => _showLogOutSheet(context!, model),
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.logout_rounded, color: Colors.red, size: 22),
+          title: const NormalText(
+            text: 'Log out',
+            fontSize: 14,
+            textColor: Colors.red,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const DividerWidget(),
       ],
     );
   }
@@ -351,6 +322,7 @@ class NewProfileScreen extends StatelessWidget {
     required String icon,
     required String title,
     required VoidCallback onTap,
+    String? subtitle,
   }) {
     return ListTile(
       onTap: onTap,
@@ -361,8 +333,97 @@ class NewProfileScreen extends StatelessWidget {
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
+      subtitle: subtitle == null
+          ? null
+          : NormalText(
+              text: subtitle,
+              fontSize: 12,
+              textColor: Colors.grey[600]!,
+            ),
+      trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.black38),
     );
   }
+}
+
+/// Prompts before signing out, and offers the way out for people who are
+/// leaving for good rather than just signing off.
+void _showLogOutSheet(BuildContext context, ProfileViewModel model) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (sheetContext) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                height: 4,
+                width: 44,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const NormalText(
+              text: 'Log out?',
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+            const SizedBox(height: 8),
+            NormalText(
+              text: 'Your cars, documents and reminders stay on your account. '
+                  'You will need to sign in again to reach them.',
+              fontSize: 14,
+              textColor: Colors.grey[600]!,
+              maxLines: 3,
+            ),
+            const SizedBox(height: 24),
+            XButton(
+              onPressed: () {
+                Navigator.pop(sheetContext);
+                model.logOut().then((value) {
+                  // logOut resets the locator, so bail if the screen went away
+                  // while it was running.
+                  if (!context.mounted) return;
+                  popToFirst(context);
+                  navigateReplace(context, const MyApp(
+                    isAuthed: false,
+                    isOnboarded: false,
+                  ));
+                });
+              },
+              text: 'Log out',
+              buttonColor: Colors.red,
+              textColor: Colors.white,
+              height: 50,
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => Navigator.pop(sheetContext),
+              child: NormalText(
+                text: 'Cancel',
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                textColor: Colors.grey[700]!,
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 Widget _buildSocialLink({

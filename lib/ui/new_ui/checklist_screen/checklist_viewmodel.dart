@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/checklist_data_model.dart';
-import 'package:mobile_auto_drive/ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_auto_drive/services/checklist_service.dart';
 

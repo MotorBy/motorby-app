@@ -1,5 +1,8 @@
 
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+import 'package:mobile_auto_drive/services/payment_gateway.dart';
+import 'package:mobile_auto_drive/services/stripe_service.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_auto_drive/models/current_plans_model.dart';
 import 'package:mobile_auto_drive/models/plan_model.dart';
@@ -7,6 +10,7 @@ import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
+import 'package:mobile_auto_drive/utils/error_logging.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../services/user_service.dart';
@@ -30,6 +34,13 @@ class ProfileViewModel extends BaseViewModel {
 
   UserModel? userModel;
   User? user;
+
+  /// The profile to render, whether or not getUserProfile has run yet.
+  ///
+  /// EditProfileScreen can be built with a fresh view model, and a null user
+  /// there meant the country field fell back to the default - so saving would
+  /// quietly move a Ghanaian account to Nigeria.
+  User? get currentUser => user ?? userService.userModel?.payload?.user;
 
   PlanModel? planModel;
   PlansModel? plansModel;
@@ -193,12 +204,25 @@ class ProfileViewModel extends BaseViewModel {
 
     if(currentPlan?.toUpperCase() != 'FREE') {
 
+      final country = countryByName(userModel!.payload!.user!.country);
+      final gateway = gatewayForCountry(country);
+
+      // Austria (EUR) routes to Stripe, which is not finished. Say so rather
+      // than opening a Paystack sheet that would charge the wrong currency.
+      if (gateway != PaymentGateway.paystack) {
+        final reason = gateway == PaymentGateway.stripe && !StripeService.isConfigured
+            ? 'Card payments in ${country.currencyCode} are coming soon to ${country.name}'
+            : 'Payments are not available in ${country.name} yet';
+        onInitialisedError?.call(reason);
+        return;
+      }
+
       final request = PaystackTransactionRequest(
         reference: 'MBY-${DateTime.now().microsecondsSinceEpoch}',
         secretKey: APIKey.payStackSKey,
         email: userModel!.payload!.user!.email!,
         amount: currentAmount! * 100,
-        currency: PaystackCurrency.ngn,
+        currency: paystackCurrencyFor(country.currencyCode),
         channel: [
           PaystackPaymentChannel.mobileMoney,
           PaystackPaymentChannel.card,
@@ -323,6 +347,27 @@ class ProfileViewModel extends BaseViewModel {
 
     }
 
+  }
+
+  /// Sends the delete request while the session is still valid, then signs
+  /// out, because the account is on its way out either way.
+  Future<void> requestAccountDeletion({
+    String? reason,
+    Function? onCallBack,
+    Function(String? e)? onErrorBack,
+  }) async {
+
+    setBusyForObject('account_deletion', true);
+
+    try {
+      await userService.requestAccountDeletion(reason: reason);
+      setBusyForObject('account_deletion', false);
+      await logOut();
+      onCallBack?.call();
+    } catch (error) {
+      setBusyForObject('account_deletion', false);
+      onErrorBack?.call(readableError(error));
+    }
   }
 
   Future logOut() async {

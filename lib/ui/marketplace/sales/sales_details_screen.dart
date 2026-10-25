@@ -2,7 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_auto_drive/ui/cars/update_car_image_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/add/update_car_image_view.dart';
 import 'package:mobile_auto_drive/ui/marketplace/sales/sales_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';

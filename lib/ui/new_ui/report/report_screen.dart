@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/new_home.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
-import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'report_viewmodel.dart';
 import 'expenditure_report_view.dart';

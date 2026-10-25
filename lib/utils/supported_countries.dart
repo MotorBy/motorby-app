@@ -11,6 +11,9 @@ class SupportedCountry {
     required this.minDigits,
     required this.maxDigits,
     required this.sampleNumber,
+    required this.currencyCode,
+    required this.currencySymbol,
+    required this.features,
   });
 
   /// Value sent to the backend as `country`.
@@ -28,6 +31,16 @@ class SupportedCountry {
   /// Shown as the field hint so the expected format is obvious.
   final String sampleNumber;
 
+  /// ISO 4217 code this market is billed in, and the symbol to print.
+  final String currencyCode;
+  final String currencySymbol;
+
+  /// What Motorby actually offers here. Anything not listed is hidden rather
+  /// than shown and then failing when the user taps it.
+  final Set<MarketFeature> features;
+
+  bool offers(MarketFeature feature) => features.contains(feature);
+
   String get label => '$name ($dialCode)';
 
   /// Full E.164 number, e.g. +2348031234567. Empty in, empty out, so a blank
@@ -38,6 +51,16 @@ class SupportedCountry {
   }
 }
 
+/// Parts of Motorby that are only live in some markets. A country that does
+/// not list a feature hides it rather than offering something that will fail.
+enum MarketFeature {
+  /// Insurance products are sourced per-market; only Nigeria has providers.
+  insurance,
+
+  /// The fuel price API is only populated for the African markets.
+  fuelPrices,
+}
+
 const List<SupportedCountry> kSupportedCountries = [
   SupportedCountry(
     name: 'Nigeria',
@@ -46,6 +69,9 @@ const List<SupportedCountry> kSupportedCountries = [
     minDigits: 10,
     maxDigits: 10,
     sampleNumber: '8031234567',
+    currencyCode: 'NGN',
+    currencySymbol: '₦',
+    features: {MarketFeature.insurance, MarketFeature.fuelPrices},
   ),
   SupportedCountry(
     name: 'Austria',
@@ -54,6 +80,9 @@ const List<SupportedCountry> kSupportedCountries = [
     minDigits: 4,
     maxDigits: 13,
     sampleNumber: '6641234567',
+    currencyCode: 'EUR',
+    currencySymbol: '€',
+    features: {},
   ),
   SupportedCountry(
     name: 'Ghana',
@@ -62,6 +91,9 @@ const List<SupportedCountry> kSupportedCountries = [
     minDigits: 9,
     maxDigits: 9,
     sampleNumber: '241234567',
+    currencyCode: 'GHS',
+    currencySymbol: 'GH₵',
+    features: {MarketFeature.fuelPrices},
   ),
   SupportedCountry(
     name: 'Kenya',
@@ -70,6 +102,9 @@ const List<SupportedCountry> kSupportedCountries = [
     minDigits: 9,
     maxDigits: 9,
     sampleNumber: '712345678',
+    currencyCode: 'KES',
+    currencySymbol: 'KSh',
+    features: {MarketFeature.fuelPrices},
   ),
   SupportedCountry(
     name: 'United States',
@@ -78,6 +113,9 @@ const List<SupportedCountry> kSupportedCountries = [
     minDigits: 10,
     maxDigits: 10,
     sampleNumber: '2015551234',
+    currencyCode: 'USD',
+    currencySymbol: '\$',
+    features: {},
   ),
 ];
 
@@ -137,4 +175,28 @@ String? validatePhoneNumber(String? raw, SupportedCountry country) {
         : 'Enter a valid ${country.name} number';
   }
   return null;
+}
+
+/// Looks a country up by the name stored on the user's profile.
+///
+/// Falls back to the default rather than returning null: an account created
+/// before a country was recorded, or one whose country we no longer support,
+/// still has to render a currency and a feature set somewhere.
+SupportedCountry countryByName(String? name) {
+  if (name == null || name.isEmpty) return defaultCountry;
+
+  final wanted = name.trim().toLowerCase();
+  for (final country in kSupportedCountries) {
+    if (country.name.toLowerCase() == wanted ||
+        country.isoCode.toLowerCase() == wanted) {
+      return country;
+    }
+  }
+
+  // 'USA' and 'United States of America' are both common in older records.
+  if (wanted.contains('united states') || wanted == 'usa' || wanted == 'us') {
+    return kSupportedCountries.firstWhere((c) => c.isoCode == 'US');
+  }
+
+  return defaultCountry;
 }

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/utils/error_logging.dart';
 import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
 import 'package:mobile_auto_drive/models/reminder_model.dart';
@@ -337,6 +338,54 @@ class HomeViewModel extends BaseViewModel {
       currentViewState = CurrentView.cars;
     }
     notifyListeners();
+  }
+
+  /// True while a car delete is in flight, so the action can show progress and
+  /// refuse a second tap.
+  bool isDeletingCar = false;
+
+  /// Deletes a car together with its photos and document scans, then refreshes
+  /// the budget list the car screens are driven from.
+  Future<void> deleteCar({
+    required CarId car,
+    Function? onCallBack,
+    Function(String? e)? onErrorBack,
+  }) async {
+
+    if (isDeletingCar) return;
+
+    isDeletingCar = true;
+    notifyListeners();
+
+    try {
+
+      await userService.deleteCar(car: car);
+
+      budgetingModel = budgetingService.budgetingModel;
+
+      // The deleted car may have been the one the budget view was sitting on.
+      final remaining = budgetingModel?.budget?.length ?? 0;
+      if ((currentBudgetViewIndex ?? 0) >= remaining) {
+        currentBudgetViewIndex = remaining == 0 ? 0 : remaining - 1;
+      }
+      budgetingService.getCurrentTotalValue(index: currentBudgetViewIndex);
+
+      totalCostingAndValue = budgetingService.totalCostingAndValue;
+      currentTotalSpent = budgetingService.currentTotalSpent;
+      currentSetBudget = budgetingService.currentSetBudget;
+
+      if (currentCar?.sId == car.sId) currentCar = null;
+
+      isDeletingCar = false;
+      notifyListeners();
+
+      onCallBack?.call();
+
+    } catch (error) {
+      isDeletingCar = false;
+      notifyListeners();
+      onErrorBack?.call(readableError(error));
+    }
   }
 
   Future updateToBudget({String? type, Function? onCallBack}) async {
