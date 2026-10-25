@@ -47,9 +47,9 @@ class MileageReportView extends StatelessWidget {
                       context: context,
                       child: InfoDetailsView(
                         infoType: InfoType.mileage,
-                        currentIndex: 0,
+                        currentIndex: model.currentCarBudgetIndex,
                         onBudgetAction: () {
-                          model.setBudgetData();
+                          model.setBudgetData(currentIndex: model.currentCarBudgetIndex);
                           FloatingSnackBar.show(
                               context,
                               'Successfully updated',

@@ -6,6 +6,7 @@ import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_summary.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/permission_handling.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -59,6 +60,7 @@ class InfoDetailsViewModel extends BaseViewModel {
   List<int>? totalCostingAndValue = [];
 
   Map<String, dynamic> addressInput = {};
+  String? mileageError;
 
   void initializeTotalCostingAndValue() {
     budgetingModel = budgetingService.budgetingModel;
@@ -95,8 +97,32 @@ class InfoDetailsViewModel extends BaseViewModel {
     descriptionInputController.clear();
 
     budgetData = {};
+    addressInput = {};
+    mileageError = null;
     date = '';
     notifyListeners();
+  }
+
+  MileageSummary mileageSummary({required int budgetIndex}) {
+    final budgets = budgetingService.budgetingModel?.budget ?? [];
+    return MileageSummary.fromBudget(
+        budgetIndex >= 0 && budgetIndex < budgets.length ? budgets[budgetIndex] : null);
+  }
+
+  /// Checks the typed odometer reading before it is sent; returns false and sets [mileageError] if it can't be.
+  bool validateMileageInput({int? lastReading}) {
+    final reading = MileageSummary.parseReading(milesInputController.text);
+    if (reading == null) {
+      mileageError = 'Enter your odometer reading';
+    } else if (lastReading != null && reading < lastReading) {
+      mileageError = "Reading can't be lower than your last one (${formatKm(lastReading)})";
+    } else {
+      mileageError = null;
+      budgetData['mileage'] = reading.toString();
+      budgetData['odometer_reading'] = reading.toString();
+    }
+    notifyListeners();
+    return mileageError == null;
   }
 
   Future createReminder({
@@ -259,6 +285,7 @@ class InfoDetailsViewModel extends BaseViewModel {
     } else if (type == "miles") {
       budgetData["mileage"] = value;
       budgetData["odometer_reading"] = value;
+      mileageError = null;
     } else if (type == "condition") {
       budgetData["condition"] = value;
     } else if (type == "shop_name") {
@@ -282,10 +309,10 @@ class InfoDetailsViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future updateToBudget({String? type, Function? onCallBack}) async {
+  Future updateToBudget({String? type, int budgetIndex = 0, Function? onCallBack, Function(String e)? onErrorCallBack}) async {
     setBusy(true);
     await budgetingService.updateOnBudget(
-        budgetId: budgetingModel!.budget![0].sId,
+        budgetId: budgetingModel!.budget![budgetIndex].sId,
         updateBudget: {
           "data" : budgetData,
           "dataType" : type
@@ -322,6 +349,7 @@ class InfoDetailsViewModel extends BaseViewModel {
     }).onError((error, stackTrace) {
       print(stackTrace.toString());
       setBusy(false);
+      onErrorCallBack?.call(error.toString().replaceFirst('Exception: ', ''));
     });
   }
 

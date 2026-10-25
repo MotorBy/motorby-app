@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/history_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_viewmodel.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/search/search_address_map.dart';
+import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_details_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_summary.dart';
 import 'package:mobile_auto_drive/utils/circular_paint.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
@@ -30,6 +33,7 @@ class InfoDetailsView extends StatelessWidget {
     this.onHistoryNav,
     this.onBudgetAction,
     this.onPermissionAction,
+    this.onViewDetails,
     this.isFromQuickActions = false,
   });
 
@@ -38,6 +42,7 @@ class InfoDetailsView extends StatelessWidget {
   final Function? onHistoryNav;
   final Function? onBudgetAction;
   final Function? onPermissionAction;
+  final VoidCallback? onViewDetails;
   final bool? isFromQuickActions;
 
   final InfoDetailsViewModel? infoDetailsViewModel;
@@ -57,6 +62,7 @@ class InfoDetailsView extends StatelessWidget {
               onHistoryNav: onHistoryNav,
               onBudgetAction: onBudgetAction,
               onPermissionAction: onPermissionAction,
+              onViewDetails: onViewDetails,
             );
           }
 
@@ -70,6 +76,7 @@ class InfoDetailsView extends StatelessWidget {
                 onHistoryNav: onHistoryNav,
                 onBudgetAction: onBudgetAction,
                 onPermissionAction: onPermissionAction,
+                onViewDetails: onViewDetails,
                           ),
               ],
             ),
@@ -88,6 +95,7 @@ class InfoBodyView extends ViewModelWidget<InfoDetailsViewModel> {
   final Function? onHistoryNav;
   final Function? onBudgetAction;
   final Function? onPermissionAction;
+  final VoidCallback? onViewDetails;
 
   const InfoBodyView({
     super.key,
@@ -96,6 +104,7 @@ class InfoBodyView extends ViewModelWidget<InfoDetailsViewModel> {
     this.onHistoryNav,
     this.onBudgetAction,
     this.onPermissionAction,
+    this.onViewDetails,
   });
 
   @override
@@ -127,6 +136,7 @@ class InfoBodyView extends ViewModelWidget<InfoDetailsViewModel> {
               infoDetailsViewModel: viewModel,
               currentIndex: currentIndex,
               onBudgetAction: onBudgetAction,
+              onViewDetails: onViewDetails,
             ),
 
           ] else if(infoType == InfoType.breakdown) ... [
@@ -917,7 +927,8 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
     this.infoDetailsViewModel,
     this.infoType = InfoType.mileage,
     this.currentIndex,
-    this.onBudgetAction
+    this.onBudgetAction,
+    this.onViewDetails,
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
@@ -925,8 +936,43 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
   final int? currentIndex;
   final Function? onBudgetAction;
 
+  /// Replaces the default of closing this sheet and opening the mileage details screen.
+  final VoidCallback? onViewDetails;
+
+  int get budgetIndex => currentIndex ?? 0;
+
+  void _viewDetails(BuildContext context) {
+    if (onViewDetails != null) {
+      onViewDetails!();
+      return;
+    }
+    final navigator = Navigator.of(context);
+    navigator.pop();
+    navigator.push(MaterialPageRoute(builder: (_) => MileageDetailsScreen(budgetIndex: budgetIndex)));
+  }
+
+  void _submit(BuildContext context, InfoDetailsViewModel viewModel, int? lastReading) {
+    FocusScope.of(context).unfocus();
+    if (!viewModel.validateMileageInput(lastReading: lastReading)) return;
+
+    viewModel.updateToBudget(
+      type: infoType!.toValue(),
+      budgetIndex: budgetIndex,
+      onCallBack: () {
+        popView(context);
+        onBudgetAction?.call();
+      },
+      onErrorCallBack: (e) {
+        FloatingSnackBar.show(context, e, isError: true);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, InfoDetailsViewModel viewModel) {
+    final summary = viewModel.mileageSummary(budgetIndex: budgetIndex);
+    final lastReading = summary.currentReading;
+
     return Column(
       children: [
         const YMargin(15),
@@ -934,16 +980,9 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             GestureDetector(
-              onTap: () {
-
-                navigate(context, HistoryScreen(
-                  infoDetailsViewModel: viewModel,
-                  budgetHistoryType: 'Mileage',
-                ));
-
-              },
+              onTap: () => _viewDetails(context),
               child: NormalText(
-                text: 'View History',
+                text: 'View details',
                 textColor: XColors.textColor(),
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
@@ -969,11 +1008,50 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
             ),
           ],
         ),
-        const YMargin(35),
+        const YMargin(20),
+        GestureDetector(
+          onTap: () => _viewDetails(context),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: XColors.secondaryColor().withOpacity(0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.speed, color: XColors.primaryColor()),
+                const XMargin(12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NormalText(
+                        text: lastReading != null ? 'Last reading: ${formatKm(lastReading)}' : 'No mileage logged yet',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        textColor: XColors.textColor(),
+                      ),
+                      if (summary.latest != null) ...[
+                        const YMargin(2),
+                        NormalText(
+                          text: formatLogDate(summary.latest!.datum.inputDate),
+                          fontSize: 12,
+                          textColor: XColors.textColor().withOpacity(0.6),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: XColors.primaryColor()),
+              ],
+            ),
+          ),
+        ),
+        const YMargin(16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const YMargin(15),
             GestureDetector(
               onTap: () async {
 
@@ -1016,7 +1094,6 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
                 ),
               ),
             ),
-            const YMargin(15),
             const YMargin(15),
             const NormalText(
               text: 'Current fuel gauge',
@@ -1063,27 +1140,29 @@ class MileageInputView extends ViewModelWidget<InfoDetailsViewModel> {
             ),
             const YMargin(15),
             MainInputField(
-              label: "Odometer reading",
+              label: "Odometer reading (km)",
+              hint: lastReading != null ? 'At least ${formatKm(lastReading)}' : 'E.g. 12500',
               keyboard: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               controller: viewModel.milesInputController,
               isEnabled: true,
               onChanged: (s){
                 viewModel.updateBudgetData(value: s, type: 'miles');
               },
             ),
+            if (viewModel.mileageError != null) ...[
+              const YMargin(6),
+              NormalText(
+                text: viewModel.mileageError,
+                fontSize: 13,
+                textColor: Colors.red,
+              ),
+            ],
           ],
         ),
         const YMargin(35),
         XButton(
-          onPressed: !viewModel.isBusy ? () {
-            viewModel.updateToBudget(
-                type: infoType!.toValue(),
-                onCallBack: (){
-                  popView(context);
-                  onBudgetAction!.call();
-                }
-            );
-          } : (){},
+          onPressed: !viewModel.isBusy ? () => _submit(context, viewModel, lastReading) : (){},
           text: "Update",
           height: 56,
           textColor: Colors.white,

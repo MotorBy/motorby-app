@@ -7,6 +7,8 @@ import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_details_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_summary.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_tiles_view.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -383,6 +385,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
     );
   }
 
+  /// Latest logged odometer reading, falling back to the mileage entered when the car was added.
+  String _currentMileage(HomeViewModel viewModel) {
+    final budgets = viewModel.budgetingService.budgetingModel?.budget ?? [];
+    final index = widget.currentBudgetIndex ?? 0;
+    final logged = index < budgets.length ? MileageSummary.fromBudget(budgets[index]).currentReading : null;
+    return (logged ?? widget.carData.details?.mileage)?.toString() ?? 'N/A';
+  }
+
   Widget _buildCarSpecifications(BuildContext context, {required HomeViewModel viewModel}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -484,7 +494,11 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                     children: [
                       Expanded(
                         child: MileageTileView(
-                          totalMileage: widget.carData.details?.mileage!.toString() ?? "N/A",
+                          totalMileage: _currentMileage(viewModel),
+                          onMileageUpdate: () async {
+                            await openMileageDetails(context, budgetIndex: widget.currentBudgetIndex ?? 0);
+                            if (mounted) setState(() {});
+                          },
                         ),
                       ),
                       const XMargin(20),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_summary.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
@@ -61,6 +62,11 @@ class MileageTileView extends StatelessWidget {
   final String? totalMileage;
   final Function? onMileageUpdate;
 
+  String get _displayMileage {
+    final reading = MileageSummary.parseReading(totalMileage);
+    return reading != null ? formatKm(reading) : '${totalMileage ?? 0} km';
+  }
+
   @override
   Widget build(BuildContext context) {
     return ContainerWidget(
@@ -85,12 +91,14 @@ class MileageTileView extends StatelessWidget {
               ),
               const YMargin(6),
               NormalText(
-                text: "${totalMileage} km",
+                text: _displayMileage,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
             ],
           ),
+          if (onMileageUpdate != null)
+            Icon(Icons.chevron_right_rounded, color: XColors.primaryColor()),
         ],
       ),
     );
