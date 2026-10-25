@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/models/places_nearby_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/directions/directions_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';

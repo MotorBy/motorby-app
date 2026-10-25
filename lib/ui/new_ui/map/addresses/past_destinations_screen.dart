@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/addresses/address_form_sheet.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/directions/directions_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -80,8 +81,8 @@ class PastDestinationsScreen extends StatelessWidget {
 
   Widget _buildSavedAddressesList(BuildContext context, MapViewModel viewModel) {
     final savedAddresses = [
-      if (viewModel.homeAddress != null) viewModel.homeAddress!,
-      if (viewModel.workAddress != null) viewModel.workAddress!,
+      if (viewModel.homeAddress?.isNotEmpty ?? false) ('home', viewModel.homeAddress!),
+      if (viewModel.workAddress?.isNotEmpty ?? false) ('work', viewModel.workAddress!),
     ];
 
     if (savedAddresses.isEmpty) {
@@ -107,10 +108,11 @@ class PastDestinationsScreen extends StatelessWidget {
       itemCount: savedAddresses.length,
       separatorBuilder: (context, index) => const YMargin(12),
       itemBuilder: (context, index) {
-        final address = savedAddresses[index];
-        final isHome = address == viewModel.homeAddress;
-        
+        final (addressType, address) = savedAddresses[index];
+        final isHome = addressType == 'home';
+
         return ContainerWidget(
+          onTap: () => showAddressFormSheet(context, viewModel, addressType),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -149,6 +151,12 @@ class PastDestinationsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                tooltip: 'Edit ${addressType.capitalize()} address',
+                icon: const Icon(Icons.edit),
+                color: XColors.primaryColor(),
+                onPressed: () => showAddressFormSheet(context, viewModel, addressType),
               ),
               IconButton(
                 icon: const Icon(Icons.directions),

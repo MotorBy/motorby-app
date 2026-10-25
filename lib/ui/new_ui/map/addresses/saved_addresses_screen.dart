@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/addresses/address_form_sheet.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/directions/directions_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/map/search_address_map.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
-import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
-import 'package:mobile_auto_drive/widgets/inputfield.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -45,7 +43,7 @@ class SavedAddressesScreen extends StatelessWidget {
                   'Home Address',
                   'Add your home address for quick navigation',
                   Icons.home_outlined,
-                  () => _showAddressForm(context, viewModel, 'home'),
+                  () => showAddressFormSheet(context, viewModel, 'home'),
                   viewModel.homeAddress,
                 ),
                 const YMargin(24),
@@ -57,7 +55,7 @@ class SavedAddressesScreen extends StatelessWidget {
                   'Work Address',
                   'Add your work address for quick navigation',
                   Icons.work_outline,
-                  () => _showAddressForm(context, viewModel, 'work'),
+                  () => showAddressFormSheet(context, viewModel, 'work'),
                   viewModel.workAddress,
                 ),
                 
@@ -214,159 +212,6 @@ class SavedAddressesScreen extends StatelessWidget {
     );
   }
 
-  void _showAddressForm(BuildContext context, MapViewModel viewModel, String addressType) {
-    final TextEditingController describeAddressController = TextEditingController();
-
-    Map<String, dynamic>? existingAddress = addressType == 'home' ? viewModel.homeAddress : viewModel.workAddress;
-    Map<String, dynamic>? addressFromMap = {};
-    
-    if (existingAddress != null) {
-      describeAddressController.text = existingAddress['nickname'] ?? '';
-    }
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => ViewModelBuilder<MapViewModel>.reactive(
-          viewModelBuilder: () => viewModel,
-          disposeViewModel: false,
-          builder: (context, viewModel, child) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 16,
-              right: 16,
-              top: 16,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Handle bar at top
-                Center(
-                  child: Container(
-                    height: 4,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const YMargin(20),
-
-                NormalText(
-                  text: existingAddress != null ? 'Edit ${addressType.capitalize()} Address' : 'Add ${addressType.capitalize()} Address',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                const YMargin(16),
-
-                // Selected address display
-                GestureDetector(
-                  onTap: () async {
-
-                    final result = await Navigator.push<Map<String, dynamic>>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SearchAddressMap(viewModel: viewModel,),
-                      ),
-                    );
-
-                    if(result != null) {
-                      addressFromMap =  result;
-                      viewModel.notifyListeners();
-                    }
-
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: XColors.highlightColor().withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.location_on, color: XColors.primaryColor()),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            addressFromMap!['address'] ?? 'Selected location',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const YMargin(16),
-
-                // Nickname field
-                MainInputField(
-                  controller: describeAddressController,
-                  label: 'Describe address (Optional)',
-                  keyboard: TextInputType.text,
-                  hint: 'E.g. My ${addressType}',
-                  isEnabled: true,
-                ),
-
-                const YMargin(24),
-
-                // Save button
-                SizedBox(
-                  width: double.infinity,
-                  child: XButton(
-                    onPressed: () {
-
-                      // Save the address with selected location
-                      viewModel.saveAddress(
-                        addressType,
-                        addressFromMap!['address'],
-                        describeAddressController.text,
-                        double.parse(addressFromMap!['lat']),
-                      double.parse(addressFromMap!['lng']),
-                        onCallBack: (){
-
-                          popView(context);
-
-                          FloatingSnackBar.show(
-                              context,
-                              'Address saved successfully',
-                              isError: false
-                          );
-
-                        },
-                        onErrorCallBack: (e) {
-
-                          FloatingSnackBar.show(
-                              context,
-                              e!,
-                              isError: true
-                          );
-
-                        }
-                      );
-
-                    },
-                    text: "Save Address",
-                    isLoading: viewModel.isBusy,
-                    buttonColor: XColors.primaryColor(),
-                    width: 120,
-                  ),
-                ),
-                const YMargin(26),
-              ],
-            ),
-          );
-        }
-      ),
-    );}
-  }
-
   void _showDeleteConfirmation(BuildContext context, MapViewModel viewModel, String addressType) {
     showDialog(
       context: context,
@@ -393,11 +238,5 @@ class SavedAddressesScreen extends StatelessWidget {
         );
       },
     );
-  }
-
-// Helper extension to capitalize first letter
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

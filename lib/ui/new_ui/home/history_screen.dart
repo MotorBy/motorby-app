@@ -12,7 +12,7 @@ import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:intl/intl.dart';
 
-import 'package:mobile_auto_drive/ui/new_ui/map/directions_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/directions/directions_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HistoryScreen extends StatelessWidget {

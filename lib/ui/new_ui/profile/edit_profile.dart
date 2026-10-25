@@ -4,7 +4,7 @@ import 'package:mobile_auto_drive/main.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/ui/new_ui/map/search_address_map.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/search/search_address_map.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';

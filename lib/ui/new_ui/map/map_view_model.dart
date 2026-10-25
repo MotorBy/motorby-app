@@ -560,6 +560,8 @@ class MapViewModel extends BaseViewModel {
         _recentDestinations = _recentDestinations.sublist(0, 10);
       }
 
+      notifyListeners();
+
     } catch (e, stacktrace) {
       print(stacktrace.toString());
       print('Error loading saved addresses: $e');
@@ -611,13 +613,17 @@ class MapViewModel extends BaseViewModel {
         lng: longitude,
       ).then((value) {
 
-        // Update local cache
+        // The service caches the saved list; drop it so the next load shows this change.
+        _placesService.savedLocationsResponse = null;
+
+        final previous = addressType == 'home' ? homeAddress : workAddress;
         final addressData = {
           'address': address,
           'nickname': description,
           'latitude': latitude,
           'longitude': longitude,
           'savedAt': DateTime.now().toIso8601String(),
+          'address_id': value.payload?.id ?? previous?['address_id'],
         };
 
         if (addressType == 'home') {

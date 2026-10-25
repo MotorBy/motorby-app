@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/models/PlacesSearchModel/place.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_view_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/map/search_places_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/search/search_places_view.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
