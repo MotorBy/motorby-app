@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/main.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/search/search_address_map.dart';
-import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/session.dart';
 import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/phone_field.dart';
@@ -400,6 +399,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   /// Second gate on deletion. Spells out that it takes the cars and documents
   /// with it, and makes the destructive choice the deliberate one.
   void _confirmAccountDeletion(BuildContext context, ProfileViewModel model) {
+    final navigator = Navigator.of(context, rootNavigator: true);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -432,11 +432,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Navigator.pop(dialogContext);
               model.requestAccountDeletion(
                 onCallBack: () {
-                  popToFirst(context);
-                  navigateReplace(context, const MyApp(
-                    isAuthed: false,
-                    isOnboarded: false,
-                  ));
+                  if (navigator.mounted) showSignIn(navigator);
                 },
                 onErrorBack: (e) {
                   FloatingSnackBar.show(

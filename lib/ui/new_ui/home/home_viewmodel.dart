@@ -21,6 +21,7 @@ import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
+import 'package:mobile_auto_drive/utils/session.dart';
 import 'package:mobile_auto_drive/utils/permission_handling.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
@@ -545,9 +546,7 @@ class HomeViewModel extends BaseViewModel {
     });
   }
 
-  Future logOut() async {
-    await persistentService.deleteAll();
-  }
+  Future logOut() => endSession();
 
 }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
-import 'package:mobile_auto_drive/ui/auth/sigin_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view.dart';
@@ -19,6 +18,7 @@ import 'package:mobile_auto_drive/utils/enums.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/session.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
@@ -43,7 +43,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
       disposeViewModel: false,
       onViewModelReady: (model) => model.init(
         onErrorLogout: () {
-          navigateReplace(context, SignInScreen());
+          if (context.mounted) showSignIn(Navigator.of(context, rootNavigator: true));
         },
         onPermissionCallBack: () {
 
@@ -91,7 +91,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
               onRefresh: () async {
                 await viewModel.init(
                   onErrorLogout: () {
-                    navigateReplace(context, SignInScreen());
+                    if (context.mounted) showSignIn(Navigator.of(context, rootNavigator: true));
                   },
                   onPermissionCallBack: () {}
                 );

@@ -1,10 +1,8 @@
 
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
-import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/payment_gateway.dart';
 import 'package:mobile_auto_drive/services/stripe_service.dart';
 import 'package:mobile_auto_drive/utils/supported_countries.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_auto_drive/models/current_plans_model.dart';
 import 'package:mobile_auto_drive/models/plan_model.dart';
 import 'package:mobile_auto_drive/models/user_model.dart';
@@ -16,6 +14,7 @@ import 'package:stacked/stacked.dart';
 
 import '../../services/user_service.dart';
 import '../../utils/locator_setup.dart';
+import 'package:mobile_auto_drive/utils/session.dart';
 
 class ProfileViewModel extends BaseViewModel {
   final userService = serviceLocator<UserService>();
@@ -68,11 +67,6 @@ class ProfileViewModel extends BaseViewModel {
     'email',
     'profile'
   ];
-
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId: APIKey.googleServerClientId,
-    scopes: scopes,
-  );
 
   Map<String, dynamic> updateData = {};
 
@@ -371,11 +365,6 @@ class ProfileViewModel extends BaseViewModel {
     }
   }
 
-  Future logOut() async {
-    await NotificationService.instance.clearReminders();
-    await _googleSignIn.signOut();
-    await persistentService.deleteAll();
-    await serviceLocator.reset(dispose: false);
-  }
+  Future logOut() => endSession();
 
 }

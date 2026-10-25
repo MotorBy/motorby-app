@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_auto_drive/main.dart';
 import 'package:mobile_auto_drive/services/device_info.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
@@ -10,6 +9,7 @@ import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/divider_widget.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/session.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/button.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
@@ -390,16 +390,7 @@ void _showLogOutSheet(BuildContext context, ProfileViewModel model) {
             XButton(
               onPressed: () {
                 Navigator.pop(sheetContext);
-                model.logOut().then((value) {
-                  // logOut resets the locator, so bail if the screen went away
-                  // while it was running.
-                  if (!context.mounted) return;
-                  popToFirst(context);
-                  navigateReplace(context, const MyApp(
-                    isAuthed: false,
-                    isOnboarded: false,
-                  ));
-                });
+                logOutToSignIn(context);
               },
               text: 'Log out',
               buttonColor: Colors.red,

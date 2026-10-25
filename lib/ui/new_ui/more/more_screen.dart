@@ -13,11 +13,11 @@ import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
+import 'package:mobile_auto_drive/utils/session.dart';
 import 'package:mobile_auto_drive/widgets/app_bar.dart';
 import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/texts.dart';
-import 'package:mobile_auto_drive/main.dart';
 import 'package:stacked/stacked.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -458,7 +458,7 @@ class MoreScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context, MoreViewModel model) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -473,7 +473,7 @@ class MoreScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: NormalText(
               text: 'Cancel',
               fontSize: 16,
@@ -482,17 +482,8 @@ class MoreScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              model.logOut().then((value) {
-                popToFirst(context);
-                navigateReplace(
-                  context,
-                  const MyApp(
-                    isAuthed: false,
-                    isOnboarded: false,
-                  ),
-                );
-              });
+              Navigator.pop(dialogContext);
+              logOutToSignIn(context);
             },
             child: const NormalText(
               text: 'Log Out',
