@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:mobile_auto_drive/services/reminder_service.dart';
+import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_details_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -45,7 +47,26 @@ void main() {
       print(persistence.getUserID);
     }
 
+    NotificationService.onOpenTarget = (target) {
+      // Only signed-in users have reminders to open.
+      if (target.type != NotificationTarget.reminder || target.id == null) return;
+      if (!serviceLocator.isRegistered<ReminderService>()) return;
+      NotificationService.navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => ReminderDetailsScreen(reminderId: target.id),
+        ),
+      );
+    };
+
     runApp(MyApp(isAuthed: isAuthed, isOnboarded: isOnboarded,));
+
+    // A reminder tapped while the app was closed opens once the first frame
+    // (and so the navigator) exists.
+    if (isAuthed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        NotificationService.instance.handleLaunchTarget();
+      });
+    }
 
   }, (error, stackTrace) {
 
@@ -69,6 +90,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // Lets notifications show in-app banners and open screens on tap.
+      navigatorKey: NotificationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -79,7 +102,7 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           Size size = MediaQuery.of(context).size;
-          EvnConfig.init(envType: APIKey.development,);
+          EvnConfig.init(envType: APIKey.production,);
           SizeConfig.init(context, width: size.width, height: size.height, allowFontScaling: true);
           return isAuthed != true ? SplashScreen(isAuthed: isAuthed,) : const DashBoardScreen();
         }
