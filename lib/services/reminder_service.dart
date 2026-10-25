@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
@@ -5,6 +7,7 @@ import 'dart:convert' as JSON;
 import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/services/api_helper.dart';
 import 'package:mobile_auto_drive/services/api_services.dart';
+import 'package:mobile_auto_drive/services/notification_service.dart';
 
 IconData getReminderCategoryIcon(String category) {
   switch (category.toLowerCase()) {
@@ -47,6 +50,9 @@ class ReminderService {
     if (response.statusCode == 200) {
 
       reminderListModel = ReminderListModel.fromJson(json);
+      // Every load re-lays the OS schedule, so alerts follow edits made on
+      // another device and repeating reminders keep rolling forward.
+      unawaited(NotificationService.instance.syncReminders(reminderListModel!.data));
       return reminderListModel!.data;
 
     } else {
@@ -97,6 +103,43 @@ class ReminderService {
     } else {
       var error = json['message'];
       throw Exception(error);
+    }
+  }
+
+  /// The reminder with [id] from the last load, if it is there.
+  ReminderPayload? reminderById(String? id) {
+    if (id == null) return null;
+    for (final r in reminderListModel?.data ?? const <ReminderPayload>[]) {
+      if (r.id == id) return r;
+    }
+    return null;
+  }
+
+  /// Saves changes to an existing reminder and reloads the list, which also
+  /// reschedules its alerts.
+  ///
+  /// Sends only the fields that are editable. The endpoint mirrors the other
+  /// resources here (PUT /resource/{id}); it is not in the codebase yet, so
+  /// the backend has to provide it.
+  Future<ReminderPayload?> updateReminder({
+    required String id,
+    required Map<String, dynamic> changes,
+  }) async {
+
+    var response = await http.put(
+      Uri.parse('${APIService.root}reminders/$id'),
+      headers: APIHelper().requestHeadersWithToken(),
+      body: JSON.json.encode(changes),
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      await getReminders();
+      return reminderById(id);
+    } else {
+      var error = json['message'];
+      throw Exception(error ?? 'Could not save this reminder');
     }
   }
 }

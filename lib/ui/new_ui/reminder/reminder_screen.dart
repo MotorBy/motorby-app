@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_details_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/divider_widget.dart';
@@ -178,7 +179,16 @@ class _ReminderScreenState extends State<ReminderScreen> {
               const XMargin(10),
             ]
           ),
-          body: ReminderListView(reminders: model.reminders,),
+          body: ReminderListView(
+            reminders: model.reminders,
+            // Saving in the details screen refreshes the shared list, so
+            // re-reading it on return picks up any edit.
+            onOpen: (reminder) => navigateWithCallBack(
+              context,
+              ReminderDetailsScreen(reminder: reminder),
+              onCallBack: (_) => model.initialize(),
+            ),
+          ),
           );
       }
     );
@@ -186,9 +196,12 @@ class _ReminderScreenState extends State<ReminderScreen> {
 }
 
 class ReminderListView extends StatelessWidget {
-  ReminderListView({super.key, this.reminders});
+  ReminderListView({super.key, this.reminders, this.onOpen});
 
   List<ReminderPayload>? reminders = [];
+
+  /// Opens a reminder's details. Rows did nothing on tap before.
+  final void Function(ReminderPayload reminder)? onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -210,9 +223,9 @@ class ReminderListView extends StatelessWidget {
                 return Column(
                   children: [
                     ListTile(
-                      onTap: () {},
+                      onTap: onOpen == null ? null : () => onOpen!(reminder),
                       leading: Icon(
-                        getReminderCategoryIcon(reminder.metadata?.category ?? ''),
+                        getReminderCategoryIcon(reminder.effectiveCategory),
                         color: XColors.primaryColor(),
                         size: 20,
                       ),

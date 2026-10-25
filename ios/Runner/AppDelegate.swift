@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import UserNotifications
 import GoogleMaps
 
 @main
@@ -15,6 +16,8 @@ import GoogleMaps
     let apiKey = dict["GOOGLE_MAPS_API_KEY"] as? String {
             GMSServices.provideAPIKey(apiKey)
         }
+      // Lets scheduled reminders present while Motorby is open.
+      UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
       GeneratedPluginRegistrant.register(with: self)
       return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

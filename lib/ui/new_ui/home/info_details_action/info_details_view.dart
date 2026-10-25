@@ -866,7 +866,9 @@ class ReminderInputView extends ViewModelWidget<InfoDetailsViewModel> {
                 viewModel.budgetData['category'] != null) {
 
               viewModel.createReminder(
-                  budgetId: null,
+                  // Link it to the car being viewed; it was always sent null,
+                  // so no reminder knew which car it was for.
+                  budgetId: viewModel.budgetingService.currentBudget?.sId,
                   title: viewModel.titleInputController.text,
                   description: viewModel.descriptionInputController.text,
                   dueDate: viewModel.budgetData['due_date'],

@@ -60,6 +60,24 @@ class ReminderPayload {
   DateTime? createdAt;
   DateTime? updatedAt;
 
+  /// The budget (and so the car) this reminder belongs to. Older reminders
+  /// only carry it inside metadata.
+  String? get linkedBudgetId {
+    final direct = budgetId;
+    if (direct != null && direct.isNotEmpty) return direct;
+    final fromMeta = metadata?.budgetId;
+    return fromMeta == null || fromMeta.isEmpty ? null : fromMeta;
+  }
+
+  String get effectiveCategory {
+    final c = category ?? metadata?.category;
+    return c == null || c.isEmpty ? 'Other' : c;
+  }
+
+  int get remindBeforeMinutes => notificationPreferences?.remindMeBefore ?? 30;
+
+  bool get pushEnabled => notificationPreferences?.push ?? true;
+
   ReminderPayload({
     this.id,
     this.budgetId,
@@ -84,7 +102,7 @@ class ReminderPayload {
     dueTime: json["due_time"],
     frequency: json["frequency"],
     category: json["category"],
-    metadata: Metadata.fromJson(json["metadata"]),
+    metadata: json["metadata"] == null ? null : Metadata.fromJson(json["metadata"]),
     notificationPreferences: json["notification_preferences"] == null
         ? null
         : NotificationPreferences.fromJson(json["notification_preferences"]),
@@ -96,7 +114,7 @@ class ReminderPayload {
     "_id": id,
     "budget_id": budgetId,
     "title": title,
-    "metadata": metadata!.toJson(),
+    "metadata": metadata?.toJson(),
     "description": description,
     "due_date": dueDate?.toIso8601String(),
     "due_time": dueTime,
@@ -113,22 +131,31 @@ class NotificationPreferences {
   bool? push;
   bool? sms;
 
+  /// Minutes before the due time to alert. The create form has always sent
+  /// this (default 30); it just was never read back.
+  int? remindMeBefore;
+
   NotificationPreferences({
     this.email,
     this.push,
     this.sms,
+    this.remindMeBefore,
   });
 
   factory NotificationPreferences.fromJson(Map<String, dynamic> json) => NotificationPreferences(
     email: json["email"],
     push: json["push"],
     sms: json["sms"],
+    remindMeBefore: json["remind_me_before"] is num
+        ? (json["remind_me_before"] as num).toInt()
+        : int.tryParse('${json["remind_me_before"] ?? ''}'),
   );
 
   Map<String, dynamic> toJson() => {
     "email": email,
     "push": push,
     "sms": sms,
+    "remind_me_before": remindMeBefore,
   };
 }
 
@@ -142,8 +169,8 @@ class Metadata {
   });
 
   factory Metadata.fromJson(Map<String, dynamic> json) => Metadata(
-    budgetId: json["budget_id"],
-    category: json["category"],
+    budgetId: json["budget_id"] ?? '',
+    category: json["category"] ?? '',
   );
 
   Map<String, dynamic> toJson() => {

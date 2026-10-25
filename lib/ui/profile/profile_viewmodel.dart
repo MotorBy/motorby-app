@@ -1,5 +1,6 @@
 
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/payment_gateway.dart';
 import 'package:mobile_auto_drive/services/stripe_service.dart';
 import 'package:mobile_auto_drive/utils/supported_countries.dart';
@@ -371,6 +372,7 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   Future logOut() async {
+    await NotificationService.instance.clearReminders();
     await _googleSignIn.signOut();
     await persistentService.deleteAll();
     await serviceLocator.reset(dispose: false);

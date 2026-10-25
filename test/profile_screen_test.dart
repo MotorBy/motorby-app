@@ -7,6 +7,7 @@ import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
 import 'package:mobile_auto_drive/utils/env_config.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
@@ -124,21 +125,50 @@ void main() {
   });
 
   group('account deletion', () {
-    testWidgets('is offered from the log out sheet', (tester) async {
+    // Moved out of the log out sheet and into edit profile (b700c9b), so
+    // signing off and leaving for good are no longer side by side.
+    testWidgets('is not offered from the log out sheet any more',
+        (tester) async {
       await pumpProfile(tester);
-
       await openLogOutSheet(tester);
 
-      expect(find.text('Leaving for good?'), findsOneWidget);
+      expect(find.text('Log out?'), findsOneWidget);
+      expect(find.text('Request account deletion'), findsNothing);
+    });
+
+    Future<void> pumpEditProfile(WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              final size = MediaQuery.of(context).size;
+              SizeConfig.init(context,
+                  width: size.width, height: size.height, allowFontScaling: true);
+              return const EditProfileScreen();
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> openDeletionDialog(WidgetTester tester) async {
+      await tester.ensureVisible(find.text('Request account deletion'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Request account deletion'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('is offered at the bottom of edit profile', (tester) async {
+      await pumpEditProfile(tester);
+
       expect(find.text('Request account deletion'), findsOneWidget);
+      expect(find.text('Removes your account and everything on it'), findsOneWidget);
     });
 
     testWidgets('asks a second time, and says what is lost', (tester) async {
-      await pumpProfile(tester);
-
-      await openLogOutSheet(tester);
-      await tester.tap(find.text('Request account deletion'));
-      await tester.pumpAndSettle();
+      await pumpEditProfile(tester);
+      await openDeletionDialog(tester);
 
       expect(find.text('Delete your account?'), findsOneWidget);
       expect(find.textContaining('cars, documents'), findsOneWidget);
@@ -147,31 +177,13 @@ void main() {
 
     testWidgets('backing out of the confirmation keeps the account',
         (tester) async {
-      await pumpProfile(tester);
-
-      await openLogOutSheet(tester);
-      await tester.tap(find.text('Request account deletion'));
-      await tester.pumpAndSettle();
+      await pumpEditProfile(tester);
+      await openDeletionDialog(tester);
       await tester.tap(find.text('Keep my account'));
       await tester.pumpAndSettle();
 
       expect(find.text('Delete your account?'), findsNothing);
-      expect(find.byType(NewProfileScreen), findsOneWidget);
-    });
-
-    testWidgets('deleting needs two deliberate taps, not one', (tester) async {
-      await pumpProfile(tester);
-
-      // The row on the page is Log out, never Delete.
-      expect(find.text('Request account deletion'), findsNothing);
-      expect(find.text('Delete your account?'), findsNothing);
-
-      await openLogOutSheet(tester);
-      expect(find.text('Delete your account?'), findsNothing);
-
-      await tester.tap(find.text('Request account deletion'));
-      await tester.pumpAndSettle();
-      expect(find.text('Delete your account?'), findsOneWidget);
+      expect(find.byType(EditProfileScreen), findsOneWidget);
     });
   });
 }
