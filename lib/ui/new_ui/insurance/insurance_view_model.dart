@@ -1,4 +1,8 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:mobile_auto_drive/services/payment_service.dart';
+import 'package:mobile_auto_drive/services/payment_gateway.dart';
+import 'package:mobile_auto_drive/services/stripe_service.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
@@ -150,12 +154,25 @@ class InsuranceViewModel extends BaseViewModel {
     Function(String? error)? onInitialisedError,
     Function(PaystackInitializedTraction? initTransc)? onShowPayModal}) async {
 
+      final country = countryByName(userModel!.payload!.user!.country);
+      final gateway = gatewayForCountry(country);
+
+      // Austria (EUR) routes to Stripe, which is not finished. Say so rather
+      // than opening a Paystack sheet that would charge the wrong currency.
+      if (gateway != PaymentGateway.paystack) {
+        final reason = gateway == PaymentGateway.stripe && !StripeService.isConfigured
+            ? 'Card payments in ${country.currencyCode} are coming soon to ${country.name}'
+            : 'Payments are not available in ${country.name} yet';
+        onInitialisedError?.call(reason);
+        return;
+      }
+
     final request = PaystackTransactionRequest(
       reference: 'MBY-${DateTime.now().microsecondsSinceEpoch}',
       secretKey: APIKey.payStackSKey,
       email: userModel!.payload!.user!.email!,
       amount: purchaseAmount!.ceil() * 100,
-      currency: PaystackCurrency.ngn,
+      currency: paystackCurrencyFor(country.currencyCode),
       channel: [
         PaystackPaymentChannel.mobileMoney,
         PaystackPaymentChannel.card,

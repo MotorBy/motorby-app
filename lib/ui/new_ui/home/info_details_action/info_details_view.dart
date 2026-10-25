@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mobile_auto_drive/utils/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/history_screen.dart';
@@ -1668,7 +1669,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
                   fontSize: 11,
                 ),
                 NormalText(
-                  text: '₦${amtFormatter(viewModel.currentTotalSpent!)}',
+                  text: money(viewModel.currentTotalSpent),
                   textColor: XColors.textColor(),
                   fontWeight: FontWeight.w700,
                   fontSize: 21,
@@ -1683,7 +1684,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
                       fontSize: 11,
                     ),
                     NormalText(
-                      text: '₦${amtFormatter(viewModel.currentSetBudget)}',
+                      text: money(viewModel.currentSetBudget),
                       textColor: XColors.textColor(),
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
@@ -1727,7 +1728,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
                   fontSize: 13,
                 ),
                 NormalText(
-                  text:"₦${amtFormatter(viewModel.currentSetBudget + int.parse(viewModel.budgetInputController.text.isEmpty ? '0' : viewModel.budgetInputController.text))}",
+                  text: money(viewModel.currentSetBudget + int.parse(viewModel.budgetInputController.text.isEmpty ? '0' : viewModel.budgetInputController.text)),
                   textColor: XColors.textColor(),
                   fontSize: 13,
                   fontWeight: FontWeight.w700,

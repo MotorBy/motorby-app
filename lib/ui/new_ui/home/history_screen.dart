@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/utils/currency.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -187,7 +188,7 @@ class HistoryScreen extends StatelessWidget {
                                       const YMargin(8),
                                       NormalText(
                                         text: budgetHistoryType != 'Breakdown' && budgetHistoryType != 'Mileage' ?
-                                        '₦${numberFormat(number: model.totalCostingAndValue![model.currentBudgetTypeIndex!].toDouble())}'
+                                        money(model.totalCostingAndValue![model.currentBudgetTypeIndex!])
                                             : model.totalCostingAndValue![model.currentBudgetTypeIndex!].toString(),
                                         textColor: XColors.textColor(),
                                         fontSize: 28,
@@ -254,7 +255,7 @@ class HistoryScreen extends StatelessWidget {
                     ...List.generate(model.fueling!.length, (index) {
                       return HistoryListView(
                         body: 'Bought fuel for',
-                        price: '₦${numberFormat(number: model.fueling![index].price!.toDouble())}',
+                        price: money(model.fueling![index].price),
                         date: model.fueling![index].date,
                         location: model.fueling![index].fuelStationName,
                         address: model.fueling![index].gasStationAddress,
@@ -272,7 +273,7 @@ class HistoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: HistoryListView(
                           body: model.servicing![index].condition,
-                          price: '₦${numberFormat(number: model.servicing![index].price!.toDouble())}',
+                          price: money(model.servicing![index].price),
                           date: model.servicing![index].date ?? '',
                           location: model.servicing![index].shopName,
                           address: model.servicing![index].shopAddress,
@@ -291,7 +292,7 @@ class HistoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: HistoryListView(
                           body: model.repairing![index].condition,
-                          price: '₦${numberFormat(number: model.repairing![index].price!.toDouble())}',
+                          price: money(model.repairing![index].price),
                           date: model.repairing![index].date ?? '',
                           location: model.repairing![index].shopName,
                           address: model.repairing![index].shopAddress,

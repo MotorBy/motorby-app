@@ -79,6 +79,10 @@ class User {
   String? email;
   String? country;
   String? state;
+
+  /// Where the user currently is, free text. Used for fuel prices and for
+  /// anything that needs more precision than state.
+  String? address;
   String? phonenumber;
   String? userType;
   String? userId;
@@ -100,6 +104,7 @@ class User {
     this.email,
     this.country,
     this.state,
+    this.address,
     this.phonenumber,
     this.userType,
     this.kycData,
@@ -124,6 +129,7 @@ class User {
     email: json["email"],
     country: json["country"],
     state: json["state"],
+    address: json["address"],
     phonenumber: json["phonenumber"],
     userType: json["user_type"],
     userId: json["user_id"],
@@ -147,6 +153,7 @@ class User {
     "email": email,
     "country": country,
     "state": state,
+    "address": address,
     "phonenumber": phonenumber,
     "user_type": userType,
     "user_id": userId,

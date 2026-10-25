@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
+import 'package:mobile_auto_drive/widgets/list_selector.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/image_handling.dart';
@@ -27,27 +29,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController middleNameController;
   late TextEditingController lastNameController;
   late TextEditingController phoneController;
+  late TextEditingController stateController;
+  late TextEditingController addressController;
+
+  /// Drives both the country field and, through it, the billing currency.
+  late SupportedCountry country;
+
   bool hasChanges = false;
 
   void initControllers(ProfileViewModel model) {
 
-    firstNameController = TextEditingController(text: model.user?.firstname ?? '');
-    middleNameController = TextEditingController(text: model.user?.firstname ?? '');
-    lastNameController = TextEditingController(text: model.user?.lastname ?? '');
-    phoneController = TextEditingController(text: model.user?.email ?? '');
+    firstNameController = TextEditingController(text: model.currentUser?.firstname ?? '');
+    middleNameController = TextEditingController(text: model.currentUser?.firstname ?? '');
+    lastNameController = TextEditingController(text: model.currentUser?.lastname ?? '');
+    phoneController = TextEditingController(text: model.currentUser?.phonenumber ?? '');
+    stateController = TextEditingController(text: model.currentUser?.state ?? '');
+    addressController = TextEditingController(text: model.currentUser?.address ?? '');
+
+    country = countryByName(model.currentUser?.country);
 
     void onChanged() {
       if (!mounted) return;
       setState(() {
-        hasChanges = firstNameController.text != (model.user?.firstname ?? '') ||
-                    middleNameController.text != (model.user?.firstname ?? '') ||
-                    lastNameController.text != (model.user?.lastname ?? '');
+        hasChanges = firstNameController.text != (model.currentUser?.firstname ?? '') ||
+                    middleNameController.text != (model.currentUser?.firstname ?? '') ||
+                    lastNameController.text != (model.currentUser?.lastname ?? '') ||
+                    stateController.text != (model.currentUser?.state ?? '') ||
+                    addressController.text != (model.currentUser?.address ?? '') ||
+                    country.name != countryByName(model.currentUser?.country).name;
       });
     }
 
     firstNameController.addListener(onChanged);
     middleNameController.addListener(onChanged);
     lastNameController.addListener(onChanged);
+    stateController.addListener(onChanged);
+    addressController.addListener(onChanged);
+  }
+
+  void pickCountry(ProfileViewModel model) {
+    listHelperPicker(
+      height: 320,
+      context: context,
+      title: 'Country',
+      listString: kSupportedCountries.map((c) => c.name).toList(),
+      selected: (s) {
+        setState(() {
+          country = kSupportedCountries.firstWhere((c) => c.name == s);
+          hasChanges = true;
+        });
+      },
+    );
   }
 
   @override
@@ -56,6 +88,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     middleNameController.dispose();
     lastNameController.dispose();
     phoneController.dispose();
+    stateController.dispose();
+    addressController.dispose();
     super.dispose();
   }
 
@@ -77,8 +111,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               appBarTitle: 'Edit profile',
             ),
             backgroundColor: XColors.background(),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            // The form outgrew a single screen once country, state and
+            // address were added, so it scrolls.
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 40),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,7 +160,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
-                  const YMargin(56),
+                  const YMargin(32),
                   MainInputField(
                     label: 'First Name',
                     controller: firstNameController,
@@ -149,6 +185,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     isEnabled: false,
                   ),
                   const YMargin(16),
+                  // Country decides which currency this account is billed in,
+                  // so show that alongside the name rather than surprising
+                  // the user at checkout.
+                  MainInputField(
+                    label: 'Country',
+                    isEnabled: false,
+                    controller: TextEditingController(
+                        text: '${country.name}  (${country.currencyCode})'),
+                    suffixIcon: GestureDetector(
+                      onTap: () => pickCountry(model),
+                      child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21),
+                    ),
+                  ),
+                  const YMargin(16),
+                  MainInputField(
+                    label: 'State',
+                    controller: stateController,
+                    isEnabled: true,
+                  ),
+                  const YMargin(16),
+                  MainInputField(
+                    label: 'Current address',
+                    controller: addressController,
+                    isEnabled: true,
+                    maxLines: 2,
+                  ),
+                  const YMargin(16),
                   XButton(
                     onPressed: hasChanges ? () {
 
@@ -156,6 +219,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         'firstname': firstNameController.text,
                         'middlename': middleNameController.text,
                         'lastname': lastNameController.text,
+                        'country': country.name,
+                        'state': stateController.text,
+                        'address': addressController.text,
                       };
                       model.updateUserTypeProfile(
                         onCallBack: () {

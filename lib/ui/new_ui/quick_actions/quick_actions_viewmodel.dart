@@ -1,4 +1,5 @@
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
+import 'package:mobile_auto_drive/utils/currency.dart';
 import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/places_services.dart';
@@ -27,7 +28,7 @@ class QuickActionsViewModel extends BaseViewModel {
     if (_budgetingModel == null || _currentCar == null) return 'N0 spent';
 
     final currentBudget = _findCurrentBudget();
-    if (currentBudget == null) return '₦0 spent';
+    if (currentBudget == null) return '${money(0)} spent';
 
     int total = 0;
     if (currentBudget.repairing != null) {
@@ -36,14 +37,14 @@ class QuickActionsViewModel extends BaseViewModel {
       }
     }
     
-    return '₦${amtFormatter(total)} spent';
+    return '${money(total)} spent';
   }
   
   String get fuelingSpent {
     if (_budgetingModel == null || _currentCar == null) return 'N0 spent';
 
     final currentBudget = _findCurrentBudget();
-    if (currentBudget == null) return '₦0 spent';
+    if (currentBudget == null) return '${money(0)} spent';
 
     int total = 0;
     if (currentBudget.fueling != null) {
@@ -52,14 +53,14 @@ class QuickActionsViewModel extends BaseViewModel {
       }
     }
     
-    return '₦${amtFormatter(total)} spent';
+    return '${money(total)} spent';
   }
   
   String get servicingSpent {
     if (_budgetingModel == null || _currentCar == null) return 'N0 spent';
 
     final currentBudget = _findCurrentBudget();
-    if (currentBudget == null) return '₦0 spent';
+    if (currentBudget == null) return '${money(0)} spent';
 
     int total = 0;
     if (currentBudget.servicing != null) {
@@ -68,7 +69,7 @@ class QuickActionsViewModel extends BaseViewModel {
       }
     }
     
-    return '₦${amtFormatter(total)} spent';
+    return '${money(total)} spent';
   }
 
   String get totalReminderSet {

@@ -7,7 +7,9 @@ import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/services/payment_gateway.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:stacked/stacked.dart';
 
 class MoreViewModel extends BaseViewModel {
@@ -17,6 +19,31 @@ class MoreViewModel extends BaseViewModel {
 
   User? _user;
   User? get user => _user;
+
+  /// The market this account belongs to. Everything country-specific on the
+  /// More page - which features show, which currency prices print in, whether
+  /// payment is possible at all - reads from here.
+  SupportedCountry get country => countryByName(_user?.country);
+
+  String get currencyCode => country.currencyCode;
+
+  bool offers(MarketFeature feature) => country.offers(feature);
+
+  /// Whether any processor can charge this market yet.
+  bool get canTakePayment => canTakePaymentIn(country);
+
+  /// 'Lagos, Nigeria' when we know the state, otherwise just the country.
+  String get locationLabel {
+    final state = _user?.state;
+    return state == null || state.isEmpty
+        ? country.name
+        : '$state, ${country.name}';
+  }
+
+  /// What the Payment & Subscription row says it will bill in.
+  String get billingLabel => canTakePayment
+      ? 'Billed in $currencyCode'
+      : 'Not available in ${country.name} yet';
 
   bool _isPro = false;
   bool get isPro => _isPro;
@@ -59,8 +86,13 @@ class MoreViewModel extends BaseViewModel {
 
   Future<void> _loadUserData() async {
     try {
-      _user = await _userService.getCurrentFuelPrice();
-      //_isPro = _user?.isPro ?? false;
+      // This used to call getCurrentFuelPrice, which returns fuel prices, not
+      // a user - so _user was never populated and the page knew nothing about
+      // who was looking at it.
+      if (_userService.userModel?.payload?.user == null) {
+        await _userService.getUsers();
+      }
+      _user = _userService.userModel?.payload?.user;
     } catch (e) {
       print('Error loading user data: $e');
     }
@@ -118,20 +150,6 @@ class MoreViewModel extends BaseViewModel {
     if (_currentInsurance == null) {
       return 'No active insurance';
     }
-    
-    // final status = _currentInsurance!.status?.toLowerCase() ?? '';
-    // switch (status) {
-    //   case 'active':
-    //     return 'Active Coverage';
-    //   case 'expired':
-    //     return 'Expired';
-    //   case 'pending':
-    //     return 'Pending Approval';
-    //   case 'cancelled':
-    //     return 'Cancelled';
-    //   default:
-    //     return 'Unknown Status';
-    // }
     return 'No active insurance';
   }
 
@@ -139,36 +157,8 @@ class MoreViewModel extends BaseViewModel {
     if (_currentPlan == null) {
       return 'Free Plan';
     }
-    
-    // final planName = _currentPlan!.payload. ?? 'Free';
-    // return planName;
     return 'Free Plan';
   }
-
-  // bool get hasActiveInsurance => _currentInsurance != null &&
-  //     _currentInsurance!.status?.toLowerCase() == 'active';
-
-  // String? get insuranceExpiryDate {
-  //   if (_currentInsurance?.endDate != null) {
-  //     return _currentInsurance!.endDate.toString().split(' ')[0];
-  //   }
-  //   return null;
-  // }
-
-  // String? get subscriptionExpiryDate {
-  //   if (_currentPlan?.endDate != null) {
-  //     return _currentPlan!.endDate.toString().split(' ')[0];
-  //   }
-  //   return null;
-  // }
-
-  // double? get insurancePremium {
-  //   return _currentInsurance?.premium;
-  // }
-  //
-  // double? get subscriptionAmount {
-  //   return _currentPlan?.amount;
-  // }
 
   void clearError() {
     _errorMessage = null;

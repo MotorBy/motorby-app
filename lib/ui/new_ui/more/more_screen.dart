@@ -5,6 +5,8 @@ import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.
 import 'package:mobile_auto_drive/ui/new_ui/insurance/insurance.dart';
 import 'package:mobile_auto_drive/ui/new_ui/more/more_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/payment_and_subscription/payment_sub_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
+import 'package:mobile_auto_drive/utils/supported_countries.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
@@ -52,8 +54,14 @@ class MoreScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const YMargin(10),
-                _buildInsuranceSection(model, context),
-                const YMargin(30),
+                _buildCountryStrip(model),
+                const YMargin(10),
+                // Insurance only has providers in some markets; elsewhere the
+                // banner would lead to an empty quote screen.
+                if (model.offers(MarketFeature.insurance)) ...[
+                  _buildInsuranceSection(model, context),
+                  const YMargin(30),
+                ],
                 _buildMoreActions(context),
                 const YMargin(30),
                 _buildMenuSection(model, context),
@@ -239,9 +247,17 @@ class MoreScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
           _buildMenuItem(
+            icon: 'assets/images/user_.svg',
+            title: 'Profile',
+            subtitle: model.locationLabel,
+            onTap: () {
+              navigate(context, const NewProfileScreen());
+            },
+          ),
+          _buildMenuItem(
             icon: 'assets/images/auto/card.svg',
             title: 'Payment & Subscription',
-            subtitle: 'Manage your billing and subscription plans',
+            subtitle: model.billingLabel,
             onTap: () {
               navigate(context, const PaymentAndSubscriptionScreen());
             },
@@ -263,6 +279,40 @@ class MoreScreen extends StatelessWidget {
           //     _showLogoutDialog(context, model);
           //   },
           // ),
+        ],
+      ),
+    );
+  }
+
+  /// Says which market the account is in, so a user never has to guess why a
+  /// feature is missing or what currency they are about to be charged in.
+  Widget _buildCountryStrip(MoreViewModel model) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Icon(Icons.public, size: 16, color: XColors.primaryColor()),
+          const XMargin(8),
+          NormalText(
+            text: model.locationLabel,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            textColor: XColors.textColor(),
+          ),
+          const XMargin(8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: XColors.primaryColor().withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: NormalText(
+              text: model.currencyCode,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              textColor: XColors.primaryColor(),
+            ),
+          ),
         ],
       ),
     );
