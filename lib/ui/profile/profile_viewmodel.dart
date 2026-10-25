@@ -10,6 +10,7 @@ import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/utils/api_keys.dart';
+import 'package:mobile_auto_drive/utils/error_logging.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../services/user_service.dart';
@@ -346,6 +347,27 @@ class ProfileViewModel extends BaseViewModel {
 
     }
 
+  }
+
+  /// Sends the delete request while the session is still valid, then signs
+  /// out, because the account is on its way out either way.
+  Future<void> requestAccountDeletion({
+    String? reason,
+    Function? onCallBack,
+    Function(String? e)? onErrorBack,
+  }) async {
+
+    setBusyForObject('account_deletion', true);
+
+    try {
+      await userService.requestAccountDeletion(reason: reason);
+      setBusyForObject('account_deletion', false);
+      await logOut();
+      onCallBack?.call();
+    } catch (error) {
+      setBusyForObject('account_deletion', false);
+      onErrorBack?.call(readableError(error));
+    }
   }
 
   Future logOut() async {

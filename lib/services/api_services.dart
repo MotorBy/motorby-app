@@ -36,6 +36,9 @@ class APIService {
   static String authUser = "$root$USER/create";
   static String loginUser = "$root$USER/login";
   static String getUser({String? id}) => "$root$USER/$id";
+  /// Asks for the account and its data to be removed. Needs the backend to
+  /// implement it; until then the app surfaces whatever error comes back.
+  static String requestAccountDeletion = "$root$USER/delete-request";
   static String makePayment = "$root$PAYMENT/create-payment";
   /// Backend-created Stripe PaymentIntent. Must exist before euro payments
   /// can work; the secret key stays server-side.

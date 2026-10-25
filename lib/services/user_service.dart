@@ -193,6 +193,28 @@ class UserService {
     await budgetService.getBudgets();
   }
 
+  /// Submits a request to delete this account.
+  ///
+  /// A request, not an immediate wipe: the backend decides when the data
+  /// actually goes, and the user keeps access until it does. Must run while
+  /// the user is still signed in, since it is authenticated.
+  Future requestAccountDeletion({String? reason}) async {
+
+    var response = await http.post(
+        Uri.parse(APIService.requestAccountDeletion),
+        headers: APIHelper().requestHeadersWithToken(),
+        body: JSON.json.encode({'reason': reason ?? ''})
+    );
+
+    final json = JSON.jsonDecode(response.body);
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception(json["message"] ?? 'Could not send your request');
+    }
+
+    return json;
+  }
+
   Future getWeather({String? lat, String? lng}) async {
 
     var response = await http.get(
