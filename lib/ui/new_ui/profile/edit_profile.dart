@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/main.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/search_address_map.dart';
+import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/supported_countries.dart';
+import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/phone_field.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
@@ -299,7 +302,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     buttonColor: hasChanges ? XColors.primaryColor() : Colors.grey,
                     width: 120,
                   ),
-                  const YMargin(30),
+                  const YMargin(20),
                   ContainerWidget(
                     onTap: () {
                       Navigator.push(
@@ -322,14 +325,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             NormalText(
                               text: 'KYC Verification',
                               textColor: XColors.black(),
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
                             const YMargin(4),
                             NormalText(
                               text: 'Update your verification details',
                               textColor: XColors.primaryColor().withOpacity(0.4),
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                           ],
                         ),
@@ -341,6 +344,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
+                  // Separate from logging out, and deliberately quieter: leaving for
+                  // good is a different decision from signing off.
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            _confirmAccountDeletion(context, model);
+                          },
+                          behavior: HitTestBehavior.opaque,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const NormalText(
+                                        text: 'Request account deletion',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        textColor: Colors.red,
+                                      ),
+                                      const SizedBox(height: 2),
+                                      NormalText(
+                                        text: 'Removes your account and everything on it',
+                                        fontSize: 12,
+                                        textColor: Colors.grey[600]!,
+                                        maxLines: 2,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.chevron_right, size: 20, color: Colors.black38),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -348,4 +395,68 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         },
     );
   }
+
+
+  /// Second gate on deletion. Spells out that it takes the cars and documents
+  /// with it, and makes the destructive choice the deliberate one.
+  void _confirmAccountDeletion(BuildContext context, ProfileViewModel model) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        title: const NormalText(
+          text: 'Delete your account?',
+          fontSize: 19,
+          fontWeight: FontWeight.w600,
+        ),
+        content: NormalText(
+          text: 'We will remove your account along with your cars, documents, '
+              'reminders and spending history. This cannot be undone, and you '
+              'will be signed out now.',
+          fontSize: 14,
+          textColor: Colors.grey[700]!,
+          maxLines: 5,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: NormalText(
+              text: 'Keep my account',
+              fontSize: 15,
+              textColor: Colors.grey[700]!,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              model.requestAccountDeletion(
+                onCallBack: () {
+                  popToFirst(context);
+                  navigateReplace(context, const MyApp(
+                    isAuthed: false,
+                    isOnboarded: false,
+                  ));
+                },
+                onErrorBack: (e) {
+                  FloatingSnackBar.show(
+                    context,
+                    e ?? 'Could not send your request. Please try again.',
+                    isError: true,
+                  );
+                },
+              );
+            },
+            child: const NormalText(
+              text: 'Delete account',
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              textColor: Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
