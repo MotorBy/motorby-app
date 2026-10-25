@@ -97,7 +97,7 @@ class XButton extends StatelessWidget {
                     ],
                   )
             : const Loader(),
-        onPressed: () => onPressed!(),
+        onPressed: onPressed == null ? null : () => onPressed!(),
       );
     } else {
       return OutlinedButton(
@@ -149,7 +149,7 @@ class XButton extends StatelessWidget {
             : Loader(
                 bgProgressColor: progressColor,
               ),
-        onPressed: () => onPressed!(),
+        onPressed: onPressed == null ? null : () => onPressed!(),
       );
     }
   }

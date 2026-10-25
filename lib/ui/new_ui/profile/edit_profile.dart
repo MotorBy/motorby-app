@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/kyc/kyc_verification_screen.dart';
 import 'package:mobile_auto_drive/ui/profile/profile_viewmodel.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/search_address_map.dart';
 import 'package:mobile_auto_drive/utils/supported_countries.dart';
-import 'package:mobile_auto_drive/widgets/list_selector.dart';
+import 'package:mobile_auto_drive/widgets/phone_field.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/image_handling.dart';
@@ -32,54 +33,92 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController stateController;
   late TextEditingController addressController;
 
-  /// Drives both the country field and, through it, the billing currency.
+  /// Read off the phone number's dial code, never picked directly. Changing
+  /// the number is how a user moves country, and the billing currency follows.
   late SupportedCountry country;
+
+  /// What the profile looked like when the form opened, so the save button
+  /// only lights up on a real change.
+  late String _initialPhone;
+  late String _initialCountry;
+  late String _initialFirstName;
+  late String _initialLastName;
+  late String _initialState;
+  late String _initialAddress;
 
   bool hasChanges = false;
 
   void initControllers(ProfileViewModel model) {
 
-    firstNameController = TextEditingController(text: model.currentUser?.firstname ?? '');
-    middleNameController = TextEditingController(text: model.currentUser?.firstname ?? '');
-    lastNameController = TextEditingController(text: model.currentUser?.lastname ?? '');
-    phoneController = TextEditingController(text: model.currentUser?.phonenumber ?? '');
-    stateController = TextEditingController(text: model.currentUser?.state ?? '');
-    addressController = TextEditingController(text: model.currentUser?.address ?? '');
+    final user = model.currentUser;
 
-    country = countryByName(model.currentUser?.country);
+    firstNameController = TextEditingController(text: user?.firstname ?? '');
+    // There is no middlename on the profile yet; it used to be seeded with the
+    // first name, which just looked like a bug to anyone opening the form.
+    middleNameController = TextEditingController(text: '');
+    lastNameController = TextEditingController(text: user?.lastname ?? '');
+    stateController = TextEditingController(text: user?.state ?? '');
+    addressController = TextEditingController(text: user?.address ?? '');
 
-    void onChanged() {
-      if (!mounted) return;
-      setState(() {
-        hasChanges = firstNameController.text != (model.currentUser?.firstname ?? '') ||
-                    middleNameController.text != (model.currentUser?.firstname ?? '') ||
-                    lastNameController.text != (model.currentUser?.lastname ?? '') ||
-                    stateController.text != (model.currentUser?.state ?? '') ||
-                    addressController.text != (model.currentUser?.address ?? '') ||
-                    country.name != countryByName(model.currentUser?.country).name;
-      });
-    }
+    // Numbers are stored in E.164 (+2348031234567). Split the dial code back
+    // out so the picker shows the right flag and the field the local number.
+    final stored = user?.phonenumber ?? '';
+    country = countryFromDialCode(stored) ?? countryByName(user?.country);
+    phoneController =
+        TextEditingController(text: stripDialCode(stored, country));
 
-    firstNameController.addListener(onChanged);
-    middleNameController.addListener(onChanged);
-    lastNameController.addListener(onChanged);
-    stateController.addListener(onChanged);
-    addressController.addListener(onChanged);
+    _initialPhone = phoneController.text;
+    _initialCountry = country.name;
+    _initialFirstName = firstNameController.text;
+    _initialLastName = lastNameController.text;
+    _initialState = stateController.text;
+    _initialAddress = addressController.text;
+
+    firstNameController.addListener(recheckChanges);
+    middleNameController.addListener(recheckChanges);
+    lastNameController.addListener(recheckChanges);
+    stateController.addListener(recheckChanges);
+    addressController.addListener(recheckChanges);
   }
 
-  void pickCountry(ProfileViewModel model) {
-    listHelperPicker(
-      height: 320,
-      context: context,
-      title: 'Country',
-      listString: kSupportedCountries.map((c) => c.name).toList(),
-      selected: (s) {
-        setState(() {
-          country = kSupportedCountries.firstWhere((c) => c.name == s);
-          hasChanges = true;
-        });
-      },
+  void recheckChanges() {
+    if (!mounted) return;
+    setState(() {
+      hasChanges = firstNameController.text != _initialFirstName ||
+          lastNameController.text != _initialLastName ||
+          middleNameController.text.isNotEmpty ||
+          stateController.text != _initialState ||
+          addressController.text != _initialAddress ||
+          phoneController.text != _initialPhone ||
+          country.name != _initialCountry;
+    });
+  }
+
+  /// Opens the map picker and fills in whatever it hands back.
+  ///
+  /// The picker returns the state alongside the address, so choosing a place
+  /// fills both rather than leaving the user to retype one of them.
+  Future<void> pickAddressOnMap() async {
+    final picked = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SearchAddressMap(viewModel: null),
+      ),
     );
+
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      final address = picked['address'];
+      if (address != null && '$address'.isNotEmpty) {
+        addressController.text = '$address';
+      }
+      final state = picked['state'];
+      if (state != null && '$state'.isNotEmpty) {
+        stateController.text = '$state';
+      }
+    });
+    recheckChanges();
   }
 
   @override
@@ -91,6 +130,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     stateController.dispose();
     addressController.dispose();
     super.dispose();
+  }
+
+  /// Explains why there is no country field: it follows the dial code, and it
+  /// decides what currency the account is billed in.
+  Widget _buildCountryHint() {
+    return Row(
+      children: [
+        Icon(Icons.info_outline, size: 15, color: XColors.primaryColor()),
+        const XMargin(6),
+        Expanded(
+          child: NormalText(
+            text: '${country.name} \u00b7 billed in ${country.currencyCode}. '
+                'Change the dial code to move country.',
+            fontSize: 12,
+            textColor: Colors.grey[600]!,
+            maxLines: 2,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -179,25 +238,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     isEnabled: true,
                   ),
                   const YMargin(16),
-                  MainInputField(
-                    label: 'Phone number',
+                  // The dial code is the only way to change country, so the
+                  // number is editable here.
+                  PhoneNumberField(
                     controller: phoneController,
-                    isEnabled: false,
+                    initialCountry: country,
+                    onChanged: (picked, number) {
+                      country = picked;
+                      recheckChanges();
+                    },
                   ),
-                  const YMargin(16),
-                  // Country decides which currency this account is billed in,
-                  // so show that alongside the name rather than surprising
-                  // the user at checkout.
-                  MainInputField(
-                    label: 'Country',
-                    isEnabled: false,
-                    controller: TextEditingController(
-                        text: '${country.name}  (${country.currencyCode})'),
-                    suffixIcon: GestureDetector(
-                      onTap: () => pickCountry(model),
-                      child: const Icon(Icons.keyboard_arrow_down_rounded, size: 21),
-                    ),
-                  ),
+                  const YMargin(8),
+                  _buildCountryHint(),
                   const YMargin(16),
                   MainInputField(
                     label: 'State',
@@ -210,6 +262,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     controller: addressController,
                     isEnabled: true,
                     maxLines: 2,
+                    hint: 'Type it, or tap the pin to choose on the map',
+                    suffixIcon: GestureDetector(
+                      onTap: pickAddressOnMap,
+                      child: Icon(
+                        Icons.pin_drop_outlined,
+                        size: 22,
+                        color: XColors.primaryColor(),
+                      ),
+                    ),
                   ),
                   const YMargin(16),
                   XButton(
@@ -219,6 +280,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         'firstname': firstNameController.text,
                         'middlename': middleNameController.text,
                         'lastname': lastNameController.text,
+                        'phonenumber': country.e164(phoneController.text),
                         'country': country.name,
                         'state': stateController.text,
                         'address': addressController.text,

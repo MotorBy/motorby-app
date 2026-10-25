@@ -10,6 +10,7 @@ import 'package:mobile_auto_drive/ui/new_ui/profile/edit_profile.dart';
 import 'package:mobile_auto_drive/utils/env_config.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
+import 'package:mobile_auto_drive/widgets/button.dart';
 
 void main() {
   setUpAll(() async {
@@ -22,7 +23,7 @@ void main() {
 
   /// Puts a signed-in user from [country] in place. The More page reads its
   /// whole country behaviour off this one field.
-  void signInFrom(String country, {String? state}) {
+  void signInFrom(String country, {String? state, String? phone}) {
     serviceLocator<UserService>().userModel = UserModel(
       statusCode: 200,
       payload: Payload(
@@ -33,6 +34,7 @@ void main() {
           email: 'ada@test.dev',
           country: country,
           state: state,
+          phonenumber: phone,
         ),
       ),
     );
@@ -123,7 +125,7 @@ void main() {
     });
   });
 
-  group('editing country, state and address', () {
+  group('editing your profile', () {
     Future<void> pumpEditProfile(WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -140,49 +142,114 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('the form offers all three location fields', (tester) async {
-      signInFrom('Nigeria', state: 'Lagos');
+    testWidgets('there is no country field to edit', (tester) async {
+      signInFrom('Nigeria', state: 'Lagos', phone: '+2348031234567');
       await pumpEditProfile(tester);
 
-      expect(find.text('Country'), findsOneWidget);
-      expect(find.text('State'), findsOneWidget);
-      expect(find.text('Current address'), findsOneWidget);
-    });
-
-    testWidgets('country shows the currency it will bill in', (tester) async {
-      signInFrom('Ghana', state: 'Accra');
-      await pumpEditProfile(tester);
-
-      expect(find.text('Ghana  (GHS)'), findsOneWidget);
-    });
-
-    testWidgets('picking a country switches the billing currency with it',
-        (tester) async {
-      signInFrom('Nigeria', state: 'Lagos');
-      await pumpEditProfile(tester);
-
-      expect(find.text('Nigeria  (NGN)'), findsOneWidget);
-
-      await tester.tap(find.byIcon(Icons.keyboard_arrow_down_rounded));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Austria').last);
-      await tester.pumpAndSettle();
-
-      expect(find.text('Austria  (EUR)'), findsOneWidget);
+      // Country is derived from the dial code now, never picked.
+      expect(find.text('Country'), findsNothing);
       expect(find.text('Nigeria  (NGN)'), findsNothing);
     });
 
-    testWidgets('only the launch countries are offered', (tester) async {
-      signInFrom('Nigeria');
+    testWidgets('the stored number is split into dial code and local number',
+        (tester) async {
+      signInFrom('Ghana', state: 'Accra', phone: '+233241234567');
       await pumpEditProfile(tester);
 
-      await tester.tap(find.byIcon(Icons.keyboard_arrow_down_rounded));
+      expect(find.text('+233'), findsOneWidget);
+      expect(find.text('241234567'), findsWidgets);
+      // The full E.164 string is never shown raw.
+      expect(find.text('+233241234567'), findsNothing);
+    });
+
+    testWidgets('the hint says which country and currency the number implies',
+        (tester) async {
+      signInFrom('Ghana', state: 'Accra', phone: '+233241234567');
+      await pumpEditProfile(tester);
+
+      expect(
+        find.textContaining('Ghana \u00b7 billed in GHS'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('changing the dial code moves the country and the currency',
+        (tester) async {
+      signInFrom('Nigeria', state: 'Lagos', phone: '+2348031234567');
+      await pumpEditProfile(tester);
+
+      expect(find.textContaining('Nigeria \u00b7 billed in NGN'), findsOneWidget);
+
+      await tester.tap(find.text('+234'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Austria (+43)').last);
       await tester.pumpAndSettle();
 
-      expect(find.text('Austria'), findsOneWidget);
-      expect(find.text('Kenya'), findsOneWidget);
-      // Not one of the five markets.
-      expect(find.text('Canada'), findsNothing);
+      expect(find.textContaining('Austria \u00b7 billed in EUR'), findsOneWidget);
+      expect(find.textContaining('Nigeria'), findsNothing);
+    });
+
+    testWidgets('only the launch countries are offered as dial codes',
+        (tester) async {
+      signInFrom('Nigeria', phone: '+2348031234567');
+      await pumpEditProfile(tester);
+
+      await tester.tap(find.text('+234'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Austria (+43)'), findsOneWidget);
+      expect(find.text('Kenya (+254)'), findsOneWidget);
+      expect(find.textContaining('Canada'), findsNothing);
+    });
+
+    testWidgets('address can be typed or picked on the map', (tester) async {
+      signInFrom('Nigeria', state: 'Lagos', phone: '+2348031234567');
+      await pumpEditProfile(tester);
+
+      expect(find.text('Current address'), findsOneWidget);
+      expect(find.text('State'), findsOneWidget);
+      // The pin is the affordance that says the map is an option.
+      expect(find.byIcon(Icons.pin_drop_outlined), findsOneWidget);
+      expect(
+        find.text('Type it, or tap the pin to choose on the map'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Update stays off until something actually changes',
+        (tester) async {
+      signInFrom('Nigeria', state: 'Lagos', phone: '+2348031234567');
+      await pumpEditProfile(tester);
+
+      final button = tester.widget<XButton>(find.byType(XButton));
+      expect(button.onPressed, isNull, reason: 'nothing edited yet');
+
+      await tester.enterText(
+          find.widgetWithText(TextFormField, 'Current address'), '12 Awolowo Rd');
+      await tester.pump();
+
+      final after = tester.widget<XButton>(find.byType(XButton));
+      expect(after.onPressed, isNotNull, reason: 'address was edited');
+    });
+
+    testWidgets('tapping Update while it is off does nothing', (tester) async {
+      signInFrom('Nigeria', state: 'Lagos', phone: '+2348031234567');
+      await pumpEditProfile(tester);
+
+      // A null onPressed used to be invoked anyway and threw.
+      await tester.tap(find.text('Update profile'));
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('middle name starts empty rather than echoing the first name',
+        (tester) async {
+      signInFrom('Nigeria', phone: '+2348031234567');
+      await pumpEditProfile(tester);
+
+      // 'Ada' is the first name; it must not be prefilled into middle name.
+      expect(find.text('Ada'), findsOneWidget);
     });
   });
 }
