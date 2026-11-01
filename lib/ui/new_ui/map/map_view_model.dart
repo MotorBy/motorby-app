@@ -101,15 +101,16 @@ class MapViewModel extends BaseViewModel {
         setBusy(true);
       });
 
-      if (_placesService.returnNearbyData(type: type) != null && _placesService.returnNearbyData(type: type)!.nearbyPlaces!.isNotEmpty) {
+      final nearbyData = _placesService.returnNearbyData(type: type);
+      if (nearbyData != null && nearbyData.nearbyPlaces != null && nearbyData.nearbyPlaces!.isNotEmpty) {
 
-        final isSameLocation = _placesService.isSameLocation(
+        final isSameLocation = currentPosition != null && _placesService.isSameLocation(
           currentPosition!.latitude,
           currentPosition!.longitude
         );
         
         if (isSameLocation) {
-          nearbyPlacesResults = _placesService.returnNearbyData(type: type)!.nearbyPlaces;
+          nearbyPlacesResults = nearbyData.nearbyPlaces;
           Future.microtask((){
             setBusy(false);
           });
@@ -124,7 +125,7 @@ class MapViewModel extends BaseViewModel {
           type: type,
           radius: radius,
         );
-        nearbyPlacesResults = _placesService.returnNearbyData(type: type)!.nearbyPlaces;
+        nearbyPlacesResults = _placesService.returnNearbyData(type: type)?.nearbyPlaces;
       }
     } catch (e, stackTrace) {
       print(stackTrace);

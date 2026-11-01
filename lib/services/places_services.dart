@@ -76,8 +76,10 @@ class PlacesService {
       final json = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        lastLat = lat;
+        lastLng = lng;
 
-        if(type == "gas_station") {
+        if (type == "gas_station") {
           nearbyPlaces = PlacesNearby.fromJson(json);
           return nearbyPlaces!;
         } else {
@@ -86,7 +88,7 @@ class PlacesService {
         }
 
       } else {
-        var error = json["message"];
+        var error = json["message"] ?? 'Unknown server error';
         throw Exception(error);
       }
 

@@ -11,8 +11,12 @@ class PlacesNearby {
 
   factory PlacesNearby.fromJson(Map<String, dynamic> json) => PlacesNearby(
     statusCode: json["statusCode"],
-    message: json["message"],
-    nearbyPlaces: json["payload"] == null ? [] : List<NearbyPlace>.from(json["payload"]!.map((x) => NearbyPlace.fromJson(x))),
+    message: json["message"]?.toString(),
+    nearbyPlaces: json["payload"] == null
+        ? []
+        : List<NearbyPlace>.from(
+            (json["payload"] as List).map((x) => NearbyPlace.fromJson(x as Map<String, dynamic>)),
+          ),
   );
 
   Map<String, dynamic> toJson() => {
@@ -50,21 +54,23 @@ class NearbyPlace {
   });
 
   factory NearbyPlace.fromJson(Map<String, dynamic> json) => NearbyPlace(
-    location: json["location"] == null ? null : Location.fromJson(json["location"]),
-    name: json["name"],
-    placeId: json["place_id"],
-    vicinity: json["vicinity"],
-    businessStatus: businessStatusValues.map[json["business_status"]]!,
-    rating: json["rating"]?.toDouble(),
-    userRatingsTotal: json["user_ratings_total"],
-    types: json["types"] == null ? [] : List<String>.from(json["types"]!.map((x) => x)),
-    icon: json["icon"],
-    distance: json["distance"]?.toDouble(),
-    id: json["_id"],
+    location: json["location"] == null ? null : Location.fromJson(json["location"] as Map<String, dynamic>),
+    name: json["name"]?.toString(),
+    placeId: json["place_id"]?.toString(),
+    vicinity: json["vicinity"]?.toString(),
+    businessStatus: json["business_status"] != null ? businessStatusValues.map[json["business_status"]] : null,
+    rating: (json["rating"] as num?)?.toDouble(),
+    userRatingsTotal: (json["user_ratings_total"] as num?)?.toInt(),
+    types: json["types"] == null
+        ? []
+        : List<String>.from((json["types"] as List).map((x) => x.toString())),
+    icon: json["icon"]?.toString(),
+    distance: (json["distance"] as num?)?.toDouble(),
+    id: json["_id"]?.toString(),
   );
 
   Map<String, dynamic> toJson() => {
-    "location": location,
+    "location": location?.toJson(),
     "name": name,
     "place_id": placeId,
     "vicinity": vicinity,
@@ -88,8 +94,8 @@ class Location {
   });
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-    lat: json["lat"]?.toDouble(),
-    lng: json["lng"]?.toDouble(),
+    lat: (json["lat"] as num?)?.toDouble(),
+    lng: (json["lng"] as num?)?.toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -100,12 +106,16 @@ class Location {
 
 enum BusinessStatus {
   EMPTY,
-  OPERATIONAL
+  OPERATIONAL,
+  CLOSED_TEMPORARILY,
+  CLOSED_PERMANENTLY
 }
 
 final businessStatusValues = EnumValues({
   "": BusinessStatus.EMPTY,
-  "OPERATIONAL": BusinessStatus.OPERATIONAL
+  "OPERATIONAL": BusinessStatus.OPERATIONAL,
+  "CLOSED_TEMPORARILY": BusinessStatus.CLOSED_TEMPORARILY,
+  "CLOSED_PERMANENTLY": BusinessStatus.CLOSED_PERMANENTLY,
 });
 
 class EnumValues<T> {

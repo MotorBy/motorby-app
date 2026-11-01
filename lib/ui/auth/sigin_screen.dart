@@ -43,7 +43,7 @@ class _SignInScreenState extends State<SignInScreen> {
             surfaceTintColor: XColors.white(),
             automaticallyImplyLeading: false,
               actions: [
-                Row(
+               /* Row(
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -65,7 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     const XMargin(10)
                   ],
-                ),
+                ),*/
               ],
             ),
           floatingActionButton: Row(
