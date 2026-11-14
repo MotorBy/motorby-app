@@ -49,3 +49,19 @@ Future<void> logOutToSignIn(BuildContext context) async {
   await endSession();
   if (navigator.mounted) showSignIn(navigator);
 }
+
+/// Messages the API sends when the token is no longer valid. Kept in one
+/// place so a wording change on the backend is a one-line fix here.
+const _sessionExpiredMessages = [
+  'jwt expired',
+  'jwt malformed',
+  'invalid token',
+  'failed/invalid token',
+  'unauthorized',
+];
+
+/// Whether [error] means the user has to sign in again.
+bool isSessionExpiredError(Object? error) {
+  final text = (error ?? '').toString().toLowerCase();
+  return _sessionExpiredMessages.any(text.contains);
+}

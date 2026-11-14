@@ -162,8 +162,9 @@ class BudgetingService {
   }
 
   String getCheckListStatus() {
-    if(currentBudget != null) {
-      return "${currentBudget!.checklistData!.items!.where((item) => item.isChecked == true).length}/${currentBudget!.checklistData!.items!.length}";
+    final items = currentBudget?.checklistData?.items;
+    if (items != null) {
+      return "${items.where((item) => item.isChecked == true).length}/${items.length}";
     }
     return "0/0";
   }

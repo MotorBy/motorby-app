@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
-import 'package:mobile_auto_drive/utils/error_logging.dart';
 import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/fuel_price_model.dart';
 import 'package:mobile_auto_drive/models/reminder_model.dart';
@@ -14,489 +12,295 @@ import 'package:mobile_auto_drive/models/user_model.dart';
 import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/checklist_service.dart';
-import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/services/sales_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
+import 'package:mobile_auto_drive/utils/error_logging.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/session.dart';
-import 'package:mobile_auto_drive/utils/permission_handling.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 
-enum CurrentView {
-  cars,
-  sales
+/// Where the home screen is in loading its data.
+enum HomeStatus {
+  /// Nothing has loaded yet.
+  loading,
+
+  /// The user loaded; individual sections may still have failed, see
+  /// [HomeViewModel.failedSections].
+  ready,
+
+  /// The user could not be loaded, so there is nothing to show.
+  failed,
 }
 
+/// Sections of home that load independently, so one failing API call only
+/// takes out its own card.
+enum HomeSection { cars, plans, reminders, fuelPrice, weather, checklist }
+
+/// How many reminders home previews before pointing at the full list.
+const homeReminderPreviewCount = 5;
+
+/// Drives the home tab, and is shared with the car screens it opens.
+///
+/// Every API response is read defensively: a field the backend renames or
+/// drops shows up as an empty state, never a crash. Each request is isolated
+/// so one failure does not blank the whole screen.
 class HomeViewModel extends BaseViewModel {
   final userService = serviceLocator<UserService>();
   final authService = serviceLocator<AuthService>();
   final persistentService = serviceLocator<PersistenceService>();
   final budgetingService = serviceLocator<BudgetingService>();
-  final paymentService =  serviceLocator<AppPaymentService>();
+  final paymentService = serviceLocator<AppPaymentService>();
   final salesService = serviceLocator<SalesService>();
   final checklistService = serviceLocator<ChecklistService>();
-  final reminderService =  serviceLocator<ReminderService>();
-  final insuranceService = serviceLocator<InsuranceService>();
+  final reminderService = serviceLocator<ReminderService>();
 
-  final _navigatorKey = GlobalKey<NavigatorState>();
-  late AppLinks _appLinks;
-  StreamSubscription<Uri>? _linkSubscription;
+  HomeStatus status = HomeStatus.loading;
 
-  bool hasAddedCar = false;
+  /// Why the user could not be loaded, when [status] is [HomeStatus.failed].
+  String? loadError;
 
-  BudgetingModel? budgetingModel;
-  CarId? currentCar;
-  Budget? currentBudget;
-
-  ChecklistDataModel? checkListDataModel;
-  ReminderListModel? reminderListModel;
+  /// Sections whose last load failed. Their cards fall back to empty states.
+  final Set<HomeSection> failedSections = {};
 
   UserModel? userModel;
-  List<File> addImagesList = [];
-
-  final TextEditingController amountInputController = TextEditingController();
-  final TextEditingController dateInputController = TextEditingController();
-  final TextEditingController cityInputController = TextEditingController();
-  final TextEditingController milesInputController = TextEditingController();
-  final TextEditingController budgetInputController = TextEditingController();
-  final TextEditingController priceInputController = TextEditingController();
-  final TextEditingController problemInputController = TextEditingController();
-  final TextEditingController addressInputController = TextEditingController();
-
-  final List<String>? totalList = [
-    'Fueling',
-    'Servicing',
-    'Repairing',
-    'Mileage',
-    'Breakdown'
-  ];
-
-  final List<String>? manageIcons = [
-    'fuel.png',
-    'servicing.png',
-    'repairing.png',
-    'mph.png',
-    'breakdowns.png'
-  ];
-
-  final List<CheckList> checkList = [
-    CheckList(title: 'Fluids (oil and coolant)',isChecked: false),
-    CheckList(title: 'Brakes',isChecked: false),
-    CheckList(title: 'Lights',isChecked: false),
-    CheckList(title: 'Wiper blades',isChecked: false),
-    CheckList(title: 'Horn',isChecked: false),
-    CheckList(title: 'Tyres',isChecked: false),
-    CheckList(title: 'Documents and licenses',isChecked: false),
-  ];
-
-  void toggleItem(int index) {
-      checkList[index].isChecked = !checkList[index].isChecked;
-      notifyListeners();
-  }
-
-  List<int>? totalCostingAndValue = [
-    0,
-    0,
-    0,
-    0,
-    0
-  ];
-
-  Map<String, dynamic> budgetData = {};
-  Map<String, dynamic>? lastBudget;
-  LastBudget? lastBudgetModel;
-
-  int? currentTotalSpent = 0;
+  BudgetingModel? budgetingModel;
+  Budget? currentBudget;
+  CarId? currentCar;
   int? currentBudgetViewIndex = 0;
+  bool hasAddedCar = false;
+  int currentSetBudget = 0;
+  String? totalMileage = '0';
 
-  List<Fueling>? fueling = [];
-  List<Servicing>? servicing = [];
-  List<Repairing>? repairing = [];
-  List<Breakdowns>? breakdowns = [];
+  ReminderListModel? reminderListModel;
+  ChecklistDataModel? checkListDataModel;
+  FuelData? fuelData;
+
+  /// The most recent spend logged on any car, for the "Recent spend" card.
+  LastBudget? recentSpend;
 
   Position? currentPosition;
   bool? locationDeclined = false;
+  String? currentWeatherValue;
+  String? currentWeatherDescription;
 
-  CurrentView? currentViewState = CurrentView.cars;
-  String? currentWeatherValue = '0';
-  String? currentWeatherDescription = 'No weather';
-  String? weatherGuideDescription = '';
+  /// Images picked for a sale listing.
+  List<File> addImagesList = [];
 
-  String? totalMileage = '0';
-  String? totalMileageUnit = 'km';
-  String? lastDistance = '0';
+  /// The in-flight load, so a pull-to-refresh during start-up joins it
+  /// instead of firing every request twice.
+  Future<void>? _loading;
 
-  int currentSetBudget = 0;
+  User? get user => userModel?.payload?.user;
 
-  String? permissionLocationStatement = 'For the best experience on the Motorby app, allow location access. '
-      'This will enable features like current weather updates and nearby points of interest.';
+  /// The name to greet the user by: their first name, else the first word of
+  /// their full name.
+  String get firstName {
+    final first = user?.firstname?.trim();
+    if (first != null && first.isNotEmpty) return first;
+    final full = user?.fullname?.trim() ?? '';
+    return full.isEmpty ? '' : full.split(RegExp(r'\s+')).first;
+  }
 
-  FuelData? fuelData;
-  String? currentFuelPrice = '0';
+  /// The user's initial for the avatar.
+  String get initial => firstName.isEmpty ? '' : firstName[0].toUpperCase();
 
-  Future init({Function? onErrorLogout, Function? onCallBack, Function? onPermissionCallBack}) async {
+  /// "Good morning" and friends, from the device clock.
+  String greeting([DateTime? now]) {
+    final hour = (now ?? DateTime.now()).hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
 
-    initDeepLinks();
-    setBusyForObject('home-loading', true);
+  /// "Toyota Corolla 2019", skipping whatever the API left out.
+  String? get currentCarTitle {
+    final car = currentCar;
+    if (car == null) return null;
+    final title = [car.carMake, car.carModel, car.carYear]
+        .where((part) => part != null && part.trim().isNotEmpty)
+        .join(' ');
+    return title.isEmpty ? null : title;
+  }
 
-    await userService.getUsers().onError((error, stackTrace) {
-      setError(error.toString());
+  List<Budget> get budgets => budgetingModel?.budget ?? const [];
+
+  /// Checklist progress for the selected car, without touching shared
+  /// service state the way [checkListStatus] does.
+  ({int checked, int total}) get checklistProgress {
+    final items = currentBudget?.checklistData?.items ?? const [];
+    return (
+      checked: items.where((item) => item.isChecked == true).length,
+      total: items.length,
+    );
+  }
+
+  List<ReminderPayload> get recentReminders {
+    final all = reminderListModel?.data ?? const <ReminderPayload>[];
+    return all.length > homeReminderPreviewCount
+        ? all.sublist(0, homeReminderPreviewCount)
+        : all;
+  }
+
+  bool get hasWeather => currentWeatherValue != null;
+
+  /// True when the first load failed and there is nothing to show.
+  bool get showLoadError => status == HomeStatus.failed && userModel == null;
+
+  /// True on the very first load, before anything is on screen.
+  bool get isFirstLoad => status == HomeStatus.loading && userModel == null;
+
+  /// Loads everything home shows. Safe to call again to refresh: the selected
+  /// car is kept, and a call made while a load is running waits for it.
+  ///
+  /// [onErrorLogout] runs after an expired session has been cleared.
+  /// [onPermissionCallBack] runs when the screen should ask for location.
+  Future<void> init({
+    VoidCallback? onErrorLogout,
+    VoidCallback? onCallBack,
+    VoidCallback? onPermissionCallBack,
+  }) {
+    return _loading ??= _load(
+      onErrorLogout: onErrorLogout,
+      onPermissionCallBack: onPermissionCallBack,
+    ).whenComplete(() {
+      _loading = null;
+      onCallBack?.call();
     });
+  }
 
-    if(hasError) {
-
-      if(modelError.toString().contains('jwt expired') ||
-          modelError.toString().contains('Failed/Invalid Token')) {
-        if(onErrorLogout != null) {
-          authService.hasUser = false;
-          await logOut();
-          onErrorLogout();
-        }
-      }
-
-      setBusyForObject('home-loading', false);
-
-    } else {
-
-      await budgetingService.getBudgets();
-      await paymentService.getPlans();
-      await reminderService.getReminders();
-      await userService.getCurrentFuelPrice(
-          country: userService.userModel!.payload!.user!.country,
-          state: userService.userModel!.payload!.user!.state,
-      );
-
-      userModel = userService.userModel;
-      reminderListModel = reminderService.reminderListModel;
-      fuelData = userService.fuelData;
-
-      onPermissionCallBack?.call();
-
-      if(fuelData != null) {
-        currentFuelPrice = fuelData!.payload!.toInt().toString();
-      }
-
-      lastBudget = budgetingService.lastBudget;
-      if(lastBudget != null) {
-
-        var isFuture = budgetingService.isFutureSpending(date: lastBudget!["data"]["date"]);
-
-        lastBudgetModel = LastBudget.fromJson({
-          ...lastBudget!["data"],
-          "budget_type" : lastBudget!["dataType"],
-          "is_future_budget" : isFuture,
-        });
-
-        print(lastBudgetModel?.toJson().toString());
-      }
-
-      onBudgetViewUpdated(0);
-      setBusyForObject('home-loading', false);
-
+  Future<void> _load({
+    VoidCallback? onErrorLogout,
+    VoidCallback? onPermissionCallBack,
+  }) async {
+    if (userModel == null) {
+      status = HomeStatus.loading;
+      notifyListeners();
     }
 
+    try {
+      await userService.getUsers();
+    } catch (error) {
+      if (isSessionExpiredError(error)) {
+        authService.hasUser = false;
+        await logOut();
+        onErrorLogout?.call();
+        return;
+      }
+      _log('user', error);
+      loadError = readableError(error);
+      // A failed refresh keeps what is already on screen.
+      status = userModel == null ? HomeStatus.failed : HomeStatus.ready;
+      notifyListeners();
+      return;
+    }
+
+    userModel = userService.userModel;
+    loadError = null;
+
+    await Future.wait([
+      _attempt(HomeSection.cars, budgetingService.getBudgets),
+      _attempt(HomeSection.plans, paymentService.getPlans),
+      _attempt(HomeSection.reminders, reminderService.getReminders),
+      _attempt(
+        HomeSection.fuelPrice,
+        () => userService.getCurrentFuelPrice(
+          country: user?.country,
+          state: user?.state,
+        ),
+      ),
+    ]);
+
+    reminderListModel = reminderService.reminderListModel;
+    fuelData = userService.fuelData;
+    recentSpend = parseRecentSpend(budgetingService.lastBudget);
+
+    onBudgetViewUpdated(currentBudgetViewIndex);
+    status = HomeStatus.ready;
+    notifyListeners();
+
+    await _offerLocation(onPermissionCallBack);
+  }
+
+  /// Runs one request, recording a failure against [section] instead of
+  /// letting it abort the rest of the load.
+  Future<void> _attempt(HomeSection section, Future<dynamic> Function() request) async {
+    try {
+      await request();
+      failedSections.remove(section);
+    } catch (error) {
+      failedSections.add(section);
+      _log(section.name, error);
+    }
+  }
+
+  void _log(String what, Object error) {
+    if (kDebugMode) debugPrint('Home: could not load $what: ${readableError(error)}');
+  }
+
+  /// Points home at the car at [index], clamped to the cars that exist.
+  void onBudgetViewUpdated(int? index) {
+    budgetingModel = budgetingService.budgetingModel;
+    final cars = budgets;
+    hasAddedCar = cars.isNotEmpty;
+
+    if (cars.isEmpty) {
+      currentBudgetViewIndex = 0;
+      currentBudget = null;
+      currentCar = null;
+      currentSetBudget = 0;
+      totalMileage = '0';
+      checkListDataModel = null;
+      notifyListeners();
+      return;
+    }
+
+    final selected = (index ?? 0).clamp(0, cars.length - 1);
+    currentBudgetViewIndex = selected;
+    budgetingService.getCurrentTotalValue(index: selected);
+
+    currentBudget = cars[selected];
+    // A budget can come back without its car (e.g. the car was deleted) or
+    // with a car missing its make, so don't assume either is there.
+    currentCar = currentBudget!.carId;
+    currentSetBudget = currentBudget!.budget ?? 0;
+    totalMileage = budgetingService.currentMileage;
+
+    salesService.currentCar = currentCar;
+    salesService.currentCarMake = currentCar?.carMake;
+    budgetingService.currentCar = currentCar;
+
+    notifyListeners();
+    getChecklistDataModel();
+  }
+
+  /// Friendlier name for [onBudgetViewUpdated].
+  void selectCar(int index) => onBudgetViewUpdated(index);
+
+  Future<void> getChecklistDataModel() async {
+    final carId = currentCar?.sId;
+    if (carId == null) return;
+    try {
+      checkListDataModel = await checklistService.getCarChecklist(carId);
+      failedSections.remove(HomeSection.checklist);
+    } catch (error) {
+      failedSections.add(HomeSection.checklist);
+      _log('checklist', error);
+    }
     notifyListeners();
   }
 
+  /// "checked/total" for the car at [index]. Used by the car details screen.
   String checkListStatus({int? index}) {
-
     budgetingService.currentBudgetIndex = index;
     budgetingService.getCurrentTotalValue(index: index);
-
     return budgetingService.getCheckListStatus();
   }
 
-  List<ReminderPayload> getReminderLists() {
-    if(reminderListModel != null) {
-      if(reminderListModel!.data.isNotEmpty && reminderListModel!.data.length > 5) {
-        return reminderListModel!.data.sublist(0, 5);
-      }
-      return reminderListModel!.data;
-    } else {
-      return [];
-    }
-  }
-
-  void weatherSetup() {
-
-    userService.getWeather(lng: currentPosition!.longitude.toString(), lat: currentPosition!.latitude.toString(),).then((value) {
-
-      if(userService.weatherData != null) {
-
-        currentWeatherValue = userService.weatherData!.payload!.tempMax!.toInt().toString();
-        currentWeatherDescription = userService.weatherData!.payload!.description;
-        weatherGuideDescription = userService.weatherData!.payload!.weatherDriveInstruction;
-
-      } else {
-        currentWeatherDescription = 'No weather at the moment';
-      }
-
-      notifyListeners();
-
-    });
-
-  }
-
-  Future<void> initDeepLinks() async {
-    _appLinks = AppLinks();
-
-    final appLink = await _appLinks.getInitialLinkString();
-    if (appLink != null) {
-      print('getInitialAppLink: $appLink');
-      openAppLink(Uri(path: appLink));
-    }
-
-    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-      print('onAppLink: $uri');
-      openAppLink(uri);
-    });
-  }
-
-  @override
-  void dispose() {
-    _linkSubscription?.cancel();
-    super.dispose();
-  }
-
-  void openAppLink(Uri uri) {
-    _navigatorKey.currentState?.pushNamed(uri.fragment);
-  }
-
-  void onBudgetViewUpdated(int? v) {
-
-    budgetingModel = budgetingService.budgetingModel;
-    currentBudgetViewIndex = v;
-
-    fuelData = userService.fuelData;
-
-    budgetingService.getCurrentTotalValue(index: v);
-    currentBudget = budgetingService.currentBudget;
-
-    totalCostingAndValue = budgetingService.totalCostingAndValue;
-    currentTotalSpent = budgetingService.currentTotalSpent;
-
-    notifyListeners();
-
-    if(budgetingModel!.budget!.isNotEmpty) {
-      hasAddedCar = true;
-
-      currentCar = budgetingModel!.budget![currentBudgetViewIndex!].carId;
-      salesService.currentCar = currentCar;
-      salesService.currentCarMake = currentCar!.carMake!;
-      currentSetBudget = budgetingModel!.budget![currentBudgetViewIndex!].budget!;
-      budgetingService.currentCar = currentCar;
-
-      totalMileage = budgetingService.currentMileage;
-      lastDistance = budgetingService.lastTraveled;
-
-      notifyListeners();
-      getChecklistDataModel();
-
-    }
-
-    notifyListeners();
-
-  }
-
-  Future<void> getChecklistDataModel() async {
-    final response = await checklistService.getCarChecklist(currentCar!.sId!);
-    checkListDataModel = response;
-  }
-
-  void updateBudgetTypeIndex({int? v}) {
-
-    fueling = budgetingModel!.budget![currentBudgetViewIndex!].fueling!.reversed.toList();
-    servicing = budgetingModel!.budget![currentBudgetViewIndex!].servicing!.reversed.toList();
-    repairing = budgetingModel!.budget![currentBudgetViewIndex!].repairing!.reversed.toList();
-    breakdowns = budgetingModel!.budget![currentBudgetViewIndex!].breakdowns!.reversed.toList();
-
-    notifyListeners();
-  }
-
-  void resetUpdateBudgetData() {
-
-    amountInputController.clear();
-    dateInputController.clear();
-    cityInputController.clear();
-    milesInputController.clear();
-    budgetInputController.clear();
-    priceInputController.clear();
-    problemInputController.clear();
-    addressInputController.clear();
-
-    budgetData = {};
-    notifyListeners();
-  }
-
-  void updateCurrentViewState() {
-    if(currentViewState == CurrentView.cars) {
-      currentViewState = CurrentView.sales;
-    } else {
-      currentViewState = CurrentView.cars;
-    }
-    notifyListeners();
-  }
-
-  /// True while a car delete is in flight, so the action can show progress and
-  /// refuse a second tap.
-  bool isDeletingCar = false;
-
-  /// Deletes a car together with its photos and document scans, then refreshes
-  /// the budget list the car screens are driven from.
-  Future<void> deleteCar({
-    required CarId car,
-    Function? onCallBack,
-    Function(String? e)? onErrorBack,
-  }) async {
-
-    if (isDeletingCar) return;
-
-    isDeletingCar = true;
-    notifyListeners();
-
-    try {
-
-      await userService.deleteCar(car: car);
-
-      budgetingModel = budgetingService.budgetingModel;
-
-      // The deleted car may have been the one the budget view was sitting on.
-      final remaining = budgetingModel?.budget?.length ?? 0;
-      if ((currentBudgetViewIndex ?? 0) >= remaining) {
-        currentBudgetViewIndex = remaining == 0 ? 0 : remaining - 1;
-      }
-      budgetingService.getCurrentTotalValue(index: currentBudgetViewIndex);
-
-      totalCostingAndValue = budgetingService.totalCostingAndValue;
-      currentTotalSpent = budgetingService.currentTotalSpent;
-      currentSetBudget = budgetingService.currentSetBudget;
-
-      if (currentCar?.sId == car.sId) currentCar = null;
-
-      isDeletingCar = false;
-      notifyListeners();
-
-      onCallBack?.call();
-
-    } catch (error) {
-      isDeletingCar = false;
-      notifyListeners();
-      onErrorBack?.call(readableError(error));
-    }
-  }
-
-  Future updateToBudget({String? type, Function? onCallBack}) async {
-    setBusy(true);
-    await  budgetingService.updateOnBudget(
-        budgetId: budgetingModel!.budget![currentBudgetViewIndex!].sId,
-        updateBudget: {
-          "data" : budgetData,
-          "dataType" : type
-        }
-    ).then((value) async {
-      setBusy(false);
-
-      if(onCallBack != null) {
-
-        resetUpdateBudgetData();
-
-        await budgetingService.getBudgets();
-        budgetingService.getCurrentTotalValue(index: currentBudgetViewIndex);
-
-        totalCostingAndValue = budgetingService.totalCostingAndValue;
-        currentTotalSpent = budgetingService.currentTotalSpent;
-        currentSetBudget = budgetingService.currentSetBudget;
-
-        onCallBack();
-
-      }
-
-      notifyListeners();
-
-    }).onError((error, stackTrace) {
-      if (kDebugMode) {
-        print(stackTrace.toString());
-      }
-      setBusy(false);
-    });
-  }
-
-  bool? openCarSpecsView = false;
-  void setCarSpecsView({bool? shouldOpen}) {
-    openCarSpecsView = !openCarSpecsView!;
-    notifyListeners();
-  }
-
-  void updateBudgetData({String? value, String? type}) {
-    if(type == "amount") {
-      budgetData["price"] = int.parse(value!);
-    } else if (type == "date") {
-      budgetData["date"] = value;
-      dateInputController.text = value!;
-    } else if (type == "problem") {
-      budgetData["condition"] = value;
-    } else if (type == "location") {
-      budgetData["location"] = value;
-    } else if (type == "miles") {
-      budgetData["mileage"] = value;
-    }  else if (type == "condition") {
-      budgetData["condition"] = value;
-    }  else if (type == "shop_name") {
-      budgetData["shop_name"] = value;
-    }  else if (type == "fuel_station_name") {
-      budgetData["fuel_station_name"] = value;
-    } else if(type == "price_per_liter") {
-      budgetData["price_per_liter"] = int.parse(value!);
-    } else if(type == "break_down") {
-      budgetData["break_down"] = value;
-    } else if(type == "cause") {
-      budgetData["cause"] = value;
-    } else if(type == "budgeting") {
-      budgetData["budget_amount"] = value;
-    }
-    notifyListeners();
-  }
-
-  Future putAddedCarOnSale({
-    int? amount,
-    String? carId,
-    Function? onCallBack,
-    Function(String e)? onErrorCallBack}) async {
-
-    setBusy(true);
-    var saleData = {
-      'user_id' : persistentService.getUserID,
-      'data': {
-        "amount_for_sale" : amount,
-        "units_left": 1
-      },
-      'car_id': carId
-    };
-
-    if(currentCar!.images!.isNotEmpty) {
-
-      await salesService.makeSales(salesData: saleData).then((value) {
-        setBusy(false);
-        onCallBack!();
-      }).onError((error, stackTrace) {
-        setBusy(false);
-        print(stackTrace.toString());
-        onErrorCallBack!(error.toString());
-      });
-    } else {
-      setBusy(false);
-      onErrorCallBack!('No image on current car for sale');
-
-    }
-
-  }
-
   FuelMileageData getFuelMileageDate({int? index}) {
-
     budgetingService.currentBudgetIndex = index;
     budgetingService.getCurrentTotalValue(index: index);
 
@@ -511,49 +315,170 @@ class HomeViewModel extends BaseViewModel {
     );
   }
 
-  void getLocationUpdate() {
-    PermissionUtil().isLocationServiceAndPermissionsActive().then((value) {
-      if (value == false) {
-        PermissionUtil.requestPermission(Permission.location).then((value) {
+  bool? openCarSpecsView = false;
+  void setCarSpecsView({bool? shouldOpen}) {
+    openCarSpecsView = shouldOpen ?? !(openCarSpecsView ?? false);
+    notifyListeners();
+  }
 
-          Future.delayed(const Duration(seconds: 2), () {
+  /// True while a car delete is in flight, so the action can show progress and
+  /// refuse a second tap.
+  bool isDeletingCar = false;
 
-            Geolocator.getLastKnownPosition().then((Position? position) async {
-              currentPosition = position;
-              if(currentPosition != null) {
-                weatherSetup();
-              }
-            });
-          });
+  /// Deletes a car together with its photos and document scans, then refreshes
+  /// the budget list the car screens are driven from.
+  Future<void> deleteCar({
+    required CarId car,
+    Function? onCallBack,
+    Function(String? e)? onErrorBack,
+  }) async {
+    if (isDeletingCar) return;
 
-        });
+    isDeletingCar = true;
+    notifyListeners();
+
+    try {
+      await userService.deleteCar(car: car);
+      if (currentCar?.sId == car.sId) currentCar = null;
+      // Re-selects within the remaining cars, or falls back to the empty state.
+      onBudgetViewUpdated(currentBudgetViewIndex);
+
+      isDeletingCar = false;
+      notifyListeners();
+      onCallBack?.call();
+    } catch (error) {
+      isDeletingCar = false;
+      notifyListeners();
+      onErrorBack?.call(readableError(error));
+    }
+  }
+
+  Future<void> putAddedCarOnSale({
+    int? amount,
+    String? carId,
+    Function? onCallBack,
+    Function(String e)? onErrorCallBack,
+  }) async {
+    if (currentCar?.images?.isNotEmpty != true) {
+      onErrorCallBack?.call('No image on current car for sale');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      await salesService.makeSales(salesData: {
+        'user_id': persistentService.getUserID,
+        'data': {
+          'amount_for_sale': amount,
+          'units_left': 1,
+        },
+        'car_id': carId,
+      });
+      onCallBack?.call();
+    } catch (error) {
+      onErrorCallBack?.call(readableError(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /// Fetches weather straight away when location is already allowed, and only
+  /// asks the screen to explain the permission when it could still be granted.
+  Future<void> _offerLocation(VoidCallback? askForPermission) async {
+    if (currentPosition != null) return;
+
+    final PermissionStatus status;
+    try {
+      status = await Permission.location.status;
+    } catch (_) {
+      return; // No permission plugin (e.g. tests).
+    }
+
+    if (status.isGranted || status.isLimited) {
+      await getLocationUpdate();
+    } else if (status.isPermanentlyDenied || status.isRestricted) {
+      locationDeclined = true;
+      notifyListeners();
+    } else if (locationDeclined != true) {
+      askForPermission?.call();
+    }
+  }
+
+  /// Requests location if needed, then loads the weather for it.
+  Future<void> getLocationUpdate() async {
+    try {
+      var permission = await Permission.location.status;
+      if (!permission.isGranted && !permission.isLimited) {
+        permission = await Permission.location.request();
+      }
+      if (!permission.isGranted && !permission.isLimited) {
+        locationDeclined = true;
+        notifyListeners();
+        return;
       }
 
-      if(value == true) {
+      locationDeclined = false;
+      currentPosition = await Geolocator.getLastKnownPosition() ??
+          await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.low,
+            timeLimit: const Duration(seconds: 10),
+          );
+      await loadWeather();
+    } catch (error) {
+      _log('location', error);
+    }
+  }
 
-        Future.microtask(() {
+  Future<void> loadWeather() async {
+    final position = currentPosition;
+    if (position == null) return;
 
-          Geolocator.getLastKnownPosition().then((Position? position) async {
-            currentPosition = position;
-            if(currentPosition != null) {
-              weatherSetup();
-            }
-          });
-        });
-
-      }
-
-    });
+    try {
+      await userService.getWeather(
+        lat: position.latitude.toString(),
+        lng: position.longitude.toString(),
+      );
+      final weather = userService.weatherData?.payload;
+      currentWeatherValue = weather?.tempMax?.round().toString();
+      currentWeatherDescription = weather?.description;
+      failedSections.remove(HomeSection.weather);
+    } catch (error) {
+      failedSections.add(HomeSection.weather);
+      _log('weather', error);
+    }
+    notifyListeners();
   }
 
   Future logOut() => endSession();
-
 }
 
-class CheckList{
-  final String title;
-  bool isChecked;
+/// Reads the "last spending" record budgeting keeps, tolerating a missing or
+/// reshaped payload. Returns null when there is nothing usable.
+LastBudget? parseRecentSpend(Map<String, dynamic>? raw, {DateTime? now}) {
+  final data = raw?['data'];
+  if (data is! Map) return null;
 
-  CheckList({required this.title,this.isChecked =false});
-  
+  try {
+    final spend = LastBudget.fromJson({
+      ...Map<String, dynamic>.from(data),
+      'budget_type': raw?['dataType'],
+    });
+    if (spend.price == null) return null;
+    spend.isFutureBudget = isFutureDate(spend.date, now: now);
+    return spend;
+  } catch (_) {
+    return null; // A field changed type; skip the card rather than crash.
+  }
+}
+
+/// Whether a "d-M-yyyy" date, as budgeting stores it, is after today.
+bool isFutureDate(String? date, {DateTime? now}) {
+  if (date == null || date.isEmpty) return false;
+  try {
+    final day = DateFormat('d-M-yyyy').parseStrict(date);
+    final today = now ?? DateTime.now();
+    return day.isAfter(DateTime(today.year, today.month, today.day));
+  } catch (_) {
+    return false;
+  }
 }

@@ -194,10 +194,6 @@ class NotificationService with WidgetsBindingObserver {
     _isForeground = state == AppLifecycleState.resumed;
   }
 
-  // ---------------------------------------------------------------------------
-  // Reminders
-  // ---------------------------------------------------------------------------
-
   /// Brings the OS schedule in line with [reminders].
   ///
   /// Called whenever the reminder list loads or a reminder is saved. It clears
@@ -308,10 +304,6 @@ class NotificationService with WidgetsBindingObserver {
 
   /// The reminder last scheduled under [id], if any.
   ReminderPayload? scheduledReminder(String? id) => id == null ? null : _scheduled[id];
-
-  // ---------------------------------------------------------------------------
-  // In-app
-  // ---------------------------------------------------------------------------
 
   /// Shows a banner at the top of whatever screen is open. Returns false when
   /// there is nowhere to show it (no navigator yet), so the caller can fall

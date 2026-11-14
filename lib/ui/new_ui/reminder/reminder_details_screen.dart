@@ -137,10 +137,6 @@ class _ReminderDetailsScreenState extends State<ReminderDetailsScreen> {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Read-only view
-// -----------------------------------------------------------------------------
-
 class _ReminderDetailsView extends StatelessWidget {
   const _ReminderDetailsView({required this.model});
 
@@ -408,10 +404,6 @@ class _ReminderDetailsView extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Edit form
-// -----------------------------------------------------------------------------
-
 class _ReminderEditForm extends StatelessWidget {
   const _ReminderEditForm({
     required this.model,
@@ -634,10 +626,6 @@ class _ReminderEditForm extends StatelessWidget {
         child: NormalText(text: message, fontSize: 12, textColor: Colors.red),
       );
 }
-
-// -----------------------------------------------------------------------------
-// Pieces
-// -----------------------------------------------------------------------------
 
 class _Section extends StatelessWidget {
   const _Section({required this.title, required this.children});

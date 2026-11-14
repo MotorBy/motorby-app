@@ -64,10 +64,6 @@ class ReminderDetailsViewModel extends BaseViewModel {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // The connected car
-  // ---------------------------------------------------------------------------
-
   List<Budget> get _budgets => _budgetingService.budgetingModel?.budget ?? const [];
 
   /// Budgets that actually have a car, i.e. what a reminder can be linked to.
@@ -94,10 +90,6 @@ class ReminderDetailsViewModel extends BaseViewModel {
   /// has since been deleted.
   bool get linkedCarMissing => reminder?.linkedBudgetId != null && linkedCar == null;
 
-  // ---------------------------------------------------------------------------
-  // Timing
-  // ---------------------------------------------------------------------------
-
   DateTime? get dueAt => reminder == null ? null : reminderDueAt(reminder!);
 
   /// The next time this reminder is due, rolling repeats forward.
@@ -116,10 +108,6 @@ class ReminderDetailsViewModel extends BaseViewModel {
 
   /// A one-off reminder whose time has passed.
   bool isPast({DateTime? now}) => dueAt != null && nextOccurrence(now: now) == null;
-
-  // ---------------------------------------------------------------------------
-  // Editing
-  // ---------------------------------------------------------------------------
 
   void startEditing() {
     final r = reminder;

@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view.dart';
-import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_details_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
+import 'package:mobile_auto_drive/ui/new_ui/home/home_widgets.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_details_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/profile/profile_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_details_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_summary_view.dart';
-import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/utils/data_handling.dart';
-import 'package:mobile_auto_drive/utils/decorator.dart';
+import 'package:mobile_auto_drive/utils/brand.dart';
 import 'package:mobile_auto_drive/utils/enums.dart';
-import 'package:mobile_auto_drive/utils/get_svg_png.dart';
-import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
 import 'package:mobile_auto_drive/utils/session.dart';
-import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
-import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
 class NewHomeRevampScreen extends StatefulWidget {
-  const NewHomeRevampScreen({Key? key}) : super(key: key);
+  const NewHomeRevampScreen({Key? key, this.viewModel}) : super(key: key);
+
+  /// Lets tests hand in a prepared view model. The app builds its own.
+  final HomeViewModel? viewModel;
 
   @override
   State<NewHomeRevampScreen> createState() => _NewHomeRevampScreenState();
@@ -36,435 +35,62 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
   @override
   bool get wantKeepAlive => true;
 
+  void _signInAgain() {
+    if (mounted) showSignIn(Navigator.of(context, rootNavigator: true));
+  }
+
+  Future<void> _refresh(HomeViewModel model) => model.init(onErrorLogout: _signInAgain);
+
+  void _askForLocation(HomeViewModel model) {
+    if (!mounted) return;
+    modalBottomSheetMenu(
+      color: Colors.white,
+      isDismissible: false,
+      context: context,
+      height: 470,
+      child: InfoDetailsView(
+        infoType: InfoType.locationSetup,
+        onPermissionAction: model.getLocationUpdate,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return ViewModelBuilder<HomeViewModel>.reactive(
-      viewModelBuilder: () => HomeViewModel(),
+      viewModelBuilder: () => widget.viewModel ?? HomeViewModel(),
       disposeViewModel: false,
       onViewModelReady: (model) => model.init(
-        onErrorLogout: () {
-          if (context.mounted) showSignIn(Navigator.of(context, rootNavigator: true));
-        },
-        onPermissionCallBack: () {
-
-          if(model.currentPosition == null && model.locationDeclined == false) {
-            modalBottomSheetMenu(
-              color: Colors.white,
-              isDismissible: false,
-              context: context,
-              height: 470,
-              child: InfoDetailsView(
-                infoType: InfoType.locationSetup,
-                onPermissionAction: () {
-                  model.getLocationUpdate();
-                },
-              ),
-            );
-          }
-
-        }
+        onErrorLogout: _signInAgain,
+        onPermissionCallBack: () => _askForLocation(model),
       ),
-      builder: (context, viewModel, child) {
+      builder: (context, model, child) {
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: XColors.background(),
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: GestureDetector(
-                onTap: () {
-                  navigate(context, const NewProfileScreen());
-                },
-                child: const GetSvgImage(image: 'assets/images/user.svg'),
-              ),
-            ),
-            title: NormalText(
-              text: 'Hey ${viewModel.userModel != null ? viewModel.userModel!.payload!.user!.fullname : ""}',
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-            centerTitle: false,
-            actions: const [],
-          ),
-          backgroundColor: XColors.background(),
-          body: SafeArea(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                await viewModel.init(
-                  onErrorLogout: () {
-                    if (context.mounted) showSignIn(Navigator.of(context, rootNavigator: true));
-                  },
-                  onPermissionCallBack: () {}
-                );
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          backgroundColor: Colors.white,
+          body: Container(
+            decoration: BoxDecoration(gradient: Brand.backdrop()),
+            child: SafeArea(
+              bottom: false,
+              child: RefreshIndicator(
+                color: Brand.purple,
+                onRefresh: () => _refresh(model),
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
                   children: [
-
-                    const YMargin(24),
-
-                    _buildWeatherSection(
-                        viewModel,
-                        onGuideClick: () {
-
-                          modalBottomSheetMenu(
-                            color: Colors.white,
-                            context: context,
-                            height: 550,
-                            child: const InfoDetailsView(
-                              infoType: InfoType.weatherView,
-                            ),
-                          );
-
-                        }
+                    HomeHeader(
+                      greeting: model.greeting(),
+                      name: model.firstName,
+                      initial: model.initial,
+                      onProfile: () => navigate(context, const NewProfileScreen()),
                     ),
-                    const YMargin(8),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      child: ContainerWidget(
-                          elevation: 0.2,
-                          borderRadius: BorderRadius.circular(16),
-                          backgroundColor: XColors.white(),
-                          width: double.infinity,
-                          child: Column(
-                            children: [
-
-                              const YMargin(8),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12,),
-                                child: CarSelectorView(
-                                    cars: viewModel.budgetingModel?.budget != null ? viewModel.budgetingModel!.budget! : [],
-                                    currentCar: viewModel.currentCar != null ? '${viewModel.currentCar!.carMake} ${viewModel.currentCar!.carModel} ${viewModel.currentCar!.carYear}' : null,
-                                    allowStyling: false,
-                                    onCarSelected: ({Budget? budget, int? index}) {
-                                      viewModel.onBudgetViewUpdated(index);
-                                    }
-                                ),
-                              ),
-
-                              if(viewModel.hasAddedCar) ... [
-
-                                ///current car body summary details
-                                ContainerWidget(
-                                  backgroundColor: XColors.secondaryColor().withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(16),
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (viewModel.budgetingModel?.budget != null && viewModel.budgetingModel!.budget!.isNotEmpty &&
-                                              viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId != null) {
-                                            navigate(context,
-                                              CarDetailsScreen(
-                                                carData: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0].carId!,
-                                                budget: viewModel.budgetingModel!.budget![viewModel.currentBudgetViewIndex ?? 0],
-                                                currentBudgetIndex: viewModel.currentBudgetViewIndex ?? 0,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            NormalText(
-                                              text: 'View details',
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              textColor: XColors.primaryColor(),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      const YMargin(15),
-
-                                      Column(
-                                        children: [
-
-                                          if(viewModel.currentBudget!.carId!.images!.isNotEmpty) ... [
-
-                                            CarListThumbnail(
-                                              images: viewModel.currentBudget!.carId!.images!,
-                                            ),
-
-                                          ] else ... [
-
-                                            Column(
-                                              children: [
-                                                const GetSvgImage(
-                                                  image: 'assets/images/car_place_holder.svg',
-                                                  width: 60,
-                                                  height: 60,
-                                                ),
-                                                const YMargin(12),
-                                                GestureDetector(
-                                                  onTap: () {
-
-                                                    navigate(context,
-                                                        AddCarsScreen(
-                                                          action: "edit",
-                                                          currentCar: viewModel.currentBudget!.carId,
-                                                        )
-                                                    );
-
-                                                  },
-                                                  child: Container(
-                                                    width: 180,
-                                                    decoration: BoxDecorators.containerDecoration(
-                                                        hasOutline: true,
-                                                        outlineWidth: 1,
-                                                        radius: 32,
-                                                        outlineColor: Colors.purpleAccent.withOpacity(0.2)
-                                                    ),
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(8.0),
-                                                      child: Row(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                          NormalText(
-                                                            text: 'Add car Images',
-                                                            textColor: XColors.black().withOpacity(0.5),
-                                                            fontWeight: FontWeight.w700,
-                                                            fontSize: 12,
-                                                          ),
-                                                          const XMargin(5),
-                                                          Icon(Icons.add, size: 17, color: XColors.primaryColor(),),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            )
-
-                                          ],
-
-                                          const YMargin(15),
-
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: MileageTileView(
-                                                  totalMileage: viewModel.totalMileage,
-                                                  onMileageUpdate: () async {
-                                                    await openMileageDetails(context, budgetIndex: viewModel.currentBudgetViewIndex ?? 0);
-                                                    viewModel.onBudgetViewUpdated(viewModel.currentBudgetViewIndex);
-                                                  },
-                                                ),
-                                              ),
-                                              const XMargin(20),
-                                              Expanded(
-                                                child: ChecklistTileView(
-                                                  checkedItems: viewModel.checkListStatus(index: viewModel.currentBudgetViewIndex).split('/')[0] == '0' ? 0 :
-                                                  int.parse(viewModel.checkListStatus(index: viewModel.currentBudgetViewIndex).split('/')[0]),
-                                                  totalItems: viewModel.checkListStatus(index: viewModel.currentBudgetViewIndex).split('/')[1] == '0' ? 0 :
-                                                  int.parse(viewModel.checkListStatus(index: viewModel.currentBudgetViewIndex).split('/')[1]),
-                                                  onCheckListScreen: () {
-                                                    navigate(
-                                                      context,
-                                                      ChecklistScreen(
-                                                        carId: viewModel.currentBudget?.carId?.sId ?? "",
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-
-                                        ],
-                                      ),
-
-                                    ],
-                                  ),
-                                ),
-
-                              ] else ... [
-
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 13.0),
-                                  child: ContainerWidget(
-                                    backgroundColor: XColors.secondaryColor().withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: NoCarsView(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-                                      onAddCar: () => navigate(context, const AddCarsScreen()),
-                                    ),
-                                  ),
-                                )
-
-                              ],
-
-                              const YMargin(36),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                child: BudgetSummaryView(
-                                  currentBudgetIndex: viewModel.currentBudgetViewIndex,
-                                ),
-                              ),
-
-                        ],
-                      )),
-                    ),
-
-                    const YMargin(8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      child: ContainerWidget(
-                        elevation: 0.2,
-                        borderRadius: BorderRadius.circular(16),
-                        backgroundColor: XColors.white(),
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  NormalText(
-                                    text: 'Recent budget',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    textColor: XColors.black(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              height: 1,
-                              width: double.infinity,
-                              color: const Color(0xFFD0D5DD).withOpacity(0.5),
-                            ),
-                            if(viewModel.lastBudget != null && viewModel.lastBudgetModel != null) ... [
-
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Wrap(
-                                  runAlignment: WrapAlignment.center,
-                                  children: [
-                                    NormalText(
-                                      text: "${viewModel.lastBudgetModel?.isFutureBudget == false ? 'You Spent ' : 'You will be spending'} an amount of ",
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      textColor: XColors.black(),
-                                    ),
-                                    Text(
-                                      '\u20A6',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: XColors.black(),
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    NormalText(
-                                      text: amtFormatter(viewModel.lastBudgetModel?.price).toString(),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      textColor: XColors.black(),
-                                    ),
-                                    NormalText(
-                                      text: " on ",
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      textColor: XColors.black(),
-                                    ),
-                                    NormalText(
-                                      text: viewModel.lastBudgetModel?.budgetType,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      textColor: XColors.black(),
-                                    ),
-                                    NormalText(
-                                      text: " in ${viewModel.lastBudgetModel?.date}.",
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      textColor: XColors.black(),
-                                    )
-                                  ]
-                                ),
-                              )
-
-                            ] else ... [
-
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: NormalText(
-                                    text: 'No budgets yet',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    textColor: XColors.black(),
-                                  ),
-                                ),
-                              )
-
-                            ]
-
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const YMargin(8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      child: ContainerWidget(
-                        elevation: 0.2,
-                        borderRadius: BorderRadius.circular(16),
-                        backgroundColor: XColors.white(),
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  NormalText(
-                                    text: 'Reminders',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    textColor: XColors.black(),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      navigate(context, const InfoDetailsView(
-                                        infoType: InfoType.reminder,
-                                        isFromQuickActions: true,
-                                      ));
-                                    },
-                                    child: NormalText(
-                                      text: 'New',
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      textColor: XColors.primaryColor(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              height: 1,
-                              width: double.infinity,
-                              color: const Color(0xFFD0D5DD).withOpacity(0.5),
-                            ),
-                            ReminderListView(
-                              reminders: viewModel.getReminderLists(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    if (model.isFirstLoad)
+                      const HomeSkeleton()
+                    else if (model.showLoadError)
+                      HomeErrorView(message: model.loadError, onRetry: () => _refresh(model))
+                    else
+                      ..._content(context, model),
                   ],
                 ),
               ),
@@ -475,49 +101,193 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
     );
   }
 
-  Widget _buildWeatherSection(HomeViewModel viewModel, {Function? onGuideClick}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 13.0),
-      child: ContainerWidget(
-        backgroundColor: XColors.secondaryColor().withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                NormalText(
-                  text: '${viewModel.currentWeatherValue}°C',
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-                const XMargin(8),
-                const GetSvgImage(image: 'assets/images/bi_cloud-sun.svg'),
-                const XMargin(24),
-                NormalText(
-                  text: '${viewModel.currentWeatherDescription}',
-                  fontSize: 14,
-                ),
-              ],
-            ),
-            const Spacer(),
-            GestureDetector(
-              onTap: () {
-                onGuideClick?.call();
-              },
-              child: NormalText(
-                text: 'Drive guide',
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                textColor: XColors.primaryColor(),
+  List<Widget> _content(BuildContext context, HomeViewModel model) {
+    final partlyFailed = model.failedSections
+        .intersection({HomeSection.cars, HomeSection.reminders})
+        .isNotEmpty;
+
+    return [
+      if (partlyFailed)
+        const HomeNotice(message: "Some of your details didn't load. Pull down to refresh."),
+      const SizedBox(height: 16),
+      WeatherCard(
+        temperature: model.currentWeatherValue,
+        description: model.currentWeatherDescription,
+        locationDeclined: model.locationDeclined == true,
+        onEnableLocation: model.getLocationUpdate,
+        onDriveGuide: () => modalBottomSheetMenu(
+          color: Colors.white,
+          context: context,
+          height: 550,
+          child: const InfoDetailsView(infoType: InfoType.weatherView),
+        ),
+      ),
+
+      HomeSectionHeader(
+        title: 'Your garage',
+        actionLabel: model.currentCar != null ? 'View details' : null,
+        onAction: () => _openCarDetails(context, model),
+      ),
+      _GarageCard(model: model),
+
+      const HomeSectionHeader(title: 'Spending'),
+      HomeCard(
+        padding: const EdgeInsets.all(4),
+        // Keyed so the summary reloads when another car is picked.
+        child: BudgetSummaryView(
+          key: ValueKey(model.currentBudgetViewIndex),
+          currentBudgetIndex: model.currentBudgetViewIndex,
+        ),
+      ),
+      const SizedBox(height: 12),
+      RecentSpendCard(spend: model.recentSpend),
+
+      HomeSectionHeader(
+        title: 'Reminders',
+        actionLabel: 'New',
+        onAction: () => navigate(
+          context,
+          const InfoDetailsView(infoType: InfoType.reminder, isFromQuickActions: true),
+        ),
+      ),
+      HomeCard(
+        padding: const EdgeInsets.all(4),
+        child: ReminderListView(
+          reminders: model.recentReminders,
+          onOpen: (reminder) => navigateWithCallBack(
+            context,
+            ReminderDetailsScreen(reminder: reminder),
+            onCallBack: (_) => _refresh(model),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  void _openCarDetails(BuildContext context, HomeViewModel model) {
+    final budget = model.currentBudget;
+    final car = model.currentCar;
+    if (budget == null || car == null) return;
+    navigate(
+      context,
+      CarDetailsScreen(
+        carData: car,
+        budget: budget,
+        currentBudgetIndex: model.currentBudgetViewIndex ?? 0,
+      ),
+    );
+  }
+}
+
+class _GarageCard extends StatelessWidget {
+  const _GarageCard({required this.model});
+
+  final HomeViewModel model;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!model.hasAddedCar) {
+      return HomeCard(
+        padding: EdgeInsets.zero,
+        child: NoCarsView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+          onAddCar: () => navigate(context, const AddCarsScreen()),
+        ),
+      );
+    }
+
+    final images = model.currentCar?.images ?? const <String>[];
+    final checklist = model.checklistProgress;
+
+    return HomeCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CarSelectorView(
+            cars: model.budgets,
+            currentCar: model.currentCarTitle,
+            allowStyling: false,
+            onCarSelected: ({Budget? budget, int? index}) => model.selectCar(index ?? 0),
+          ),
+          const SizedBox(height: 8),
+          if (images.isNotEmpty)
+            CarListThumbnail(images: images)
+          else
+            _AddPhotos(
+              onTap: () => navigate(
+                context,
+                AddCarsScreen(action: 'edit', currentCar: model.currentCar),
               ),
             ),
-          ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: MileageTileView(
+                  totalMileage: model.totalMileage,
+                  onMileageUpdate: () async {
+                    await openMileageDetails(context, budgetIndex: model.currentBudgetViewIndex ?? 0);
+                    model.onBudgetViewUpdated(model.currentBudgetViewIndex);
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ChecklistTileView(
+                  checkedItems: checklist.checked,
+                  totalItems: checklist.total,
+                  onCheckListScreen: () {
+                    final carId = model.currentCar?.sId;
+                    if (carId == null) return;
+                    navigate(context, ChecklistScreen(carId: carId));
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddPhotos extends StatelessWidget {
+  const _AddPhotos({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Brand.lavender,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: SizedBox(
+          height: 140,
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Brand.hairline,
+                ),
+                child: const Icon(Icons.add_a_photo_rounded, color: Brand.purple, size: 22),
+              ),
+              const SizedBox(height: 10),
+              Text('Add car photos', style: Brand.text(size: 14, weight: FontWeight.w600)),
+              const SizedBox(height: 2),
+              Text('Show off your ride', style: Brand.text(size: 12, color: Brand.muted)),
+            ],
+          ),
         ),
       ),
     );
   }
-
 }

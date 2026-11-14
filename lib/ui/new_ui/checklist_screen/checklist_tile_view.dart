@@ -1,9 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_summary.dart';
-import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/utils/margin.dart';
-import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
-import 'package:mobile_auto_drive/widgets/texts.dart';
+import 'package:mobile_auto_drive/utils/brand.dart';
+
+/// The shared look of the small stat tiles on home and car details.
+class _StatTile extends StatelessWidget {
+  const _StatTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+    this.trailing,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Brand.lavender,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 10, 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 26,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.14),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(icon, size: 15, color: color),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            label,
+                            overflow: TextOverflow.ellipsis,
+                            style: Brand.text(size: 12, weight: FontWeight.w600, color: Brand.muted),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        value,
+                        maxLines: 1,
+                        style: Brand.text(size: 18, weight: FontWeight.w700, letterSpacing: -0.3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (trailing != null) trailing!,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class ChecklistTileView extends StatelessWidget {
   const ChecklistTileView({super.key, this.checkedItems = 0, this.totalItems = 0, this.onCheckListScreen});
@@ -14,41 +88,26 @@ class ChecklistTileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ContainerWidget(
-      onTap: () {
-        onCheckListScreen?.call();
-      },
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      borderRadius: BorderRadius.circular(16),
-      backgroundColor: XColors.secondaryColor().withOpacity(0.3),
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const NormalText(
-                text: 'Checklist',
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-              ),
-              const YMargin(6),
-              NormalText(
-                text: '$checkedItems/$totalItems',
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ],
-          ),
-          CircularProgressIndicator(
-            value: checkedItems != 0 ? (checkedItems!/totalItems!) : 0.8,
-            color: Colors.deepPurple,
-            strokeWidth: 8,
-            backgroundColor: Colors.black12,
-          ),
-        ],
+    final checked = checkedItems ?? 0;
+    final total = totalItems ?? 0;
+    final progress = total == 0 ? 0.0 : (checked / total).clamp(0.0, 1.0);
+
+    return _StatTile(
+      icon: Icons.fact_check_rounded,
+      label: 'Checklist',
+      value: '$checked/$total',
+      color: Brand.purple,
+      onTap: onCheckListScreen == null ? null : () => onCheckListScreen!(),
+      trailing: SizedBox(
+        width: 34,
+        height: 34,
+        child: CircularProgressIndicator(
+          value: progress,
+          strokeWidth: 5,
+          strokeCap: StrokeCap.round,
+          color: Brand.purple,
+          backgroundColor: Brand.lilac,
+        ),
       ),
     );
   }
@@ -69,38 +128,15 @@ class MileageTileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ContainerWidget(
-      onTap: () {
-        onMileageUpdate?.call();
-      },
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      borderRadius: BorderRadius.circular(16),
-      backgroundColor: XColors.secondaryColor().withOpacity(0.3),
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const NormalText(
-                text: 'Mileage',
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-              ),
-              const YMargin(6),
-              NormalText(
-                text: _displayMileage,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ],
-          ),
-          if (onMileageUpdate != null)
-            Icon(Icons.chevron_right_rounded, color: XColors.primaryColor()),
-        ],
-      ),
+    return _StatTile(
+      icon: Icons.speed_rounded,
+      label: 'Mileage',
+      value: _displayMileage,
+      color: Brand.info,
+      onTap: onMileageUpdate == null ? null : () => onMileageUpdate!(),
+      trailing: onMileageUpdate == null
+          ? null
+          : const Icon(Icons.chevron_right_rounded, color: Brand.purple),
     );
   }
 }

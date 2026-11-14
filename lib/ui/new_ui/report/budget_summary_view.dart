@@ -31,11 +31,13 @@ class _BudgetSummaryViewState extends State<BudgetSummaryView> {
         },
         builder: (context, model, child) {
 
-          String currentSpending = model.budgetingModel != null &&
-              model.budgetingModel!.budget!.isNotEmpty ? amtFormatter(model.budgetingModel!.budget?[widget.currentBudgetIndex ?? 0].currentSpending!) : "0";
-
-          String totalBudget = model.budgetingModel != null &&
-              model.budgetingModel!.budget!.isNotEmpty ? amtFormatter(model.budgetingModel!.budget?[widget.currentBudgetIndex ?? 0].budget!) : "0";
+          // Read defensively: a car without a spending limit, or an index
+          // left over from a deleted car, must not take home down.
+          final budgets = model.budgetingModel?.budget ?? const [];
+          final index = widget.currentBudgetIndex ?? 0;
+          final selected = index < budgets.length ? budgets[index] : null;
+          String currentSpending = amtFormatter(selected?.currentSpending ?? 0);
+          String totalBudget = amtFormatter(selected?.budget ?? 0);
 
           return ContainerWidget(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
