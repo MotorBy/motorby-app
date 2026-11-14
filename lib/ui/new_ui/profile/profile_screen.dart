@@ -182,6 +182,7 @@ class NewProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
+          subtitle: 'Manage your payment and subscription',
           onTap: (){
             navigate(context!, const PaymentAndSubscriptionScreen());
           },
@@ -190,6 +191,7 @@ class NewProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: 'assets/images/auto/file.svg',
           title: 'My documents',
+          subtitle: 'Manage your documents',
           onTap: (){
             navigate(context!, const CarDocumentsScreen(showCarSelection: true,));
           },
@@ -206,6 +208,7 @@ class NewProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: 'assets/images/auto/about_icon.svg',
           title: 'About app',
+          subtitle: 'Learn more about MotorBy',
           onTap: () {
             showModalBottomSheet(
               context: context!,
