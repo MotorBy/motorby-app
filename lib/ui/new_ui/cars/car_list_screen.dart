@@ -4,7 +4,6 @@ import 'package:mobile_auto_drive/components/coming_soon_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add/update_car_image_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
-import 'package:mobile_auto_drive/ui/marketplace/shops/shops_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/decorator.dart';
@@ -45,7 +44,7 @@ class CarsListScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(21),
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 child: const NormalText(
-                  text: 'Add new car',
+                  text: 'New',
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),

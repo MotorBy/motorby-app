@@ -38,13 +38,13 @@ class NewProfileScreen extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(26.0),
+            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
             child: Column(
               children: [
                 _buildProfileHeader(model, context: context),
-                const SizedBox(height: 44),
+                const SizedBox(height: 24),
                 _buildCarsCard(model, context: context),
-                const SizedBox(height: 44),
+                const SizedBox(height: 24),
                 _buildMenuItems(model, context: context),
               ],
             ),
@@ -72,7 +72,7 @@ class NewProfileScreen extends StatelessWidget {
             color: Colors.purple,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
         if (!model.isPro)
           OutlinedButton(
             onPressed: (){
@@ -169,16 +169,14 @@ class NewProfileScreen extends StatelessWidget {
     return Column(
       children: [
         _buildMenuItem(
-          icon: 'assets/images/user_.svg',
+          icon: 'assets/images/user.svg',
           title: 'Edit profile',
           subtitle: 'Name, phone number and address',
           onTap: (){
             navigate(context!, EditProfileScreen(model: model));
           },
         ),
-        const DividerWidget(
 
-        ),
         _buildMenuItem(
           icon: 'assets/images/auto/card.svg',
           title: 'Payment and subscription',
@@ -187,7 +185,7 @@ class NewProfileScreen extends StatelessWidget {
             navigate(context!, const PaymentAndSubscriptionScreen());
           },
         ),
-        const DividerWidget(),
+
         _buildMenuItem(
           icon: 'assets/images/auto/file.svg',
           title: 'My documents',
@@ -204,7 +202,6 @@ class NewProfileScreen extends StatelessWidget {
         //     navigate(context!, const ReferralScreen());
         //   },
         // ),
-        const DividerWidget(),
         _buildMenuItem(
           icon: 'assets/images/auto/about_icon.svg',
           title: 'About app',
@@ -304,7 +301,6 @@ class NewProfileScreen extends StatelessWidget {
             );
           },
         ),
-        const DividerWidget(),
         ListTile(
           onTap: () => _showLogOutSheet(context!, model),
           contentPadding: EdgeInsets.zero,
@@ -316,7 +312,6 @@ class NewProfileScreen extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        const DividerWidget(),
       ],
     );
   }

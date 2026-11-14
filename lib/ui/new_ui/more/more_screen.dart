@@ -247,7 +247,7 @@ class MoreScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
           _buildMenuItem(
-            icon: 'assets/images/user_.svg',
+            icon: 'assets/images/user.svg',
             title: 'Profile',
             subtitle: model.locationLabel,
             onTap: () {

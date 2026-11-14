@@ -74,7 +74,7 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                 onTap: () {
                   navigate(context, const NewProfileScreen());
                 },
-                child: const GetSvgImage(image: 'assets/images/user_.svg'),
+                child: const GetSvgImage(image: 'assets/images/user.svg'),
               ),
             ),
             title: NormalText(
