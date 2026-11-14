@@ -9,6 +9,7 @@ import 'package:mobile_auto_drive/services/firebase_service.dart';
 import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_details_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/utils/env_config.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
 import 'package:mobile_auto_drive/utils/size_config.dart';
@@ -168,21 +169,39 @@ void main() {
       ],
     );
 
-    testWidgets('offers a delete action next to edit', (tester) async {
+    Future<void> openActions(WidgetTester tester) async {
+      await tester.tap(find.byTooltip('Car actions'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('keeps edit and delete off the screen itself', (tester) async {
       await pumpDetails(tester, car);
 
-      expect(find.text('edit car'), findsOneWidget);
-      expect(find.text('delete car'), findsOneWidget);
+      expect(find.text('Edit car'), findsNothing);
+      expect(find.text('Delete car'), findsNothing);
+      expect(find.text('edit car'), findsNothing);
+      expect(find.text('delete car'), findsNothing);
+    });
+
+    testWidgets('offers edit and delete in the car actions sheet',
+        (tester) async {
+      await pumpDetails(tester, car);
+      await openActions(tester);
+
+      expect(find.byType(MoreCarAction), findsOneWidget);
+      expect(find.text('Edit car'), findsOneWidget);
+      expect(find.text('Delete car'), findsOneWidget);
     });
 
     testWidgets('asks before deleting and says what goes with the car',
         (tester) async {
       await pumpDetails(tester, car);
+      await openActions(tester);
 
-      await tester.tap(find.text('delete car'));
+      await tester.tap(find.text('Delete car'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Delete car'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsOneWidget);
       expect(
         find.textContaining('Its 2 uploaded files will be removed too'),
         findsOneWidget,
@@ -192,13 +211,14 @@ void main() {
 
     testWidgets('cancelling leaves the car alone', (tester) async {
       await pumpDetails(tester, car);
+      await openActions(tester);
 
-      await tester.tap(find.text('delete car'));
+      await tester.tap(find.text('Delete car'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Delete car'), findsNothing);
+      expect(find.byType(AlertDialog), findsNothing);
       expect(find.byType(CarDetailsScreen), findsOneWidget);
     });
 
@@ -215,12 +235,91 @@ void main() {
           carDocuments: [],
         ),
       );
+      await openActions(tester);
 
-      await tester.tap(find.text('delete car'));
+      await tester.tap(find.text('Delete car'));
       await tester.pumpAndSettle();
 
       expect(find.text('Delete Honda Civic? This cannot be undone.'),
           findsOneWidget);
+    });
+  });
+
+  group('car list empty state', () {
+    setUpAll(() async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      if (!serviceLocator.isRegistered<UserService>()) await locatorSetup();
+      SharedPreferences.setMockInitialValues({});
+      await PersistenceService.getInstance();
+    });
+
+    Future<void> pumpList(WidgetTester tester) async {
+      serviceLocator<BudgetingService>().budgetingModel =
+          BudgetingModel(statusCode: 200, budget: []);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              final size = MediaQuery.of(context).size;
+              SizeConfig.init(context,
+                  width: size.width, height: size.height, allowFontScaling: true);
+              return const CarsListScreen();
+            },
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    testWidgets('greets the user and offers to add a car', (tester) async {
+      await pumpList(tester);
+
+      expect(find.byType(NoCarsView), findsOneWidget);
+      expect(find.text('Your garage is empty'), findsOneWidget);
+      expect(find.text('Add your first car'), findsOneWidget);
+    });
+  });
+
+  group('no cars view', () {
+    testWidgets('the add button hands off to the caller', (tester) async {
+      var tapped = 0;
+      await tester.pumpWidget(MaterialApp(
+        home: Builder(builder: (context) {
+          final size = MediaQuery.of(context).size;
+          SizeConfig.init(context,
+              width: size.width, height: size.height, allowFontScaling: true);
+          return Scaffold(
+            body: NoCarsView(
+              padding: EdgeInsets.zero,
+              onAddCar: () => tapped++,
+            ),
+          );
+        }),
+      ));
+
+      await tester.tap(find.text('Add your first car'));
+      await tester.pump();
+
+      expect(tapped, 1);
+    });
+  });
+
+  group('car list thumbnail', () {
+    testWidgets('shows only the first photo of a car with several',
+        (tester) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: Scaffold(
+          body: CarListThumbnail(images: [
+            'https://a.test/1.jpg',
+            'https://a.test/2.jpg',
+            'https://a.test/3.jpg',
+          ]),
+        ),
+      ));
+
+      final images = tester.widgetList<Image>(find.byType(Image)).toList();
+      expect(images, hasLength(1));
+      expect((images.single.image as NetworkImage).url, 'https://a.test/1.jpg');
     });
   });
 }

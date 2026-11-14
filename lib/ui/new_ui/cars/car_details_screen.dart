@@ -1,8 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
-import 'package:mobile_auto_drive/ui/new_ui/cars/add/add_car_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/add/update_car_image_view.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/documents/car_documents_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.dart';
@@ -10,9 +10,7 @@ import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view
 import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_details_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_summary.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/budget_tiles_view.dart';
-import 'package:mobile_auto_drive/services/user_service.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/utils/decorator.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
 import 'package:mobile_auto_drive/utils/margin.dart';
 import 'package:mobile_auto_drive/utils/navigator.dart';
@@ -75,57 +73,21 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
             appBarTitle: '${widget.carData.carMake} ${widget.carData.carModel} ${widget.carData.carYear}',
             hasOnBack: true,
             context: context,
+            actions: [
+              IconButton(
+                tooltip: 'Car actions',
+                onPressed: () => _openCarActions(context, viewModel),
+                icon: Icon(Icons.more_vert_rounded, color: XColors.primaryColor()),
+              ),
+              const XMargin(6),
+            ],
           ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildCarImageSlider(context: context),
-                const YMargin(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-
-                        navigate(context,
-                            AddCarsScreen(
-                              action: "edit",
-                              currentCar: widget.carData,
-                            )
-                        );
-
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                        decoration: BoxDecorators.containerDecoration(
-                          hasOutline: true,
-                          outlineWidth: 2,
-                          radius: 26,
-                          outlineColor:
-                          Colors.transparent,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            NormalText(
-                              text: 'edit car',
-                              textColor: XColors.black().withOpacity(0.5),
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                            ),
-                            const XMargin(10),
-                            Icon(Icons.edit, size: 17, color: XColors.primaryColor(),),
-                          ],
-                        ),
-                      ),
-                    ),
-                    _buildDeleteCarAction(context, viewModel),
-                    const XMargin(16),
-                  ],
-                ),
-                const YMargin(10),
+                const YMargin(20),
                 _buildCarSpecifications(
                     context,
                     viewModel: viewModel
@@ -169,113 +131,24 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildDeleteCarAction(BuildContext context, HomeViewModel viewModel) {
-    return GestureDetector(
-      onTap: viewModel.isDeletingCar
-          ? null
-          : () => _confirmDeleteCar(context, viewModel),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-        decoration: BoxDecorators.containerDecoration(
-          hasOutline: true,
-          outlineWidth: 2,
-          radius: 26,
-          outlineColor: Colors.transparent,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            NormalText(
-              text: viewModel.isDeletingCar ? 'deleting...' : 'delete car',
-              textColor: XColors.black().withOpacity(0.5),
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
-            ),
-            const XMargin(10),
-            if (viewModel.isDeletingCar)
-              const SizedBox(
-                height: 15,
-                width: 15,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red),
-              )
-            else
-              const Icon(Icons.delete_outline, size: 18, color: Colors.red),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Deleting takes the photos and documents with it and cannot be undone, so
-  /// spell out what goes before asking.
-  void _confirmDeleteCar(BuildContext context, HomeViewModel viewModel) {
-    final car = widget.carData;
-    final imageCount = carStorageUrls(car).length;
-
-    showDialog(
+  void _openCarActions(BuildContext context, HomeViewModel viewModel) {
+    modalBottomSheetMenu(
+      color: Colors.white,
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const NormalText(
-          text: 'Delete car',
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        content: NormalText(
-          text: imageCount == 0
-              ? 'Delete ${car.carMake} ${car.carModel}? This cannot be undone.'
-              : 'Delete ${car.carMake} ${car.carModel}? Its $imageCount uploaded '
-                  'file${imageCount == 1 ? '' : 's'} will be removed too. '
-                  'This cannot be undone.',
-          fontSize: 16,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: NormalText(
-              text: 'Cancel',
-              fontSize: 16,
-              textColor: Colors.grey[600]!,
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              _deleteCar(viewModel);
-            },
-            child: const NormalText(
-              text: 'Delete',
-              fontSize: 16,
-              textColor: Colors.red,
-            ),
-          ),
-        ],
+      child: MoreCarAction(
+        homeViewModel: viewModel,
+        car: widget.carData,
+        onCarDeleted: (car) {
+          if (!mounted) return;
+          FloatingSnackBar.show(
+            context,
+            '${car.carMake} ${car.carModel} deleted',
+            isError: false,
+          );
+          // The car this screen is built from is gone, so leave with it.
+          popView(context);
+        },
       ),
-    );
-  }
-
-  void _deleteCar(HomeViewModel viewModel) {
-    viewModel.deleteCar(
-      car: widget.carData,
-      onCallBack: () {
-        if (!mounted) return;
-        FloatingSnackBar.show(
-          context,
-          '${widget.carData.carMake} ${widget.carData.carModel} deleted',
-          isError: false,
-        );
-        // The car this screen is built from is gone, so leave with it.
-        popView(context);
-      },
-      onErrorBack: (e) {
-        if (!mounted) return;
-        FloatingSnackBar.show(
-          context,
-          e ?? 'Could not delete this car. Please try again.',
-          isError: true,
-        );
-      },
     );
   }
 

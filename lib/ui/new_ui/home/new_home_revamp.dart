@@ -5,6 +5,7 @@ import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_screen.da
 import 'package:mobile_auto_drive/ui/new_ui/checklist_screen/checklist_tile_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/home_viewmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_details_screen.dart';
+import 'package:mobile_auto_drive/ui/new_ui/cars/car_list_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/cars/car_selector_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/mileage/mileage_details_screen.dart';
@@ -187,32 +188,8 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
 
                                           if(viewModel.currentBudget!.carId!.images!.isNotEmpty) ... [
 
-                                            SingleChildScrollView(
-                                              scrollDirection: Axis.horizontal,
-                                              child: Row(
-                                                children: [
-                                                  ...List.generate(
-                                                    viewModel.currentBudget!.carId!.images!.length,
-                                                        (imgIndex) => Padding(
-                                                      padding: const EdgeInsets.all(3.0),
-                                                      child: Container(
-                                                        width: 90,
-                                                        height: 70,
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.black.withOpacity(0.1),
-                                                          borderRadius: BorderRadius.circular(16),
-                                                        ),
-                                                        child: ClipRRect(
-                                                          borderRadius: BorderRadius.circular(16),
-                                                          child: Image.network(
-                                                            viewModel.currentBudget!.carId!.images![imgIndex],
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),)
-                                                ],
-                                              ),
+                                            CarListThumbnail(
+                                              images: viewModel.currentBudget!.carId!.images!,
                                             ),
 
                                           ] else ... [
@@ -315,20 +292,9 @@ class _NewHomeRevampScreenState extends State<NewHomeRevampScreen> with Automati
                                   child: ContainerWidget(
                                     backgroundColor: XColors.secondaryColor().withOpacity(0.3),
                                     borderRadius: BorderRadius.circular(16),
-                                    padding: const EdgeInsets.all(10),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          NormalText(
-                                            text: 'No cars added yet',
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
-                                            textColor: XColors.black(),
-                                          ),
-                                        ],
-                                      ),
+                                    child: NoCarsView(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+                                      onAddCar: () => navigate(context, const AddCarsScreen()),
                                     ),
                                   ),
                                 )
