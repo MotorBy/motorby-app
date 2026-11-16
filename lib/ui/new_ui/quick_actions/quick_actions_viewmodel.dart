@@ -2,6 +2,8 @@ import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/utils/currency.dart';
 import 'package:mobile_auto_drive/models/reminder_model.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
+import 'package:mobile_auto_drive/services/drive_session_service.dart';
+import 'package:mobile_auto_drive/ui/new_ui/drive/drive_mode_viewmodel.dart';
 import 'package:mobile_auto_drive/services/places_services.dart';
 import 'package:mobile_auto_drive/services/reminder_service.dart';
 import 'package:mobile_auto_drive/utils/data_handling.dart';
@@ -12,6 +14,10 @@ class QuickActionsViewModel extends BaseViewModel {
   final _budgetingService = serviceLocator<BudgetingService>();
   final _placesService = serviceLocator<PlacesService>();
   final _reminderService = serviceLocator<ReminderService>();
+  final driveService = serviceLocator<DriveSessionService>();
+
+  /// True while drive mode is asking for location and starting up.
+  bool isStartingDrive = false;
   
   BudgetingModel? _budgetingModel;
   Budget? currentBudget;
@@ -114,6 +120,7 @@ class QuickActionsViewModel extends BaseViewModel {
   }
 
   Future<void> init() async {
+    driveService.addListener(notifyListeners);
     setBusy(true);
     try {
 
@@ -131,6 +138,39 @@ class QuickActionsViewModel extends BaseViewModel {
 
     } finally {
       setBusy(false);
+    }
+  }
+
+  @override
+  void dispose() {
+    driveService.removeListener(notifyListeners);
+    super.dispose();
+  }
+
+  // ---- Drive mode ----
+
+  bool get isDriving => driveService.isDriving;
+
+  String get driveTitle => isDriving ? 'Driving now' : 'Start driving';
+
+  String get driveSubtitle => isDriving
+      ? '${DriveModeViewModel.carNameFor(driveService.drivingCar)} is in drive mode · tap to view'
+      : "Put your car in drive mode and we'll track the trip";
+
+  /// Puts the selected car in drive mode. Returns why it couldn't, or null
+  /// when drive mode is on (including when it already was).
+  Future<String?> startDriving() async {
+    if (isDriving) return null;
+    final car = getCurrentCar();
+    if (car == null) return 'Add a car to start driving';
+
+    isStartingDrive = true;
+    notifyListeners();
+    try {
+      return await driveService.start(car);
+    } finally {
+      isStartingDrive = false;
+      notifyListeners();
     }
   }
 

@@ -62,11 +62,14 @@ class InfoDetailsViewModel extends BaseViewModel {
   Map<String, dynamic> addressInput = {};
   String? mileageError;
 
-  void initializeTotalCostingAndValue() {
+  /// Loads the totals for the car at [index] (the first car by default),
+  /// clamped to the cars that exist.
+  void initializeTotalCostingAndValue({int index = 0}) {
     budgetingModel = budgetingService.budgetingModel;
 
     if (budgetingModel != null && budgetingModel!.budget!.isNotEmpty) {
-      budgetingService.getCurrentTotalValue(index: 0);
+      final cars = budgetingModel!.budget!.length;
+      budgetingService.getCurrentTotalValue(index: index.clamp(0, cars - 1));
       totalCostingAndValue = budgetingService.totalCostingAndValue;
 
       currentTotalSpent = budgetingService.currentTotalSpent;

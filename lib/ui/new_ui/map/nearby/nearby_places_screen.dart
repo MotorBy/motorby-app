@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_auto_drive/ui/new_ui/map/nearby/nearby_chips.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_auto_drive/models/places_nearby_model.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/directions/directions_screen.dart';
@@ -86,7 +87,7 @@ class NearbyPlacesScreen extends StatelessWidget {
                   ),
                   child: Center(
                     child: Icon(
-                      placeType == 'gas_station' ? Icons.local_gas_station : Icons.car_repair,
+                      NearbyCategory.byType(placeType)?.icon ?? Icons.place_rounded,
                       color: XColors.primaryColor(),
                       size: 24,
                     ),
@@ -185,13 +186,13 @@ class NearbyPlacesScreen extends StatelessWidget {
                 child: viewModel.busy('nearby') ? viewModel.destinationAddressName != place.name ? const NormalText(
                   text: 'Get Direction',
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   textColor: Colors.blue,
-                ) : const Loader() : const NormalText(
+                ) : const Loader() : NormalText(
                   text: 'Get Direction',
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  textColor: Colors.blue,
+                  fontWeight: FontWeight.w500,
+                  textColor: XColors.primaryColor(),
                 ),
               ),
             ),

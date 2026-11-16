@@ -29,7 +29,7 @@ class _StatTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 10, 12),
+          padding: const EdgeInsets.fromLTRB(12, 6, 10, 6),
           child: Row(
             children: [
               Expanded(
@@ -98,17 +98,17 @@ class ChecklistTileView extends StatelessWidget {
       value: '$checked/$total',
       color: Brand.purple,
       onTap: onCheckListScreen == null ? null : () => onCheckListScreen!(),
-      trailing: SizedBox(
-        width: 34,
-        height: 34,
-        child: CircularProgressIndicator(
-          value: progress,
-          strokeWidth: 5,
-          strokeCap: StrokeCap.round,
-          color: Brand.purple,
-          backgroundColor: Brand.lilac,
-        ),
-      ),
+      // trailing: SizedBox(
+      //   width: 34,
+      //   height: 34,
+      //   child: CircularProgressIndicator(
+      //     value: progress,
+      //     strokeWidth: 5,
+      //     strokeCap: StrokeCap.round,
+      //     color: Brand.purple,
+      //     backgroundColor: Brand.lilac,
+      //   ),
+      // ),
     );
   }
 }
@@ -134,9 +134,9 @@ class MileageTileView extends StatelessWidget {
       value: _displayMileage,
       color: Brand.info,
       onTap: onMileageUpdate == null ? null : () => onMileageUpdate!(),
-      trailing: onMileageUpdate == null
-          ? null
-          : const Icon(Icons.chevron_right_rounded, color: Brand.purple),
+      // trailing: onMileageUpdate == null
+      //     ? null
+      //     : const Icon(Icons.chevron_right_rounded, color: Brand.purple),
     );
   }
 }

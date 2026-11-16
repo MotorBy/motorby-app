@@ -4,6 +4,7 @@ import 'package:mobile_auto_drive/services/auth_service.dart';
 import 'package:mobile_auto_drive/services/budgeting_service.dart';
 import 'package:mobile_auto_drive/services/checklist_service.dart';
 import 'package:mobile_auto_drive/services/community_service.dart';
+import 'package:mobile_auto_drive/services/drive_session_service.dart';
 import 'package:mobile_auto_drive/services/insurance_service.dart';
 import 'package:mobile_auto_drive/services/notification_service.dart';
 import 'package:mobile_auto_drive/services/payment_service.dart';
@@ -36,5 +37,6 @@ Future locatorSetup() async {
   serviceLocator.registerLazySingleton(() => PlacesService());
   serviceLocator.registerLazySingleton(() => InsuranceService());
   serviceLocator.registerLazySingleton(() => ReminderService());
+  serviceLocator.registerLazySingleton(() => DriveSessionService());
 
 }

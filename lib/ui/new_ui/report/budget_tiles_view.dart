@@ -1,166 +1,138 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home/info_details_action/info_details_view.dart';
 import 'package:mobile_auto_drive/ui/new_ui/report/report_viewmodel.dart';
-import 'package:mobile_auto_drive/utils/colors.dart';
-import 'package:mobile_auto_drive/utils/data_handling.dart';
+import 'package:mobile_auto_drive/utils/brand.dart';
+import 'package:mobile_auto_drive/utils/currency.dart';
 import 'package:mobile_auto_drive/utils/enums.dart';
-import 'package:mobile_auto_drive/utils/get_svg_png.dart';
-import 'package:mobile_auto_drive/utils/margin.dart';
-import 'package:mobile_auto_drive/widgets/app_container_widget.dart';
 import 'package:mobile_auto_drive/widgets/floating_snack_bar.dart';
 import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
-import 'package:mobile_auto_drive/widgets/texts.dart';
 import 'package:stacked/stacked.dart';
 
+/// A car's spending as a list: fuel, servicing, repairs and what is left of
+/// the budget. Tapping a row opens the sheet that logs or updates it.
 class BudgetTilesView extends StatelessWidget {
+  const BudgetTilesView({super.key, this.budgetCurrentIndex, this.onUpdated});
 
+  /// The car's place in the budget list.
   final int? budgetCurrentIndex;
 
-  const BudgetTilesView({
-    super.key,
-    this.budgetCurrentIndex
-  });
+  /// Called after an entry or the budget was saved.
+  final VoidCallback? onUpdated;
+
+  int get _index => budgetCurrentIndex ?? 0;
+
+  void _open(BuildContext context, ReportViewModel model, InfoType type) {
+    if (model.budgetingModel?.budget?.isEmpty ?? true) {
+      FloatingSnackBar.show(context, 'Add a new car to continue with budget activities', isError: true);
+      return;
+    }
+    modalBottomSheetMenu(
+      color: Colors.white,
+      context: context,
+      child: InfoDetailsView(
+        infoType: type,
+        currentIndex: _index,
+        onBudgetAction: () {
+          model.setBudgetData(currentIndex: _index);
+          onUpdated?.call();
+          FloatingSnackBar.show(context, 'Successfully updated', isError: false);
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ReportViewModel>.reactive(
-        viewModelBuilder: () => ReportViewModel(),
-        disposeViewModel: false,
-        onViewModelReady: (model) => model.setBudgetData(currentIndex: budgetCurrentIndex ?? 0),
-        builder: (context, model, child) {
+      viewModelBuilder: () => ReportViewModel(),
+      disposeViewModel: false,
+      onViewModelReady: (model) => model.setBudgetData(currentIndex: _index),
+      builder: (context, model, child) {
+        final totals = model.totalCostingAndValue ?? const <int>[];
+        int total(int i) => i < totals.length ? totals[i] : 0;
+        final left = (model.currentSetBudget ?? 0) - (model.currentTotalSpent ?? 0);
 
-          final List<String> budgetIcon = [
-            'assets/images/budget_icons/fuel.png',
-            'assets/images/budget_icons/service.png',
-            'assets/images/budget_icons/repairs.png',
-            'assets/images/budget_icons/wallet.png'
-          ];
+        final items = [
+          _SpendItem('Fuel', 'Log a fill-up', Icons.local_gas_station_rounded, Brand.purple, total(0),
+              InfoType.fueling),
+          _SpendItem('Servicing', 'Log a service', Icons.build_rounded, Brand.success, total(1),
+              InfoType.servicing),
+          _SpendItem('Repairs', 'Log a repair', Icons.handyman_rounded, Brand.warning, total(2),
+              InfoType.repairing),
+          _SpendItem(left < 0 ? 'Over budget' : 'Budget left', 'Update budget', Icons.account_balance_wallet_rounded,
+              left < 0 ? Brand.danger : Brand.info, left.abs(), InfoType.budgeting),
+        ];
 
-          final List<String> budgetTopic = [
-            'Fueling',
-            'Servicing',
-            'Repair',
-            'Remaining'
-          ];
+        return Column(
+          children: [
+            for (var i = 0; i < items.length; i++) ...[
+              if (i > 0) Divider(height: 0.5, indent: 64, color: Brand.lilac.withValues(alpha: 0.3)),
+              _SpendRow(item: items[i], onTap: () => _open(context, model, items[i].type)),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
 
-          final List<String> budgetSubTopic = [
-            amtFormatter(model.totalCostingAndValue![0]),
-            amtFormatter(model.totalCostingAndValue![1]),
-            amtFormatter(model.totalCostingAndValue![2]),
-            amtFormatter(model.currentSetBudget! - model.currentTotalSpent!),
-          ];
+class _SpendItem {
+  const _SpendItem(this.label, this.action, this.icon, this.color, this.amount, this.type);
 
-          return Column(children: [
+  final String label;
+  final String action;
+  final IconData icon;
+  final Color color;
+  final int amount;
+  final InfoType type;
+}
 
-          const YMargin(14),
-          SizedBox(
-            height: 330,
-            child: GridView.builder(
-              itemCount: budgetIcon.length,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 300,
-                childAspectRatio: 3 / 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 18,
-                mainAxisExtent: 150,
+class _SpendRow extends StatelessWidget {
+  const _SpendRow({required this.item, required this.onTap});
+
+  final _SpendItem item;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: item.color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
               ),
-              itemBuilder: (context, index) {
-                return ContainerWidget(
-                  backgroundColor: XColors.secondaryColor().withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(16),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  onTap: () {
-
-                    if(model.budgetingModel != null && model.budgetingModel!.budget!.isEmpty) {
-                      FloatingSnackBar.show(
-                          context,
-                          'Add a new car to continue with budget activities',
-                          isError: true
-                      );
-                      return;
-                    }
-
-                    InfoType? infoType;
-
-                    if(index == 0) {
-                      infoType = InfoType.fueling;
-                    } else if(index == 1) {
-                      infoType = InfoType.servicing;
-                    } else if(index == 2) {
-                      infoType = InfoType.repairing;
-                    } else if(index == 3) {
-                      infoType = InfoType.budgeting;
-                    }
-
-                    modalBottomSheetMenu(
-                      color: Colors.white,
-                      context: context,
-                      child: InfoDetailsView(
-                        infoType: infoType!,
-                        currentIndex: 0,
-                        onBudgetAction: () {
-
-                          model.setBudgetData();
-                          FloatingSnackBar.show(
-                              context,
-                              'Successfully updated',
-                              isError: false
-                          );
-
-                        },
-                      ),
-                    );
-
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: GetPngImage(
-                          allowSolid: true,
-                          allowPadding: true,
-                          image: budgetIcon[index],
-                          height: 24,
-                          width: 24,
-                        ),
-                      ),
-                      const YMargin(7),
-                      Center(
-                        child: NormalText(
-                          text: budgetTopic[index],
-                          fontSize: 14,
-                          textColor: XColors.primaryColor(),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '\u20A6',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: XColors.black(),
-                                fontWeight: FontWeight.w600),
-                          ),
-                          NormalText(
-                            text: budgetSubTopic[index],
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                );
-              },
+              child: Icon(item.icon, color: item.color, size: 20),
             ),
-          )
-        ],);
-      }
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.label, style: Brand.text(size: 15, weight: FontWeight.w600)),
+                  const SizedBox(height: 2),
+                  Text(item.action, style: Brand.text(size: 12, color: Brand.muted)),
+                ],
+              ),
+            ),
+            Text(money(item.amount),
+                style: Brand.text(
+                  size: 15,
+                  weight: FontWeight.w700,
+                  color: item.type == InfoType.budgeting ? item.color : Brand.ink,
+                )),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right_rounded, color: Brand.muted, size: 20),
+          ],
+        ),
+      ),
     );
   }
 }

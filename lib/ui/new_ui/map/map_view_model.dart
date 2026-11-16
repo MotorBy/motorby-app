@@ -12,6 +12,7 @@ import 'package:mobile_auto_drive/services/persistence_service.dart';
 import 'package:mobile_auto_drive/services/places_services.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/locator_setup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked/stacked.dart';
 
 class MapViewModel extends BaseViewModel {
@@ -58,7 +59,27 @@ class MapViewModel extends BaseViewModel {
   List<Map<String, dynamic>> get recentDestinations => _filteredDestinations.isEmpty ? _recentDestinations : _filteredDestinations;
 
   Future<void> init() async {
-    await loadSavedAddresses();
+    await Future.wait([loadSavedAddresses(), loadNearbyVisibility()]);
+  }
+
+  // ---- Nearby chips on the map ----
+
+  static const nearbyHiddenKey = 'map.nearbyHidden';
+
+  /// Whether the nearby chips show above "Where to?". Remembered across launches.
+  bool showNearby = true;
+
+  Future<void> loadNearbyVisibility() async {
+    final prefs = await SharedPreferences.getInstance();
+    showNearby = !(prefs.getBool(nearbyHiddenKey) ?? false);
+    notifyListeners();
+  }
+
+  Future<void> setNearbyVisible(bool visible) async {
+    showNearby = visible;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(nearbyHiddenKey, !visible);
   }
 
   List<Budget> getBudgetData({int? index}) {

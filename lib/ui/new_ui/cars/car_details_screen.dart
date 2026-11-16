@@ -98,7 +98,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16,),
                   child: ContainerWidget(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    padding: const EdgeInsets.fromLTRB(8, 12, 8, 4),
                     elevation: 0.2,
                     borderRadius: BorderRadius.circular(16),
                     backgroundColor: XColors.white(),
@@ -107,6 +107,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                       children: [
                         Row(
                           children: [
+                            const XMargin(8),
                             NormalText(
                               text: 'Car Spending',
                               fontSize: 14,
@@ -115,6 +116,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> with SingleTickerPr
                             ),
                           ],
                         ),
+                        const YMargin(6),
                         BudgetTilesView(
                             budgetCurrentIndex: widget.currentBudgetIndex
                         ),

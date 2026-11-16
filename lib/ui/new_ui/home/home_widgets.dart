@@ -101,13 +101,13 @@ class HomeHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(greeting, style: Brand.text(size: 14, color: Brand.muted)),
+                Text(greeting, style: Brand.text(size: 12, color: Brand.muted)),
                 const SizedBox(height: 4),
                 Text(
                   name.isEmpty ? 'Welcome back' : 'Hi, $name',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Brand.text(size: 26, weight: FontWeight.w700, letterSpacing: -0.5),
+                  style: Brand.text(size: 16, weight: FontWeight.w700, letterSpacing: -0.5),
                 ),
               ],
             ),
@@ -178,6 +178,7 @@ class WeatherCard extends StatelessWidget {
               TextSpan(text: '  ·  ${_capitalise(description!)}'),
           ])
         : TextSpan(
+            style: Brand.text(size: 15, color: Brand.muted),
             text: askForLocation
                 ? 'Turn on location for the weather on your drive'
                 : 'Checking the weather near you…',
@@ -188,7 +189,7 @@ class WeatherCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(28),
         border: Brand.hairline,
       ),
       child: Row(

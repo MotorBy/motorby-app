@@ -39,35 +39,24 @@ class MoreScreen extends StatelessWidget {
         ),
         backgroundColor: XColors.background(),
         body: SingleChildScrollView(
-          child: Container(
-            // decoration: BoxDecoration(
-            //   gradient: LinearGradient(
-            //     begin: Alignment.topCenter,
-            //     end: Alignment.bottomCenter,
-            //     colors: [
-            //       XColors.primaryColor().withOpacity(0.05),
-            //       XColors.background(),
-            //     ],
-            //   ),
-            // ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const YMargin(10),
-                _buildCountryStrip(model),
-                const YMargin(10),
-                // Insurance only has providers in some markets; elsewhere the
-                // banner would lead to an empty quote screen.
-                if (model.offers(MarketFeature.insurance)) ...[
-                  _buildInsuranceSection(model, context),
-                  const YMargin(30),
-                ],
-                _buildMoreActions(context),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const YMargin(10),
+              _buildCountryStrip(model),
+              const YMargin(10),
+              // Insurance only has providers in some markets; elsewhere the
+              // banner would lead to an empty quote screen.
+              if (model.offers(MarketFeature.insurance)) ...[
+                _buildInsuranceSection(model, context),
                 const YMargin(30),
-                _buildMenuSection(model, context),
-                const YMargin(20),
-            ],
-          ),),
+              ],
+              _buildMoreActions(context),
+              const YMargin(30),
+              _buildMenuSection(model, context),
+              const YMargin(20),
+          ],
+                    ),
         ),
     ));
   }
@@ -173,16 +162,16 @@ class MoreScreen extends StatelessWidget {
                   );
                 },
               ),
-              const YMargin(12),
-              _buildQuickActionCard(
-                icon: 'assets/images/user-group.svg',
-                title: 'Community',
-                subtitle: 'Join the motorby community and engage with others',
-                color: Colors.green,
-                onTap: () {
-                  navigate(context, const CommunityScreen());
-                },
-              ),
+              // const YMargin(12),
+              // _buildQuickActionCard(
+              //   icon: 'assets/images/user-group.svg',
+              //   title: 'Community',
+              //   subtitle: 'Join the motorby community and engage with others',
+              //   color: Colors.green,
+              //   onTap: () {
+              //     navigate(context, const CommunityScreen());
+              //   },
+              // ),
               const YMargin(12),
               _buildQuickActionCard(
                 icon: 'assets/images/scan.svg',
@@ -216,18 +205,18 @@ class MoreScreen extends StatelessWidget {
                 },
               ),
               const YMargin(12),
-              _buildQuickActionCard(
-                icon: 'assets/images/nav_icons/report.svg',
-                title: 'Reports',
-                subtitle: 'View detailed analytics and vehicle reports',
-                color: Colors.purple,
-                onTap: () {
-                  navigate(
-                      context,
-                      const ReportScreen(isFromQuickActions: true)
-                  );
-                },
-              ),
+              // _buildQuickActionCard(
+              //   icon: 'assets/images/nav_icons/report.svg',
+              //   title: 'Reports',
+              //   subtitle: 'View detailed analytics and vehicle reports',
+              //   color: Colors.purple,
+              //   onTap: () {
+              //     navigate(
+              //         context,
+              //         const ReportScreen(isFromQuickActions: true)
+              //     );
+              //   },
+              // ),
             ],
           ),
         ],

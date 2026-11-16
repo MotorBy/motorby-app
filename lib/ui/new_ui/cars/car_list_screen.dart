@@ -358,7 +358,7 @@ class MoreCarAction extends StatelessWidget {
               text: label,
               textColor: tint,
               fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ],
         ),

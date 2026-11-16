@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile_auto_drive/ui/new_ui/budget/budget_widgets.dart';
 import 'package:mobile_auto_drive/models/budgeting_model.dart';
 import 'package:mobile_auto_drive/models/checklist_data_model.dart';
 import 'package:mobile_auto_drive/models/reminder_model.dart';
@@ -278,11 +279,13 @@ void main() {
       expect(find.text('Checklist'), findsOneWidget);
       expect(find.text('Spending', skipOffstage: false), findsOneWidget);
 
-      await tester.scrollUntilVisible(find.text('No reminders set here'), 300,
+      await tester.scrollUntilVisible(find.byType(RecentSpendCard), 300,
           scrollable: find.byType(Scrollable).first);
-      expect(find.text('Reminders'), findsOneWidget);
+      expect(find.byType(BudgetSummaryCard), findsOneWidget);
+      expect(find.text('See details'), findsOneWidget);
       expect(find.byType(RecentSpendCard), findsOneWidget);
-      expect(find.text('No reminders set here'), findsOneWidget);
+      // Reminders moved off home.
+      expect(find.text('Reminders'), findsNothing);
     });
 
     testWidgets('offers to add a car when there are none', (tester) async {

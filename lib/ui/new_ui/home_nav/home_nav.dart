@@ -3,12 +3,25 @@ import 'package:mobile_auto_drive/ui/new_ui/home/new_home_revamp.dart';
 import 'package:mobile_auto_drive/ui/new_ui/home_nav/home_nav_vmodel.dart';
 import 'package:mobile_auto_drive/ui/new_ui/map/map_screen.dart';
 import 'package:mobile_auto_drive/ui/new_ui/more/more_screen.dart';
-import 'package:mobile_auto_drive/ui/new_ui/quick_actions/quick_actions_bottom_sheet.dart';
 import 'package:mobile_auto_drive/ui/new_ui/reminder/reminder_screen.dart';
 import 'package:mobile_auto_drive/utils/colors.dart';
 import 'package:mobile_auto_drive/utils/get_svg_png.dart';
-import 'package:mobile_auto_drive/widgets/show_bottomsheet.dart';
 import 'package:stacked/stacked.dart';
+
+/// One bottom-nav tab. Its position in [dashboardTabs] is also its page index.
+class DashboardTab {
+  const DashboardTab({required this.label, required this.icon});
+
+  final String label;
+  final String icon;
+}
+
+const dashboardTabs = <DashboardTab>[
+  DashboardTab(label: 'Home', icon: 'assets/images/nav_icons/home.svg'),
+  DashboardTab(label: 'Reminders', icon: 'assets/images/nav_icons/reminder.svg'),
+  DashboardTab(label: 'Map', icon: 'assets/images/nav_icons/map.svg'),
+  DashboardTab(label: 'More', icon: 'assets/images/nav_icons/more.svg'),
+];
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key});
@@ -30,9 +43,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) async {
-        if (!didPop) {}
-      },
       child: ViewModelBuilder<DashboardViewModel>.reactive(
         viewModelBuilder: () => DashboardViewModel(),
         builder: (context, model, child) {
@@ -40,80 +50,25 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             backgroundColor: XColors.background(),
             body: PageView(
               controller: _pageController,
-              onPageChanged: (index) {
-                if (index >= 2) {
-                  model.changeTabIndex(index + 1);
-                } else {
-                  model.changeTabIndex(index);
-                }
-              },
+              onPageChanged: model.changeTabIndex,
               physics: const PageScrollPhysics(),
               children: const [
                 NewHomeRevampScreen(),
                 ReminderScreen(),
                 MapScreen(),
-                MoreScreen() ////new more screen section
+                MoreScreen(),
               ],
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                modalBottomSheetMenu(
-                  context: context,
-                  radius: 24,
-                  child: const QuickActionsBottomSheet(),
+            bottomNavigationBar: BottomNavbar(
+              currentIndex: model.currentIndex,
+              onTap: (index) {
+                model.changeTabIndex(index);
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
                 );
               },
-              backgroundColor: XColors.primaryColor(),
-              child: const GetSvgImage(image: 'assets/images/primary_button.svg'),
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
-            bottomNavigationBar: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeOutCubic,
-                      height: 3,
-                      margin: EdgeInsets.only(
-                        left: (MediaQuery.of(context).size.width / 5) * model.currentIndex + 20,
-                        right: (MediaQuery.of(context).size.width / 5) * (4 - model.currentIndex) + 20,
-                      ),
-                      decoration: BoxDecoration(
-                        color: XColors.primaryColor(),
-                        borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(3),
-                        ),
-                      ),
-                    ),
-                  ),
-                  BottomNavbar(
-                    onTap: (index) {
-                      _pageController.animateToPage(
-                        index == 3 ? 2 : index,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOutCubic,
-                      );
-                      model.changeTabIndex(index);
-                    },
-                    model: model,
-                  ),
-                ],
-              ),
             ),
           );
         },
@@ -122,88 +77,117 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 }
 
+/// The four-tab bar with a sliding indicator over the selected tab.
 class BottomNavbar extends StatelessWidget {
-  final Function(int) onTap;
-  final DashboardViewModel model;
+  const BottomNavbar({super.key, required this.currentIndex, required this.onTap});
 
-  const BottomNavbar({super.key, required this.onTap, required this.model});
+  final int currentIndex;
+  final ValueChanged<int> onTap;
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          label: "Home",
-          icon: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.all(model.currentIndex == 0 ? 0 : 2),
-            child: GetSvgImage(
-              image: 'assets/images/nav_icons/home.svg',
-              height: 22,
-              width: 22,
-              color: model.currentIndex == 0 ? XColors.primaryColor() : null,
-            ),
+    final tabCount = dashboardTabs.length;
+    final selected = currentIndex.clamp(0, tabCount - 1);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
           ),
-          backgroundColor: XColors.background(),
-        ),
-        BottomNavigationBarItem(
-          label: "Reminder",
-          icon: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.all(model.currentIndex == 1 ? 0 : 2),
-            child: GetSvgImage(
-              image: 'assets/images/nav_icons/reminder.svg',
-              height: 22,
-              width: 22,
-              color: model.currentIndex == 1 ? XColors.primaryColor() : null,
-            ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: Stack(
+            children: [
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                // Maps the tab index onto -1 (far left) .. 1 (far right).
+                alignment: Alignment(tabCount == 1 ? 0 : -1 + 2 * selected / (tabCount - 1), -1),
+                child: FractionallySizedBox(
+                  widthFactor: 1 / tabCount,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Container(
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: XColors.primaryColor(),
+                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(3)),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  for (var i = 0; i < tabCount; i++)
+                    Expanded(
+                      child: _NavItem(
+                        tab: dashboardTabs[i],
+                        selected: i == selected,
+                        onTap: () => onTap(i),
+                      ),
+                    ),
+                ],
+              ),
+            ],
           ),
-          backgroundColor: XColors.background(),
         ),
-        const BottomNavigationBarItem(
-          label: "",
-          icon: SizedBox(width: 50),
-        ),
-        BottomNavigationBarItem(
-          label: "Map",
-          icon: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.all(model.currentIndex == 3 ? 0 : 2),
-            child: GetSvgImage(
-              image: 'assets/images/nav_icons/map.svg',
-              height: 22,
-              width: 22,
-              color: model.currentIndex == 3 ? XColors.primaryColor() : null,
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({required this.tab, required this.selected, required this.onTap});
+
+  final DashboardTab tab;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? XColors.primaryColor() : XColors.textColor();
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: tab.label,
+      child: InkResponse(
+        onTap: onTap,
+        radius: 36,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedScale(
+              duration: const Duration(milliseconds: 200),
+              scale: selected ? 1.1 : 1,
+              child: GetSvgImage(
+                image: tab.icon,
+                height: 22,
+                width: 22,
+                color: selected ? XColors.primaryColor() : null,
+              ),
             ),
-          ),
-          backgroundColor: XColors.background(),
-        ),
-        BottomNavigationBarItem(
-          label: "More",
-          icon: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.all(model.currentIndex == 4 ? 0 : 2),
-            child: GetSvgImage(
-              image: 'assets/images/nav_icons/more.svg',
-              height: 22,
-              width: 22,
-              color: model.currentIndex == 4 ? XColors.primaryColor() : null,
+            const SizedBox(height: 4),
+            Text(
+              tab.label,
+              style: TextStyle(
+                fontSize: selected ? 12 : 11,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                color: color,
+              ),
             ),
-          ),
-          backgroundColor: XColors.background(),
+          ],
         ),
-      ],
-      currentIndex: model.currentIndex,
-      selectedItemColor: XColors.primaryColor(),
-      selectedFontSize: 12.0,
-      unselectedFontSize: 11.0,
-      backgroundColor: Colors.transparent,
-      unselectedItemColor: XColors.textColor(),
-      type: BottomNavigationBarType.fixed,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      elevation: 0,
-      onTap: onTap,
+      ),
     );
   }
 }

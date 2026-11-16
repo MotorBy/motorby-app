@@ -52,7 +52,11 @@ class InfoDetailsView extends StatelessWidget {
     return ViewModelBuilder<InfoDetailsViewModel>.reactive(
         viewModelBuilder: () => infoDetailsViewModel ?? InfoDetailsViewModel(),
         disposeViewModel: false,
-        onViewModelReady: (model) => model.initializeTotalCostingAndValue(),
+        // The budget sheet shows the picked car's numbers; the other sheets
+        // keep their existing behaviour.
+        onViewModelReady: (model) => model.initializeTotalCostingAndValue(
+          index: infoType == InfoType.budgeting ? currentIndex ?? 0 : 0,
+        ),
         builder: (context, viewModel, child) {
 
           if(isFromQuickActions != true) {
@@ -117,6 +121,7 @@ class InfoBodyView extends ViewModelWidget<InfoDetailsViewModel> {
 
             FuelBudgetView(
               infoType: infoType,
+              currentIndex: currentIndex,
               infoDetailsViewModel: viewModel,
               onBudgetAction: onBudgetAction,
             )
@@ -125,6 +130,7 @@ class InfoBodyView extends ViewModelWidget<InfoDetailsViewModel> {
 
             ServiceRepairBudgetView(
               infoType: infoType,
+              currentIndex: currentIndex,
               infoDetailsViewModel: viewModel,
               onBudgetAction: onBudgetAction,
             ),
@@ -196,11 +202,15 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
     super.key,
     this.infoDetailsViewModel,
     this.infoType = InfoType.fueling,
+    this.currentIndex,
     this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
+
+  /// The car's place in the budget list; the entry is logged against it.
+  final int? currentIndex;
   final Function? onBudgetAction;
 
   @override
@@ -350,6 +360,7 @@ class FuelBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue().toString(),
+                  budgetIndex: currentIndex ?? 0,
                   onCallBack: () {
                     popView(context);
                     onBudgetAction!.call();
@@ -388,11 +399,15 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
     super.key,
     this.infoDetailsViewModel,
     this.infoType = InfoType.servicing,
+    this.currentIndex,
     this.onBudgetAction
   });
 
   final InfoDetailsViewModel? infoDetailsViewModel;
   final InfoType? infoType;
+
+  /// The car's place in the budget list; the entry is logged against it.
+  final int? currentIndex;
   final Function? onBudgetAction;
 
   @override
@@ -635,6 +650,7 @@ class ServiceRepairBudgetView extends ViewModelWidget<InfoDetailsViewModel> {
 
               viewModel.updateToBudget(
                   type: infoType!.toValue(),
+                  budgetIndex: currentIndex ?? 0,
                   onCallBack: (){
                     popView(context);
                     onBudgetAction!.call();
@@ -1801,7 +1817,9 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            // Wraps so a large amount or bigger font size can't overflow.
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 NormalText(
                   text: viewModel.budgetInputController.text.isNotEmpty ? 'Your budget will be increased to  ' : 'Increase your budget of  ',
@@ -1833,6 +1851,7 @@ class BudgetingInfoView extends ViewModelWidget<InfoDetailsViewModel> {
           onPressed: !viewModel.isBusy ? () {
             viewModel.updateToBudget(
                 type: 'budgeting',
+                budgetIndex: currentIndex ?? 0,
                 onCallBack: () {
 
                   popView(context);

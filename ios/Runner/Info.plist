@@ -26,6 +26,12 @@
     <string>We need your location to show relevant data</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>MotorBy requires continuous access to your location</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Drive mode keeps tracking your trip while your screen is off.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+    </array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>

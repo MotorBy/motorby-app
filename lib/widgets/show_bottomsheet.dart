@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-void modalBottomSheetMenu({
+/// Shows [child] in a modal sheet; the returned future completes when it closes.
+Future<void> modalBottomSheetMenu({
   required BuildContext context,
   double? radius,
   Widget? child,
   bool? isDismissible,
   double? height,
   Color? color}) {
-  showModalBottomSheet(
+  return showModalBottomSheet<void>(
       isDismissible: isDismissible ?? true,
       context: context,
       isScrollControlled: true,
